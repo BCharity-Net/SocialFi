@@ -7,11 +7,12 @@ import React, { FC } from 'react'
 
 interface Props {
   groups: Group[]
+  testId: string
 }
 
-const List: FC<Props> = ({ groups }) => {
+const List: FC<Props> = ({ groups, testId }) => {
   return (
-    <Card>
+    <Card testId={testId}>
       <CardBody className="space-y-6">
         {groups?.length === 0 && (
           <EmptyState

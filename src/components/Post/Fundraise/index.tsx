@@ -107,7 +107,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
   if (loading) return <FundraiseShimmer />
 
   return (
-    <Card forceRounded>
+    <Card forceRounded testId="fundraise">
       <div
         className="h-40 rounded-t-xl border-b sm:h-52 dark:border-b-gray-700/80"
         style={{
@@ -133,7 +133,10 @@ const Fundraise: FC<Props> = ({ fund }) => {
                   .trim()}
               </Markup>
             </div>
-            <div className="block sm:flex items-center !my-3 space-y-2 sm:space-y-0 sm:space-x-3">
+            <div
+              className="block sm:flex items-center !my-3 space-y-2 sm:space-y-0 sm:space-x-3"
+              data-test="fundraise-meta"
+            >
               {fund?.stats?.totalAmountOfCollects > 0 && (
                 <>
                   <button
@@ -214,6 +217,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
                         : percentageReached
                     }%`
                   }}
+                  data-test="fundraise-progress-bar"
                 />
               </div>
             </Tooltip>

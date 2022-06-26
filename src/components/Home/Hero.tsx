@@ -6,12 +6,18 @@ const Hero: React.FC = () => {
       <div className="container px-5 mx-auto max-w-screen-xl">
         <div className="flex items-stretch py-8 w-full text-center sm:py-12 sm:text-left">
           <div className="flex-1 flex-shrink-0 space-y-3">
-            <div className="text-2xl font-extrabold text-black sm:text-3xl">
+            <div
+              className="text-2xl font-extrabold text-black sm:text-4xl"
+              data-test="app-name"
+            >
               Welcome to BCharity Baas👋
             </div>
-            <div className="leading-7 text-gray-700">
+            <div
+              className="leading-7 text-gray-700"
+              data-test="app-description"
+            >
               Next generation group-driven composable, decentralized, and
-              permissionless public good industry Web3 built on blockchains.
+              permissionless public good sector Web3 built on blockchains.
             </div>
             <div className="text-2xl font-extrabold text-black sm:text-2xl">
               VHR Crypto OnChain Volunteer Hours

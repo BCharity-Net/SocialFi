@@ -38,8 +38,8 @@ const MirrorNotification: FC<Props> = ({ notification }) => {
               className="font-bold"
             >
               {notification?.publication?.__typename === 'Post'
-                ? postType === 'crowdfund'
-                  ? 'crowdfund'
+                ? postType === 'fundraise'
+                  ? 'fundraise'
                   : notification?.publication?.__typename?.toLowerCase()
                 : notification?.publication?.__typename?.toLowerCase()}
             </a>
@@ -52,7 +52,7 @@ const MirrorNotification: FC<Props> = ({ notification }) => {
               href={`/posts/${notification?.publication?.id}`}
               className="text-gray-500 line-clamp-2 linkify mt-2"
             >
-              {postType === 'crowdfund' ? (
+              {postType === 'fundraise' ? (
                 notification?.publication?.metadata?.name
               ) : (
                 <Markup>{notification?.publication?.metadata?.content}</Markup>

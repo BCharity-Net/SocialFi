@@ -21,7 +21,7 @@ export async function middleware(req: NextRequest) {
         : `@${profile?.handle} • BCharity`
       const description = profile?.bio ?? ''
       const image = profile
-        ? `https://ik.imagekit.io/lensterimg/tr:n-avatar/${getIPFSLink(
+        ? `https://ik.imagekit.io/bcharityimg/tr:n-avatar/${getIPFSLink(
             // @ts-ignore
             profile?.picture?.original?.url ??
               // @ts-ignore

@@ -25,7 +25,7 @@ export async function middleware(req: NextRequest) {
       } by @${profile.handle} • BCharity`
       const description = publication.metadata?.content ?? ''
       const image = profile
-        ? `https://ik.imagekit.io/lensterimg/tr:n-avatar/${getIPFSLink(
+        ? `https://ik.imagekit.io/bcharityimg/tr:n-avatar/${getIPFSLink(
             // @ts-ignore
             profile?.picture?.original?.url ??
               // @ts-ignore

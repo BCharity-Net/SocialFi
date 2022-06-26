@@ -9,10 +9,9 @@ import { TextArea } from '@components/UI/TextArea'
 import SEO from '@components/utils/SEO'
 import { PencilAltIcon } from '@heroicons/react/outline'
 import { CheckCircleIcon } from '@heroicons/react/solid'
-import trackEvent from '@lib/trackEvent'
 import { useRouter } from 'next/router'
 import React, { FC } from 'react'
-import { CONTACT_EMAIL } from 'src/constants'
+import { APP_NAME, CONTACT_EMAIL } from 'src/constants'
 import { object, string } from 'zod'
 
 const newContactSchema = object({
@@ -36,15 +35,15 @@ const Contact: FC = () => {
 
   return (
     <GridLayout>
-      <SEO title="Contact • BCharity" />
+      <SEO title={`Contact • ${APP_NAME}`} />
       <GridItemFour>
         <SettingsHelper
-          heading="Contact BCharity"
+          heading={`Contact ${APP_NAME}`}
           description="Contact us to help you get the issue resolved."
         />
       </GridItemFour>
       <GridItemEight>
-        <Card>
+        <Card testId="contact-form">
           {false ? (
             <EmptyState
               message={<span>Publication reported successfully!</span>}
@@ -59,7 +58,6 @@ const Contact: FC = () => {
                 location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
                   subject
                 )}&body=${encodeURIComponent(message)}`
-                trackEvent('contact')
                 push('/')
               }}
             >

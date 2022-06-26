@@ -131,7 +131,7 @@ const MenuItems: FC<Props> = ({ pingData }) => {
                   setCurrentUser(undefined)
                   Cookies.remove('accessToken')
                   Cookies.remove('refreshToken')
-                  localStorage.removeItem('lenster.store')
+                  localStorage.removeItem('bcharity.store')
                   disconnect()
                 }}
                 className={({ active }: { active: boolean }) =>
@@ -220,7 +220,7 @@ const MenuItems: FC<Props> = ({ pingData }) => {
                       </Tooltip>
                     )}
                     <a
-                      href={`https://gitlab.com/lenster/lenster/-/commit/${GIT_COMMIT_SHA}`}
+                      href={`https://gitlab.com/bcharity/bcharity/-/commit/${GIT_COMMIT_SHA}`}
                       className="font-mono"
                       title="Git commit SHA"
                       target="_blank"

@@ -24,7 +24,7 @@ const generateMeta = (
       <meta property="twitter:image:src" content="${image}" />
       <meta property="twitter:image:width" content="400" />
       <meta property="twitter:image:height" content="400" />
-      <meta property="twitter:creator" content="lensterxyz" />
+      <meta property="twitter:creator" content="bcharityxyz" />
     </head>
   </html>`
 }

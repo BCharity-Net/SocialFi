@@ -63,4 +63,4 @@ and visit http://localhost:4783
 
 ## ⚖️ License
 
-BCharity is open-sourced software licensed under the Lenster with © [GNU General Public License 3.0](LICENSE).
+BCharity is open-sourced software licensed under the BCharity with © [GNU General Public License 3.0](LICENSE).

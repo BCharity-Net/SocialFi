@@ -81,7 +81,7 @@ const SiteLayout: FC<Props> = ({ children }) => {
       setCurrentUser(undefined)
       Cookies.remove('accessToken')
       Cookies.remove('refreshToken')
-      localStorage.removeItem('lenster.store')
+      localStorage.removeItem('bcharity.store')
       disconnect()
     }
 

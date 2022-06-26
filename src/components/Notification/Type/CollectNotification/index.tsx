@@ -32,9 +32,9 @@ const CollectNotification: FC<Props> = ({ notification }) => {
     <div className="flex justify-between items-start">
       <div className="space-y-2 w-4/5">
         <div className="flex items-center space-x-3">
-          {postType === 'community' ? (
+          {postType === 'group' ? (
             <UsersIcon className="h-6 w-6 text-pink-500/70" />
-          ) : postType === 'crowdfund' ? (
+          ) : postType === 'fundraise' ? (
             <CashIcon className="h-6 w-6 text-pink-500/70" />
           ) : (
             <CollectionIcon className="h-6 w-6 text-pink-500/70" />
@@ -56,24 +56,24 @@ const CollectNotification: FC<Props> = ({ notification }) => {
             <NotificationWalletProfileName wallet={notification?.wallet} />
           )}{' '}
           <span className="text-gray-600 dark:text-gray-400">
-            {postType === 'community'
+            {postType === 'group'
               ? 'joined your'
-              : postType === 'crowdfund'
+              : postType === 'fundraise'
               ? 'funded your'
               : 'collected your'}{' '}
           </span>
           <Link
             href={
-              postType === 'community'
-                ? `/communities/${notification?.collectedPublication?.id}`
+              postType === 'group'
+                ? `/groups/${notification?.collectedPublication?.id}`
                 : `/posts/${notification?.collectedPublication?.id}`
             }
             prefetch={false}
           >
             <a
               href={
-                postType === 'community'
-                  ? `/communities/${notification?.collectedPublication?.id}`
+                postType === 'group'
+                  ? `/groups/${notification?.collectedPublication?.id}`
                   : `/posts/${notification?.collectedPublication?.id}`
               }
               className="font-bold"
@@ -82,7 +82,7 @@ const CollectNotification: FC<Props> = ({ notification }) => {
             </a>
           </Link>
           <CollectedContent notification={notification} />
-          {postType !== 'community' && (
+          {postType !== 'group' && (
             <CollectedAmount notification={notification} />
           )}
         </div>

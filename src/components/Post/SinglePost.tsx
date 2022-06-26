@@ -6,6 +6,7 @@ import Link from 'next/link'
 import React, { FC } from 'react'
 
 import PostActions from './Actions'
+import HiddenPost from './HiddenPost'
 import PostBody from './PostBody'
 import PostType from './Type'
 
@@ -25,7 +26,7 @@ const SinglePost: FC<Props> = ({
   const postType = post?.metadata?.attributes[0]?.value
 
   return (
-    <div className="p-5">
+    <div className="p-5" data-test="publication">
       <PostType post={post} hideType={hideType} showThread={showThread} />
       <div>
         <div className="flex justify-between pb-4 space-x-1.5">
@@ -42,14 +43,21 @@ const SinglePost: FC<Props> = ({
             <a
               href={`/posts/${post?.id ?? post?.pubId}`}
               className="text-sm text-gray-500"
+              data-test="publication-timestamp"
             >
               {dayjs(new Date(post?.createdAt)).fromNow()}
             </a>
           </Link>
         </div>
-        <div className="ml-[53px]">
-          <PostBody post={post} />
-          <PostActions post={post} />
+        <div className="ml-[53px]" data-test="publication-content">
+          {post?.hidden ? (
+            <HiddenPost type={post?.__typename} />
+          ) : (
+            <>
+              <PostBody post={post} />
+              <PostActions post={post} />
+            </>
+          )}
         </div>
       </div>
     </div>

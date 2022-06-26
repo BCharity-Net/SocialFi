@@ -6,6 +6,7 @@ import { BCharityPost } from '@generated/bcharitytypes'
 import { CollectionIcon } from '@heroicons/react/outline'
 import { getModule } from '@lib/getModule'
 import humanize from '@lib/humanize'
+import nFormatter from '@lib/nFormatter'
 import { motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { FC, useEffect, useState } from 'react'
@@ -25,24 +26,36 @@ const Collect: FC<Props> = ({ post }) => {
     post?.collectModule?.__typename === 'FreeCollectModuleSettings'
 
   useEffect(() => {
-    if (post?.stats?.totalAmountOfCollects) {
-      setCount(post?.stats?.totalAmountOfCollects)
+    if (
+      post?.mirrorOf?.stats?.totalAmountOfCollects ||
+      post?.stats?.totalAmountOfCollects
+    ) {
+      setCount(
+        post.__typename === 'Mirror'
+          ? post?.mirrorOf?.stats?.totalAmountOfCollects
+          : post?.stats?.totalAmountOfCollects
+      )
     }
-  }, [post?.stats?.totalAmountOfCollects])
+  }, [post])
 
   return (
     <motion.button
       whileTap={{ scale: 0.9 }}
       onClick={() => setShowCollectModal(true)}
       aria-label="Collect"
+      data-test="publication-collect"
     >
       <div className="flex items-center space-x-1 text-red-500 hover:red-brand-400">
         <div className="p-1.5 rounded-full hover:bg-red-300 hover:bg-opacity-20">
-          <Tooltip placement="top" content="Collect" withDelay>
+          <Tooltip
+            placement="top"
+            content={count > 0 ? `${humanize(count)} Collects` : 'Collect'}
+            withDelay
+          >
             <CollectionIcon className="w-[18px]" />
           </Tooltip>
         </div>
-        {count > 0 && <div className="text-xs">{humanize(count)}</div>}
+        {count > 0 && <div className="text-xs">{nFormatter(count)}</div>}
       </div>
       <Modal
         title={
