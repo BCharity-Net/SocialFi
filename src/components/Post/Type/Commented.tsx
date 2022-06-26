@@ -14,9 +14,7 @@ const Commented: FC<Props> = ({ post }) => {
 
   return (
     <div>
-      {mainPost && postType !== 'group' ? (
-        <ThreadBody post={mainPost} />
-      ) : null}
+      {mainPost && postType !== 'group' ? <ThreadBody post={mainPost} /> : null}
       <ThreadBody post={commentOn} />
     </div>
   )
