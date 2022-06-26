@@ -1,0 +1,70 @@
+@font-face {
+  font-family: 'BCharity';
+  font-style: normal;
+  font-weight: 450;
+  src: local('BCharity'),
+    url('https://assets.lenster.xyz/css/fonts/BCharity-Light.woff')
+      format('woff');
+}
+
+@font-face {
+  font-family: 'BCharity';
+  font-style: italic;
+  font-weight: 450;
+  src: local('BCharity'),
+    url('https://assets.lenster.xyz/css/fonts/BCharity-LightItalic.woff')
+      format('woff');
+}
+
+@font-face {
+  font-family: 'BCharity';
+  font-style: normal;
+  font-weight: 500;
+  src: local('BCharity'),
+    url('https://assets.lenster.xyz/css/fonts/BCharity-Medium.woff')
+      format('woff');
+}
+
+@font-face {
+  font-family: 'BCharity';
+  font-style: italic;
+  font-weight: 500;
+  src: local('BCharity'),
+    url('https://assets.lenster.xyz/css/fonts/BCharity-MediumItalic.woff')
+      format('woff');
+}
+
+@font-face {
+  font-family: 'BCharity';
+  font-style: normal;
+  font-weight: 700;
+  src: local('BCharity'),
+    url('https://assets.lenster.xyz/css/fonts/BCharity-Bold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'BCharity';
+  font-style: italic;
+  font-weight: 700;
+  src: local('BCharity'),
+    url('https://assets.lenster.xyz/css/fonts/BCharity-BoldItalic.woff')
+      format('woff');
+}
+
+@font-face {
+  font-family: 'BCharity';
+  font-style: normal;
+  font-weight: 900;
+  src: local('BCharity'),
+    url('https://assets.lenster.xyz/css/fonts/BCharity-Black.woff')
+      format('woff');
+}
+
+@font-face {
+  font-family: 'BCharity';
+  font-style: italic;
+  font-weight: 900;
+  src: local('BCharity'),
+    url('https://assets.lenster.xyz/css/fonts/BCharity-BlackItalic.woff')
+      format('woff');
+}
