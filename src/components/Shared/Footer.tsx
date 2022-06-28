@@ -12,9 +12,6 @@ const Footer: FC = () => {
       }`}
       data-test="footer"
     >
-      <span className="font-bold text-gray-500 dark:text-gray-300">
-        © BCharity
-      </span>
       <a
         href="https://polygive.gitbook.io/bcharity/"
         target="_blank"
@@ -72,6 +69,11 @@ const Footer: FC = () => {
       <Link href="/terms" prefetch={false}>
         <a href="/terms">Terms</a>
       </Link>
+      <span className="font-bold text-gray-600 dark:text-gray-600">
+        <a href="https://ecssen.ca/" target="_blank" rel="noreferrer noopener">
+          © BCharity powered by ECSSEN Career School
+        </a>
+      </span>
       {/* <a
         className="pr-3 hover:font-bold"
         href="https://vercel.com/bcharity?utm_source=BCharity&utm_campaign=oss"

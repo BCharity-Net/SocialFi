@@ -128,11 +128,11 @@ const MenuItems: FC<Props> = ({ pingData }) => {
               <Menu.Item
                 as="a"
                 onClick={() => {
-                  setCurrentUser(undefined)
+                  setCurrentUser(null)
                   Cookies.remove('accessToken')
                   Cookies.remove('refreshToken')
                   localStorage.removeItem('bcharity.store')
-                  disconnect()
+                  if (disconnect) disconnect()
                 }}
                 className={({ active }: { active: boolean }) =>
                   clsx({ 'dropdown-active': active }, 'menu-item')

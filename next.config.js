@@ -10,8 +10,7 @@ const moduleExports = withPWA({
     runtimeCaching
   },
   reactStrictMode: process.env.NODE_ENV === 'production',
-  maximumFileSizeToCacheInBytes: 5000000,
-  poweredByHeader: false
+  maximumFileSizeToCacheInBytes: 5000000
 })
 
 const sentryWebpackPluginOptions = {
