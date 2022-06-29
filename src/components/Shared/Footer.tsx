@@ -71,7 +71,7 @@ const Footer: FC = () => {
       </Link>
       <span className="font-bold text-gray-600 dark:text-gray-600">
         <a href="https://ecssen.ca/" target="_blank" rel="noreferrer noopener">
-          © BCharity powered by ECSSEN Career School
+          © BCharity powered by ECSSEN (Registered Charity)
         </a>
       </span>
       {/* <a
