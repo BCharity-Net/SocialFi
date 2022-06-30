@@ -6,8 +6,8 @@ import { BCharityPost } from '@generated/bcharitytypes'
 import { CreateMirrorBroadcastItemResult } from '@generated/types'
 import { BROADCAST_MUTATION } from '@gql/BroadcastMutation'
 import { SwitchHorizontalIcon } from '@heroicons/react/outline'
-import consoleLog from '@lib/consoleLog'
 import humanize from '@lib/humanize'
+import Logger from '@lib/logger'
 import nFormatter from '@lib/nFormatter'
 import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
@@ -117,19 +117,19 @@ const Mirror: FC<Props> = ({ post }) => {
         if (error.message === ERRORS.notMined) {
           toast.error(error.message)
         }
-        consoleLog('Relay Error', '#ef4444', error.message)
+        Logger.error('Relay Error =>', error.message)
       }
     }
   )
   const [createMirrorTypedData, { loading: typedDataLoading }] = useMutation(
     CREATE_MIRROR_TYPED_DATA_MUTATION,
     {
-      onCompleted({
+      async onCompleted({
         createMirrorTypedData
       }: {
         createMirrorTypedData: CreateMirrorBroadcastItemResult
       }) {
-        consoleLog('Mutation', '#4ade80', 'Generated createMirrorTypedData')
+        Logger.log('Mutation =>', 'Generated createMirrorTypedData')
         const { id, typedData } = createMirrorTypedData
         const {
           profileId,
@@ -137,17 +137,19 @@ const Mirror: FC<Props> = ({ post }) => {
           pubIdPointed,
           referenceModule,
           referenceModuleData,
-          referenceModuleInitData
+          referenceModuleInitData,
+          deadline
         } = typedData?.value
 
-        signTypedDataAsync({
-          domain: omit(typedData?.domain, '__typename'),
-          types: omit(typedData?.types, '__typename'),
-          value: omit(typedData?.value, '__typename')
-        }).then((signature) => {
+        try {
+          const signature = await signTypedDataAsync({
+            domain: omit(typedData?.domain, '__typename'),
+            types: omit(typedData?.types, '__typename'),
+            value: omit(typedData?.value, '__typename')
+          })
           setUserSigNonce(userSigNonce + 1)
           const { v, r, s } = splitSignature(signature)
-          const sig = { v, r, s, deadline: typedData.value.deadline }
+          const sig = { v, r, s, deadline }
           const inputStruct = {
             profileId,
             profileIdPointed,
@@ -168,7 +170,9 @@ const Mirror: FC<Props> = ({ post }) => {
           } else {
             write({ args: inputStruct })
           }
-        })
+        } catch (error) {
+          Logger.warn('Sign Error =>', error)
+        }
       },
       onError(error) {
         toast.error(error.message ?? ERROR_MESSAGE)

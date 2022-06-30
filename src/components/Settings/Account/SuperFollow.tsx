@@ -1,169 +1,143 @@
 import { LensHubProxy } from '@abis/LensHubProxy'
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import IndexStatus from '@components/Shared/IndexStatus'
+import UserProfile from '@components/Shared/UserProfile'
 import { Button } from '@components/UI/Button'
-import { Card } from '@components/UI/Card'
-import { Form, useZodForm } from '@components/UI/Form'
-import { Input } from '@components/UI/Input'
+import { Card, CardBody } from '@components/UI/Card'
+import { ErrorMessage } from '@components/UI/ErrorMessage'
 import { Spinner } from '@components/UI/Spinner'
-import {
-  CreateSetFollowModuleBroadcastItemResult,
-  Erc20
-} from '@generated/types'
+import { Profile, SetDefaultProfileBroadcastItemResult } from '@generated/types'
 import { BROADCAST_MUTATION } from '@gql/BroadcastMutation'
-import { StarIcon, XIcon } from '@heroicons/react/outline'
-import consoleLog from '@lib/consoleLog'
-import getTokenImage from '@lib/getTokenImage'
+import { ExclamationIcon, PencilIcon } from '@heroicons/react/outline'
+import Logger from '@lib/logger'
 import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import {
+  APP_NAME,
   CONNECT_WALLET,
-  DEFAULT_COLLECT_TOKEN,
   ERROR_MESSAGE,
   ERRORS,
   LENSHUB_PROXY,
   RELAY_ON
 } from 'src/constants'
+import Custom404 from 'src/pages/404'
 import { useAppStore, usePersistStore } from 'src/store'
-import { useContractWrite, useSignTypedData } from 'wagmi'
-import { object, string } from 'zod'
+import { useAccount, useContractWrite, useSignTypedData } from 'wagmi'
 
-const newFundraiseSchema = object({
-  amount: string().min(1, { message: 'Invalid amount' }),
-  recipient: string()
-    .max(42, { message: 'Ethereum address should be within 42 characters' })
-    .regex(/^0x[a-fA-F0-9]{40}$/, { message: 'Invalid Ethereum address' })
-})
-
-const MODULES_CURRENCY_QUERY = gql`
-  query EnabledCurrencyModules($request: SingleProfileQueryRequest!) {
-    enabledModuleCurrencies {
-      name
-      symbol
-      decimals
-      address
-    }
-    profile(request: $request) {
-      followModule {
-        __typename
-      }
-    }
-  }
-`
-
-export const CREATE_SET_FOLLOW_MODULE_TYPED_DATA_MUTATION = gql`
-  mutation CreateSetFollowModuleTypedData(
+const CREATE_SET_DEFAULT_PROFILE_DATA_MUTATION = gql`
+  mutation CreateSetDefaultProfileTypedData(
     $options: TypedDataOptions
-    $request: CreateSetFollowModuleRequest!
+    $request: CreateSetDefaultProfileRequest!
   ) {
-    createSetFollowModuleTypedData(options: $options, request: $request) {
+    createSetDefaultProfileTypedData(options: $options, request: $request) {
       id
       expiresAt
       typedData {
-        types {
-          SetFollowModuleWithSig {
-            name
-            type
-          }
-        }
         domain {
           name
           chainId
           version
           verifyingContract
         }
+        types {
+          SetDefaultProfileWithSig {
+            name
+            type
+          }
+        }
         value {
           nonce
           deadline
+          wallet
           profileId
-          followModule
-          followModuleInitData
         }
       }
     }
   }
 `
 
-const SuperFollow: FC = () => {
-  const { userSigNonce, setUserSigNonce } = useAppStore()
-  const { isAuthenticated, currentUser } = usePersistStore()
-  const [selectedCurrency, setSelectedCurrency] = useState<string>(
-    DEFAULT_COLLECT_TOKEN
-  )
-  const [selectedCurrencySymobol, setSelectedCurrencySymobol] =
-    useState<string>('WMATIC')
+const SetProfile: FC = () => {
+  const { profiles, userSigNonce, setUserSigNonce } = useAppStore()
+  const { isAuthenticated } = usePersistStore()
+  const [selectedUser, setSelectedUser] = useState<string>()
+  const { address } = useAccount()
   const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
     onError(error) {
       toast.error(error?.message)
     }
   })
-  const { data: currencyData, loading } = useQuery(MODULES_CURRENCY_QUERY, {
-    variables: { request: { profileId: currentUser?.id } },
-    skip: !currentUser?.id,
-    onCompleted() {
-      consoleLog('Query', '#8b5cf6', `Fetched enabled module currencies`)
-    }
-  })
+
+  const onCompleted = () => {
+    toast.success('Default profile updated successfully!')
+  }
 
   const {
     data: writeData,
     isLoading: writeLoading,
+    error,
     write
   } = useContractWrite({
     addressOrName: LENSHUB_PROXY,
     contractInterface: LensHubProxy,
-    functionName: 'setFollowModuleWithSig',
+    functionName: 'setDefaultProfileWithSig',
+    onSuccess() {
+      onCompleted()
+    },
     onError(error: any) {
       toast.error(error?.data?.message ?? error?.message)
     }
   })
 
-  const form = useZodForm({
-    schema: newFundraiseSchema,
-    defaultValues: {
-      recipient: currentUser?.ownedBy
-    }
-  })
+  const hasDefaultProfile = !!profiles.find((o) => o.isDefault)
+  const sortedProfiles: Profile[] = profiles?.sort((a, b) =>
+    !(a.isDefault !== b.isDefault) ? 0 : a.isDefault ? -1 : 1
+  )
+
+  useEffect(() => {
+    setSelectedUser(sortedProfiles[0]?.id)
+  }, [sortedProfiles])
 
   const [broadcast, { data: broadcastData, loading: broadcastLoading }] =
     useMutation(BROADCAST_MUTATION, {
+      onCompleted(data) {
+        if (data?.broadcast?.reason !== 'NOT_ALLOWED') {
+          onCompleted()
+        }
+      },
       onError(error) {
         if (error.message === ERRORS.notMined) {
           toast.error(error.message)
         }
-        consoleLog('Relay Error', '#ef4444', error.message)
+        Logger.error('Relay Error =>', error.message)
       }
     })
-  const [createSetFollowModuleTypedData, { loading: typedDataLoading }] =
-    useMutation(CREATE_SET_FOLLOW_MODULE_TYPED_DATA_MUTATION, {
-      onCompleted({
-        createSetFollowModuleTypedData
+  const [createSetDefaultProfileTypedData, { loading: typedDataLoading }] =
+    useMutation(CREATE_SET_DEFAULT_PROFILE_DATA_MUTATION, {
+      async onCompleted({
+        createSetDefaultProfileTypedData
       }: {
-        createSetFollowModuleTypedData: CreateSetFollowModuleBroadcastItemResult
+        createSetDefaultProfileTypedData: SetDefaultProfileBroadcastItemResult
       }) {
-        consoleLog(
-          'Mutation',
-          '#4ade80',
-          'Generated createSetFollowModuleTypedData'
-        )
-        const { id, typedData } = createSetFollowModuleTypedData
-        const { profileId, followModule, followModuleInitData } =
-          typedData?.value
+        Logger.log('Mutation =>', 'Generated createSetDefaultProfileTypedData')
+        const { id, typedData } = createSetDefaultProfileTypedData
+        const { deadline } = typedData?.value
 
-        signTypedDataAsync({
-          domain: omit(typedData?.domain, '__typename'),
-          types: omit(typedData?.types, '__typename'),
-          value: omit(typedData?.value, '__typename')
-        }).then((signature) => {
+        try {
+          const signature = await signTypedDataAsync({
+            domain: omit(typedData?.domain, '__typename'),
+            types: omit(typedData?.types, '__typename'),
+            value: omit(typedData?.value, '__typename')
+          })
           setUserSigNonce(userSigNonce + 1)
+          const { wallet, profileId } = typedData?.value
           const { v, r, s } = splitSignature(signature)
-          const sig = { v, r, s, deadline: typedData.value.deadline }
+          const sig = { v, r, s, deadline }
           const inputStruct = {
+            follower: address,
+            wallet,
             profileId,
-            followModule,
-            followModuleInitData,
             sig
           }
           if (RELAY_ON) {
@@ -177,146 +151,93 @@ const SuperFollow: FC = () => {
           } else {
             write({ args: inputStruct })
           }
-        })
+        } catch (error) {
+          Logger.warn('Sign Error =>', error)
+        }
       },
       onError(error) {
         toast.error(error.message ?? ERROR_MESSAGE)
       }
     })
 
-  const setSuperFollow = (amount: string | null, recipient: string | null) => {
+  const setDefaultProfile = () => {
     if (!isAuthenticated) return toast.error(CONNECT_WALLET)
 
-    createSetFollowModuleTypedData({
+    createSetDefaultProfileTypedData({
       variables: {
         options: { overrideSigNonce: userSigNonce },
-        request: {
-          profileId: currentUser?.id,
-          followModule: amount
-            ? {
-                feeFollowModule: {
-                  amount: {
-                    currency: selectedCurrency,
-                    value: amount
-                  },
-                  recipient
-                }
-              }
-            : {
-                freeFollowModule: true
-              }
-        }
+        request: { profileId: selectedUser }
       }
     })
   }
 
-  if (loading)
-    return (
-      <Card>
-        <div className="p-5 py-10 space-y-2 text-center">
-          <Spinner size="md" className="mx-auto" />
-          <div>Loading super follow settings</div>
-        </div>
-      </Card>
-    )
-
-  const followType = currencyData?.profile?.followModule?.__typename
+  if (!isAuthenticated) return <Custom404 />
 
   return (
     <Card>
-      <Form
-        form={form}
-        className="p-5 space-y-4"
-        onSubmit={({ amount, recipient }) => {
-          setSuperFollow(amount, recipient)
-        }}
-      >
-        <div className="text-lg font-bold">Set super follow</div>
+      <CardBody className="space-y-5">
+        {error && <ErrorMessage title="Transaction failed!" error={error} />}
+        {hasDefaultProfile ? (
+          <>
+            <div className="text-lg font-bold">Your default profile</div>
+            <UserProfile profile={sortedProfiles[0]} />
+          </>
+        ) : (
+          <div className="flex items-center space-x-1.5 font-bold text-yellow-500">
+            <ExclamationIcon className="w-5 h-5" />
+            <div>You don&rsquo;t have any default profile set!</div>
+          </div>
+        )}
+        <div className="text-lg font-bold">Select default profile</div>
         <p>
-          Setting super follow makes users spend crypto to follow you, and
-          it&rsquo;s a good way to earn it, you can change the amount and
-          currency or disable/enable it anytime.
+          Selecting your default account helps to display the selected profile
+          across {APP_NAME}, you can change your default profile anytime.
         </p>
-        <div className="pt-2">
-          <div className="label">Select Currency</div>
+        <div className="text-lg font-bold">What else you should know</div>
+        <div className="text-sm text-gray-500 divide-y dark:divide-gray-700">
+          <p className="pb-3">
+            Only the default profile will be visible across the {APP_NAME},
+            example notifications, follow etc.
+          </p>
+          <p className="py-3">You can change default profile anytime here.</p>
+        </div>
+        <div>
+          <div className="label">Select profile</div>
           <select
             className="w-full bg-white rounded-xl border border-gray-300 outline-none dark:bg-gray-800 disabled:bg-gray-500 disabled:bg-opacity-20 disabled:opacity-60 dark:border-gray-700/80 focus:border-brand-500 focus:ring-brand-400"
-            onChange={(e) => {
-              const currency = e.target.value.split('-')
-              setSelectedCurrency(currency[0])
-              setSelectedCurrencySymobol(currency[1])
-            }}
+            onChange={(e) => setSelectedUser(e.target.value)}
           >
-            {currencyData?.enabledModuleCurrencies?.map((currency: Erc20) => (
-              <option
-                key={currency.address}
-                value={`${currency.address}-${currency.symbol}`}
-              >
-                {currency.name}
+            {sortedProfiles?.map((profile: Profile) => (
+              <option key={profile?.id} value={profile?.id}>
+                @{profile?.handle}
               </option>
             ))}
           </select>
         </div>
-        <Input
-          label="Follow amount"
-          type="number"
-          step="0.0001"
-          min="0"
-          max="100000"
-          prefix={
-            <img
-              className="w-6 h-6"
-              height={24}
-              width={24}
-              src={getTokenImage(selectedCurrencySymobol)}
-              alt={selectedCurrencySymobol}
-            />
-          }
-          placeholder="5"
-          {...form.register('amount')}
-        />
-        <Input
-          label="Funds recipient"
-          type="text"
-          placeholder="0x3A5bd...5e3"
-          {...form.register('recipient')}
-        />
-        <div className="ml-auto flex flex-col space-y-2">
-          <div className="block space-y-2 space-x-0 sm:flex sm:space-y-0 sm:space-x-2">
-            {followType === 'FeeFollowModuleSettings' && (
-              <Button
-                type="button"
-                variant="danger"
-                outline
-                onClick={() => {
-                  setSuperFollow(null, null)
-                }}
-                disabled={
-                  typedDataLoading ||
-                  signLoading ||
-                  writeLoading ||
-                  broadcastLoading
-                }
-                icon={<XIcon className="w-4 h-4" />}
-              >
-                Disable Super follow
-              </Button>
-            )}
-            <Button
-              type="submit"
-              disabled={
-                typedDataLoading ||
-                signLoading ||
-                writeLoading ||
-                broadcastLoading
-              }
-              icon={<StarIcon className="w-4 h-4" />}
-            >
-              {followType === 'FeeFollowModuleSettings'
-                ? 'Update Super follow'
-                : 'Set Super follow'}
-            </Button>
-          </div>
+        <div className="flex flex-col space-y-2">
+          <Button
+            className="ml-auto"
+            type="submit"
+            disabled={
+              typedDataLoading ||
+              signLoading ||
+              writeLoading ||
+              broadcastLoading
+            }
+            onClick={setDefaultProfile}
+            icon={
+              typedDataLoading ||
+              signLoading ||
+              writeLoading ||
+              broadcastLoading ? (
+                <Spinner size="xs" />
+              ) : (
+                <PencilIcon className="w-4 h-4" />
+              )
+            }
+          >
+            Save
+          </Button>
           {writeData?.hash ?? broadcastData?.broadcast?.txHash ? (
             <IndexStatus
               txHash={
@@ -324,12 +245,13 @@ const SuperFollow: FC = () => {
                   ? writeData?.hash
                   : broadcastData?.broadcast?.txHash
               }
+              reload
             />
           ) : null}
         </div>
-      </Form>
+      </CardBody>
     </Card>
   )
 }
 
-export default SuperFollow
+export default SetProfile

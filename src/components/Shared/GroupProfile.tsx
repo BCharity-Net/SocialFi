@@ -12,7 +12,7 @@ interface Props {
 const GroupProfile: FC<Props> = ({ group }) => {
   return (
     <div className="flex justify-between items-center">
-      <Link href={`/groups/${group?.id}`} prefetch={false}>
+      <Link href={`/groups/${group?.id}`}>
         <a href={`/groups/${group?.id}`}>
           <div className="flex items-center space-x-3">
             <img

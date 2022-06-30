@@ -7,7 +7,7 @@ import { Spinner } from '@components/UI/Spinner'
 import { Following, PaginatedResultInfo, Profile } from '@generated/types'
 import { MinimalProfileFields } from '@gql/MinimalProfileFields'
 import { UsersIcon } from '@heroicons/react/outline'
-import consoleLog from '@lib/consoleLog'
+import Logger from '@lib/logger'
 import { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
 
@@ -17,6 +17,7 @@ const FOLLOWING_QUERY = gql`
       items {
         profile {
           ...MinimalProfileFields
+          isFollowedByMe
         }
         totalAmountOfTimesFollowing
       }
@@ -42,9 +43,8 @@ const Following: FC<Props> = ({ profile }) => {
     onCompleted(data) {
       setPageInfo(data?.following?.pageInfo)
       setFollowing(data?.following?.items)
-      consoleLog(
-        'Query',
-        '#8b5cf6',
+      Logger.log(
+        'Query =>',
         `Fetched first 10 following Profile:${profile?.id}`
       )
     }
@@ -63,9 +63,8 @@ const Following: FC<Props> = ({ profile }) => {
       }).then(({ data }: any) => {
         setPageInfo(data?.following?.pageInfo)
         setFollowing([...following, ...data?.following?.items])
-        consoleLog(
-          'Query',
-          '#8b5cf6',
+        Logger.log(
+          'Query =>',
           `Fetched next 10 following Profile:${profile?.id} Next:${pageInfo?.next}`
         )
       })
@@ -99,7 +98,12 @@ const Following: FC<Props> = ({ profile }) => {
         <div className="divide-y dark:divide-gray-700">
           {following?.map((following: Following) => (
             <div className="p-5" key={following?.profile?.id}>
-              <UserProfile profile={following?.profile} showBio />
+              <UserProfile
+                profile={following?.profile}
+                showBio
+                showFollow
+                isFollowing={following?.profile?.isFollowedByMe}
+              />
             </div>
           ))}
         </div>

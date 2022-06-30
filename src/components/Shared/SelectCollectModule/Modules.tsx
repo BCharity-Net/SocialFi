@@ -5,9 +5,8 @@ import { Spinner } from '@components/UI/Spinner'
 import GetModuleIcon from '@components/utils/GetModuleIcon'
 import { EnabledModule } from '@generated/types'
 import { CheckCircleIcon } from '@heroicons/react/solid'
-import consoleLog from '@lib/consoleLog'
 import { FEE_DATA_TYPE, getModule } from '@lib/getModule'
-import trackEvent from '@lib/trackEvent'
+import Logger from '@lib/logger'
 import clsx from 'clsx'
 import { Dispatch, FC, useState } from 'react'
 
@@ -47,14 +46,13 @@ const Modules: FC<Props> = ({
 }) => {
   const { error, data, loading } = useQuery(MODULES_QUERY, {
     onCompleted() {
-      consoleLog('Query', '#8b5cf6', `Fetched enabled modules`)
+      Logger.log('Query =>', `Fetched enabled modules`)
     }
   })
   const [showFeeEntry, setShowFeeEntry] = useState<boolean>(false)
 
   const handleSelectModule = (module: EnabledModule) => {
     setSelectedModule(module)
-    trackEvent(`${getModule(module.moduleName).name.toLowerCase()}`, 'select')
 
     if (getModule(module?.moduleName).hasParam) {
       setShowFeeEntry(true)

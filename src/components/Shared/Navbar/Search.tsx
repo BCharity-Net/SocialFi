@@ -5,8 +5,7 @@ import { Spinner } from '@components/UI/Spinner'
 import useOnClickOutside from '@components/utils/hooks/useOnClickOutside'
 import { Profile } from '@generated/types'
 import { MinimalProfileFields } from '@gql/MinimalProfileFields'
-import consoleLog from '@lib/consoleLog'
-import trackEvent from '@lib/trackEvent'
+import Logger from '@lib/logger'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ChangeEvent, FC, useRef, useState } from 'react'
@@ -40,9 +39,8 @@ const Search: FC<Props> = ({ hideDrodown = false }) => {
   const [searchUsers, { data: searchUsersData, loading: searchUsersLoading }] =
     useLazyQuery(SEARCH_USERS_QUERY, {
       onCompleted(data) {
-        consoleLog(
-          'Lazy Query',
-          '#8b5cf6',
+        Logger.log(
+          'Lazy Query =>',
           `Fetched ${data?.search?.items?.length} search result for ${searchText}`
         )
       }
@@ -70,7 +68,7 @@ const Search: FC<Props> = ({ hideDrodown = false }) => {
 
   return (
     <>
-      <div onClick={() => trackEvent('search')} aria-hidden="true">
+      <div aria-hidden="true">
         <form onSubmit={handleKeyDown}>
           <Input
             type="text"
@@ -99,7 +97,7 @@ const Search: FC<Props> = ({ hideDrodown = false }) => {
                     key={profile?.handle}
                     className="py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-800"
                   >
-                    <Link href={`/u/${profile?.handle}`} prefetch={false}>
+                    <Link href={`/u/${profile?.handle}`}>
                       <a
                         href={`/u/${profile?.handle}`}
                         onClick={() => setSearchText('')}

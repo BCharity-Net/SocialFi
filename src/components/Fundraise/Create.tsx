@@ -16,9 +16,9 @@ import SEO from '@components/utils/SEO'
 import { CreatePostBroadcastItemResult, Erc20 } from '@generated/types'
 import { BROADCAST_MUTATION } from '@gql/BroadcastMutation'
 import { PlusIcon } from '@heroicons/react/outline'
-import consoleLog from '@lib/consoleLog'
 import getTokenImage from '@lib/getTokenImage'
 import imagekitURL from '@lib/imagekitURL'
+import Logger from '@lib/logger'
 import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
 import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
@@ -52,7 +52,7 @@ const MODULES_CURRENCY_QUERY = gql`
   }
 `
 
-const newCrowdfundSchema = object({
+const newFundraiseSchema = object({
   title: string()
     .min(2, { message: 'Title should be atleast 2 characters' })
     .max(255, { message: 'Title should not exceed 255 characters' }),
@@ -88,7 +88,7 @@ const Create: NextPage = () => {
   })
   const { data: currencyData, loading } = useQuery(MODULES_CURRENCY_QUERY, {
     onCompleted() {
-      consoleLog('Query', '#8b5cf6', `Fetched enabled module currencies`)
+      Logger.log('Query =>', `Fetched enabled module currencies`)
     }
   })
 
@@ -106,7 +106,7 @@ const Create: NextPage = () => {
   })
 
   const form = useZodForm({
-    schema: newCrowdfundSchema,
+    schema: newFundraiseSchema,
     defaultValues: {
       recipient: currentUser?.ownedBy
     }
@@ -132,18 +132,18 @@ const Create: NextPage = () => {
         if (error.message === ERRORS.notMined) {
           toast.error(error.message)
         }
-        consoleLog('Relay Error', '#ef4444', error.message)
+        Logger.error('Relay Error =>', error.message)
       }
     })
   const [createPostTypedData, { loading: typedDataLoading }] = useMutation(
     CREATE_POST_TYPED_DATA_MUTATION,
     {
-      onCompleted({
+      async onCompleted({
         createPostTypedData
       }: {
         createPostTypedData: CreatePostBroadcastItemResult
       }) {
-        consoleLog('Mutation', '#4ade80', 'Generated createPostTypedData')
+        Logger.log('Mutation =>', 'Generated createPostTypedData')
         const { id, typedData } = createPostTypedData
         const {
           profileId,
@@ -151,17 +151,19 @@ const Create: NextPage = () => {
           collectModule,
           collectModuleInitData,
           referenceModule,
-          referenceModuleInitData
+          referenceModuleInitData,
+          deadline
         } = typedData?.value
 
-        signTypedDataAsync({
-          domain: omit(typedData?.domain, '__typename'),
-          types: omit(typedData?.types, '__typename'),
-          value: omit(typedData?.value, '__typename')
-        }).then((signature) => {
+        try {
+          const signature = await signTypedDataAsync({
+            domain: omit(typedData?.domain, '__typename'),
+            types: omit(typedData?.types, '__typename'),
+            value: omit(typedData?.value, '__typename')
+          })
           setUserSigNonce(userSigNonce + 1)
           const { v, r, s } = splitSignature(signature)
-          const sig = { v, r, s, deadline: typedData.value.deadline }
+          const sig = { v, r, s, deadline }
           const inputStruct = {
             profileId,
             contentURI,
@@ -182,7 +184,9 @@ const Create: NextPage = () => {
           } else {
             write({ args: inputStruct })
           }
-        })
+        } catch (error) {
+          Logger.warn('Sign Error =>', error)
+        }
       },
       onError(error) {
         toast.error(error.message ?? ERROR_MESSAGE)
@@ -215,7 +219,7 @@ const Create: NextPage = () => {
         {
           traitType: 'string',
           key: 'type',
-          value: 'fundraise'
+          value: 'crowdfund'
         },
         {
           traitType: 'string',
@@ -253,7 +257,7 @@ const Create: NextPage = () => {
     })
   }
 
-  if (loading) return <PageLoading message="Loading create fundraise" />
+  if (loading) return <PageLoading message="Loading create crowdfund" />
   if (!isAuthenticated) return <Custom404 />
 
   return (
@@ -261,8 +265,8 @@ const Create: NextPage = () => {
       <SEO title={`Create Crowdfund • ${APP_NAME}`} />
       <GridItemFour>
         <SettingsHelper
-          heading="Create fundraise"
-          description="Create new decentralized fundraise"
+          heading="Create crowdfund"
+          description="Create new decentralized crowdfund"
         />
       </GridItemFour>
       <GridItemEight>
@@ -274,7 +278,7 @@ const Create: NextPage = () => {
               }
               indexing="Crowdfund creation in progress, please wait!"
               indexed="Crowdfund created successfully"
-              type="fundraise"
+              type="crowdfund"
               urlPrefix="posts"
             />
           ) : (
@@ -373,7 +377,7 @@ const Create: NextPage = () => {
                 label="Referral Fee"
                 helper={
                   <span>
-                    When someone mirrors the fundraise they will get some reward
+                    When someone mirrors the crowdfund they will get some reward
                     in percentage for referring it.
                   </span>
                 }

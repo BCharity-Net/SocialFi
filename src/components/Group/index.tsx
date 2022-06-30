@@ -3,7 +3,7 @@ import { GridItemEight, GridItemFour, GridLayout } from '@components/GridLayout'
 import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
 import SEO from '@components/utils/SEO'
 import { GroupFields } from '@gql/GroupFields'
-import consoleLog from '@lib/consoleLog'
+import Logger from '@lib/logger'
 import { NextPage } from 'next'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
@@ -37,7 +37,7 @@ const ViewGroup: NextPage = () => {
     variables: { request: { publicationId: id } },
     skip: !id,
     onCompleted() {
-      consoleLog('Query', '#8b5cf6', `Fetched group details Group:${id}`)
+      Logger.log('Query =>', `Fetched group details Group:${id}`)
     }
   })
 

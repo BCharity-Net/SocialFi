@@ -60,13 +60,13 @@ const Footer: FC = () => {
       >
         GitHub
       </a>
-      <Link href="/thanks" prefetch={false}>
+      <Link href="/thanks">
         <a href="/thanks">Thanks</a>
       </Link>
-      <Link href="/privacy" prefetch={false}>
+      <Link href="/privacy">
         <a href="/privacy">Privacy</a>
       </Link>
-      <Link href="/terms" prefetch={false}>
+      <Link href="/terms">
         <a href="/terms">Terms</a>
       </Link>
       <span className="font-bold text-gray-600 dark:text-gray-600">

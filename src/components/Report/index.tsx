@@ -14,7 +14,7 @@ import { TextArea } from '@components/UI/TextArea'
 import SEO from '@components/utils/SEO'
 import { PencilAltIcon } from '@heroicons/react/outline'
 import { CheckCircleIcon } from '@heroicons/react/solid'
-import consoleLog from '@lib/consoleLog'
+import Logger from '@lib/logger'
 import { useRouter } from 'next/router'
 import React, { FC, useState } from 'react'
 import { APP_NAME, ZERO_ADDRESS } from 'src/constants'
@@ -57,9 +57,8 @@ const Report: FC = () => {
     },
     skip: !id,
     onCompleted() {
-      consoleLog(
-        'Query',
-        '#8b5cf6',
+      Logger.log(
+        'Query =>',
         `Fetched publication details to report Publication:${id}`
       )
     }
@@ -145,7 +144,7 @@ const Report: FC = () => {
                     <>
                       <TextArea
                         label="Description"
-                        placeholder="Tell us something about the group!"
+                        placeholder="Tell us something about the community!"
                         {...form.register('additionalComments')}
                       />
                       <div className="ml-auto">
