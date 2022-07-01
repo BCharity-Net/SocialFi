@@ -194,7 +194,7 @@ const Create: NextPage = () => {
     }
   )
 
-  const createCrowdfund = async (
+  const createFundraise = async (
     title: string,
     amount: string,
     goal: string,
@@ -219,7 +219,7 @@ const Create: NextPage = () => {
         {
           traitType: 'string',
           key: 'type',
-          value: 'crowdfund'
+          value: 'fundraise'
         },
         {
           traitType: 'string',
@@ -229,7 +229,7 @@ const Create: NextPage = () => {
       ],
       media: [],
       createdOn: new Date(),
-      appId: `${APP_NAME} Crowdfund`
+      appId: `${APP_NAME} Fundraise`
     }).finally(() => setIsUploading(false))
 
     createPostTypedData({
@@ -257,16 +257,16 @@ const Create: NextPage = () => {
     })
   }
 
-  if (loading) return <PageLoading message="Loading create crowdfund" />
+  if (loading) return <PageLoading message="Loading create fundraise" />
   if (!isAuthenticated) return <Custom404 />
 
   return (
     <GridLayout>
-      <SEO title={`Create Crowdfund • ${APP_NAME}`} />
+      <SEO title={`Create Fundraise • ${APP_NAME}`} />
       <GridItemFour>
         <SettingsHelper
-          heading="Create crowdfund"
-          description="Create new decentralized crowdfund"
+          heading="Create fundraise"
+          description="Create new decentralized fundraise"
         />
       </GridItemFour>
       <GridItemEight>
@@ -276,9 +276,9 @@ const Create: NextPage = () => {
               txHash={
                 data?.hash ? data?.hash : broadcastData?.broadcast?.txHash
               }
-              indexing="Crowdfund creation in progress, please wait!"
-              indexed="Crowdfund created successfully"
-              type="crowdfund"
+              indexing="Fundraise creation in progress, please wait!"
+              indexed="Fundraise created successfully"
+              type="fundraise"
               urlPrefix="posts"
             />
           ) : (
@@ -293,7 +293,7 @@ const Create: NextPage = () => {
                 referralFee,
                 description
               }) => {
-                createCrowdfund(
+                createFundraise(
                   title,
                   amount,
                   goal,
@@ -377,7 +377,7 @@ const Create: NextPage = () => {
                 label="Referral Fee"
                 helper={
                   <span>
-                    When someone mirrors the crowdfund they will get some reward
+                    When someone mirrors the fundraise they will get some reward
                     in percentage for referring it.
                   </span>
                 }
