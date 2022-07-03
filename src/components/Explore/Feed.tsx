@@ -14,12 +14,13 @@ import { CollectionIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import React, { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
-import { usePersistStore } from 'src/store'
+import { useAppPersistStore } from 'src/store/app'
 
 const EXPLORE_FEED_QUERY = gql`
   query ExploreFeed(
     $request: ExplorePublicationRequest!
     $reactionRequest: ReactionFieldResolverRequest
+    $profileId: ProfileId
   ) {
     explorePublications(request: $request) {
       items {
@@ -49,7 +50,7 @@ interface Props {
 }
 
 const Feed: FC<Props> = ({ feedType = 'TOP_COMMENTED' }) => {
-  const { currentUser } = usePersistStore()
+  const { currentUser } = useAppPersistStore()
   const [publications, setPublications] = useState<BCharityPost[]>([])
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
   const { data, loading, error, fetchMore } = useQuery(EXPLORE_FEED_QUERY, {
@@ -59,7 +60,8 @@ const Feed: FC<Props> = ({ feedType = 'TOP_COMMENTED' }) => {
         limit: 10,
         noRandomize: feedType === 'LATEST'
       },
-      reactionRequest: currentUser ? { profileId: currentUser?.id } : null
+      reactionRequest: currentUser ? { profileId: currentUser?.id } : null,
+      profileId: currentUser?.id ?? null
     },
     onCompleted(data) {
       setPageInfo(data?.explorePublications?.pageInfo)
@@ -72,8 +74,8 @@ const Feed: FC<Props> = ({ feedType = 'TOP_COMMENTED' }) => {
   })
 
   const { observe } = useInView({
-    onEnter: () => {
-      fetchMore({
+    onEnter: async () => {
+      const { data } = await fetchMore({
         variables: {
           request: {
             sortCriteria: feedType,
@@ -81,16 +83,16 @@ const Feed: FC<Props> = ({ feedType = 'TOP_COMMENTED' }) => {
             limit: 10,
             noRandomize: feedType === 'LATEST'
           },
-          reactionRequest: currentUser ? { profileId: currentUser?.id } : null
+          reactionRequest: currentUser ? { profileId: currentUser?.id } : null,
+          profileId: currentUser?.id ?? null
         }
-      }).then(({ data }: any) => {
-        setPageInfo(data?.explorePublications?.pageInfo)
-        setPublications([...publications, ...data?.explorePublications?.items])
-        Logger.log(
-          'Query =>',
-          `Fetched next 10 explore publications FeedType:${feedType} Next:${pageInfo?.next}`
-        )
       })
+      setPageInfo(data?.explorePublications?.pageInfo)
+      setPublications([...publications, ...data?.explorePublications?.items])
+      Logger.log(
+        'Query =>',
+        `Fetched next 10 explore publications FeedType:${feedType} Next:${pageInfo?.next}`
+      )
     }
   })
 

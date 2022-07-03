@@ -11,6 +11,7 @@ import Logger from '@lib/logger'
 import nFormatter from '@lib/nFormatter'
 import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
+import clsx from 'clsx'
 import { motion } from 'framer-motion'
 import { FC, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -21,7 +22,7 @@ import {
   LENSHUB_PROXY,
   RELAY_ON
 } from 'src/constants'
-import { useAppStore, usePersistStore } from 'src/store'
+import { useAppPersistStore, useAppStore } from 'src/store/app'
 import { useContractWrite, useSignTypedData } from 'wagmi'
 
 const CREATE_MIRROR_TYPED_DATA_MUTATION = gql`
@@ -66,8 +67,9 @@ interface Props {
 
 const Mirror: FC<Props> = ({ post }) => {
   const [count, setCount] = useState<number>(0)
+  const [mirrored, setMirrored] = useState<boolean>(post?.mirrors?.length > 0)
   const { userSigNonce, setUserSigNonce } = useAppStore()
-  const { isAuthenticated, currentUser } = usePersistStore()
+  const { isAuthenticated, currentUser } = useAppPersistStore()
 
   useEffect(() => {
     if (
@@ -90,6 +92,7 @@ const Mirror: FC<Props> = ({ post }) => {
 
   const onCompleted = () => {
     setCount(count + 1)
+    setMirrored(true)
     toast.success('Post has been mirrored!')
   }
 
@@ -108,11 +111,7 @@ const Mirror: FC<Props> = ({ post }) => {
   const [broadcast, { loading: broadcastLoading }] = useMutation(
     BROADCAST_MUTATION,
     {
-      onCompleted(data) {
-        if (data?.broadcast?.reason !== 'NOT_ALLOWED') {
-          onCompleted()
-        }
-      },
+      onCompleted,
       onError(error) {
         if (error.message === ERRORS.notMined) {
           toast.error(error.message)
@@ -160,13 +159,11 @@ const Mirror: FC<Props> = ({ post }) => {
             sig
           }
           if (RELAY_ON) {
-            broadcast({ variables: { request: { id, signature } } }).then(
-              ({ data, errors }) => {
-                if (errors || data?.broadcast?.reason === 'NOT_ALLOWED') {
-                  write({ args: inputStruct })
-                }
-              }
-            )
+            const {
+              data: { broadcast: result }
+            } = await broadcast({ variables: { request: { id, signature } } })
+
+            if ('reason' in result) write({ args: inputStruct })
           } else {
             write({ args: inputStruct })
           }
@@ -205,8 +202,18 @@ const Mirror: FC<Props> = ({ post }) => {
       aria-label="Mirror"
       data-test="publication-mirror"
     >
-      <div className="flex items-center space-x-1 text-brand">
-        <div className="p-1.5 rounded-full hover:bg-opacity-20 hover:bg-brand-300">
+      <div
+        className={clsx(
+          mirrored ? 'text-green-500' : 'text-brand',
+          'flex items-center space-x-1'
+        )}
+      >
+        <div
+          className={clsx(
+            mirrored ? 'hover:bg-green-300' : 'hover:bg-brand-300',
+            'p-1.5 rounded-full hover:bg-opacity-20'
+          )}
+        >
           {typedDataLoading ||
           signLoading ||
           writeLoading ||

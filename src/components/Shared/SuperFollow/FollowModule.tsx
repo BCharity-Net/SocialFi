@@ -28,7 +28,7 @@ import {
   POLYGONSCAN_URL,
   RELAY_ON
 } from 'src/constants'
-import { useAppStore, usePersistStore } from 'src/store'
+import { useAppPersistStore, useAppStore } from 'src/store/app'
 import {
   useAccount,
   useBalance,
@@ -50,6 +50,7 @@ const SUPER_FOLLOW_QUERY = gql`
             asset {
               name
               symbol
+              decimals
               address
             }
             value
@@ -108,7 +109,7 @@ const FollowModule: FC<Props> = ({
   again
 }) => {
   const { userSigNonce, setUserSigNonce } = useAppStore()
-  const { isAuthenticated, currentUser } = usePersistStore()
+  const { isAuthenticated, currentUser } = useAppPersistStore()
   const [allowed, setAllowed] = useState<boolean>(true)
   const { address } = useAccount()
   const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
@@ -172,7 +173,9 @@ const FollowModule: FC<Props> = ({
 
   const { data: balanceData } = useBalance({
     addressOrName: currentUser?.ownedBy,
-    token: followModule?.amount?.asset?.address
+    token: followModule?.amount?.asset?.address,
+    formatUnits: followModule?.amount?.asset?.decimals,
+    watch: true
   })
   let hasAmount = false
 
@@ -188,11 +191,7 @@ const FollowModule: FC<Props> = ({
   const [broadcast, { loading: broadcastLoading }] = useMutation(
     BROADCAST_MUTATION,
     {
-      onCompleted(data) {
-        if (data?.broadcast?.reason !== 'NOT_ALLOWED') {
-          onCompleted()
-        }
-      },
+      onCompleted,
       onError(error) {
         if (error.message === ERRORS.notMined) {
           toast.error(error.message)
@@ -230,13 +229,12 @@ const FollowModule: FC<Props> = ({
             sig
           }
           if (RELAY_ON) {
-            broadcast({ variables: { request: { id, signature } } }).then(
-              ({ data, errors }) => {
-                if (errors || data?.broadcast?.reason === 'NOT_ALLOWED') {
-                  write({ args: inputStruct })
-                }
-              }
-            )
+            const {
+              data: { broadcast: result },
+              errors
+            } = await broadcast({ variables: { request: { id, signature } } })
+
+            if ('reason' in result || errors) write({ args: inputStruct })
           } else {
             write({ args: inputStruct })
           }

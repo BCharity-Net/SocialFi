@@ -1,9 +1,10 @@
-import AppContext from '@components/utils/AppContext'
 import Link from 'next/link'
-import { FC, useContext } from 'react'
+import { FC } from 'react'
+// import { APP_NAME } from 'src/constants'
+import { useAppPersistStore } from 'src/store/app'
 
 const Footer: FC = () => {
-  const { staffMode } = useContext(AppContext)
+  const { staffMode } = useAppPersistStore()
 
   return (
     <footer
@@ -76,7 +77,7 @@ const Footer: FC = () => {
       </span>
       {/* <a
         className="pr-3 hover:font-bold"
-        href="https://vercel.com/bcharity?utm_source=BCharity&utm_campaign=oss"
+        href={`https://vercel.com/?utm_source=${APP_NAME}&utm_campaign=oss`}
         target="_blank"
         rel="noreferrer noopener"
       >

@@ -20,6 +20,7 @@ const FOLLOWERS_QUERY = gql`
           address
           defaultProfile {
             ...MinimalProfileFields
+            isFollowedByMe
           }
         }
         totalAmountOfTimesFollowed
@@ -54,8 +55,8 @@ const Followers: FC<Props> = ({ profile }) => {
   })
 
   const { observe } = useInView({
-    onEnter: () => {
-      fetchMore({
+    onEnter: async () => {
+      const { data } = await fetchMore({
         variables: {
           request: {
             profileId: profile?.id,
@@ -63,14 +64,13 @@ const Followers: FC<Props> = ({ profile }) => {
             limit: 10
           }
         }
-      }).then(({ data }: any) => {
-        setPageInfo(data?.followers?.pageInfo)
-        setFollowers([...followers, ...data?.followers?.items])
-        Logger.log(
-          'Query =>',
-          `Fetched next 10 followers Profile:${profile?.id} Next:${pageInfo?.next}`
-        )
       })
+      setPageInfo(data?.followers?.pageInfo)
+      setFollowers([...followers, ...data?.followers?.items])
+      Logger.log(
+        'Query =>',
+        `Fetched next 10 followers Profile:${profile?.id} Next:${pageInfo?.next}`
+      )
     }
   })
 
@@ -103,8 +103,10 @@ const Followers: FC<Props> = ({ profile }) => {
             <div className="p-5" key={follower?.wallet?.defaultProfile?.id}>
               {follower?.wallet?.defaultProfile ? (
                 <UserProfile
-                  profile={follower?.wallet?.defaultProfile as Profile}
+                  profile={follower?.wallet?.defaultProfile}
                   showBio
+                  showFollow
+                  isFollowing={follower?.wallet?.defaultProfile?.isFollowedByMe}
                 />
               ) : (
                 <WalletProfile wallet={follower?.wallet} />
