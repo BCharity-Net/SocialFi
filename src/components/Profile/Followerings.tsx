@@ -9,10 +9,11 @@ import Following from './Following'
 
 interface Props {
   followersCount: number
+  vhrBalance: number
   profile: Profile
 }
 
-const Followerings: FC<Props> = ({ followersCount, profile }) => {
+const Followerings: FC<Props> = ({ followersCount, vhrBalance, profile }) => {
   const [showFollowingModal, setShowFollowingModal] = useState<boolean>(false)
   const [showFollowersModal, setShowFollowersModal] = useState<boolean>(false)
 
@@ -37,6 +38,10 @@ const Followerings: FC<Props> = ({ followersCount, profile }) => {
       >
         <div className="text-xl">{humanize(followersCount)}</div>
         <div className="text-gray-500">Followers</div>
+      </button>
+      <button type="button" className="text-left" onClick={() => {}}>
+        <div className="text-xl">{humanize(vhrBalance)}</div>
+        <div className="text-gray-500">VHR</div>
       </button>
       <Modal
         title="Following"
