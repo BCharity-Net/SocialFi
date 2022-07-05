@@ -1,5 +1,5 @@
 import { LensHubProxy } from '@abis/LensHubProxy'
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import { GridItemEight, GridItemFour, GridLayout } from '@components/GridLayout'
 import { CREATE_POST_TYPED_DATA_MUTATION } from '@components/Post/NewPost'
 import ChooseFile from '@components/Shared/ChooseFile'
@@ -9,14 +9,12 @@ import { Button } from '@components/UI/Button'
 import { Card } from '@components/UI/Card'
 import { Form, useZodForm } from '@components/UI/Form'
 import { Input } from '@components/UI/Input'
-import { PageLoading } from '@components/UI/PageLoading'
 import { Spinner } from '@components/UI/Spinner'
 import { TextArea } from '@components/UI/TextArea'
 import SEO from '@components/utils/SEO'
-import { CreatePostBroadcastItemResult, Erc20 } from '@generated/types'
+import { CreatePostBroadcastItemResult } from '@generated/types'
 import { BROADCAST_MUTATION } from '@gql/BroadcastMutation'
 import { PlusIcon } from '@heroicons/react/outline'
-import getTokenImage from '@lib/getTokenImage'
 import imagekitURL from '@lib/imagekitURL'
 import Logger from '@lib/logger'
 import omit from '@lib/omit'
@@ -29,7 +27,6 @@ import toast from 'react-hot-toast'
 import {
   APP_NAME,
   CONNECT_WALLET,
-  DEFAULT_COLLECT_TOKEN,
   ERROR_MESSAGE,
   ERRORS,
   LENSHUB_PROXY,
@@ -41,31 +38,28 @@ import { v4 as uuid } from 'uuid'
 import { useContractWrite, useSignTypedData } from 'wagmi'
 import { object, string } from 'zod'
 
-const MODULES_CURRENCY_QUERY = gql`
-  query EnabledCurrencyModules {
-    enabledModuleCurrencies {
-      name
-      symbol
-      decimals
-      address
-    }
-  }
-`
-
-const newFundraiseSchema = object({
-  title: string()
-    .min(2, { message: 'Title should be atleast 2 characters' })
-    .max(255, { message: 'Title should not exceed 255 characters' }),
-  amount: string().min(1, { message: 'Invalid amount' }),
-  goal: string(),
-  recipient: string()
+const newHourSchema = object({
+  orgID: string()
+    .min(11, { message: 'Not a valid Organization' })
+    .max(11, { message: 'Not a valid Organization' }),
+  // amount: string().min(1, { message: 'Invalid amount' }),
+  // goal: string(),
+  volunteer: string()
     .max(42, { message: 'Ethereum address should be within 42 characters' })
     .regex(/^0x[a-fA-F0-9]{40}$/, { message: 'Invalid Ethereum address' }),
-  referralFee: string()
-    .min(1, { message: 'Invalid Referral fee' })
-    .max(20, { message: 'Invalid Referral fee' }),
+
+  date: string()
+    .max(10, { message: 'Invalid date' })
+    .min(10, { message: 'Invalid date' }),
+  totalMinutes: string()
+    .min(1, {
+      message: 'Invalid total minutes (Enter a number between 1 and 1440)'
+    })
+    .max(4, {
+      message: 'Invalid total minutes (Enter a number between 1 and 1440)'
+    }),
   description: string()
-    .max(1000, { message: 'Description should not exceed 1000 characters' })
+    .max(250, { message: 'Description should not exceed 250 characters' })
     .nullable()
 })
 
@@ -74,21 +68,16 @@ const Hours: NextPage = () => {
   const [coverType, setCoverType] = useState<string>()
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [uploading, setUploading] = useState<boolean>(false)
-  const [selectedCurrency, setSelectedCurrency] = useState<string>(
-    DEFAULT_COLLECT_TOKEN
-  )
-  const [selectedCurrencySymobol, setSelectedCurrencySymobol] =
-    useState<string>('WMATIC')
+  // const [selectedCurrency, setSelectedCurrency] = useState<string>(
+  //   DEFAULT_COLLECT_TOKEN
+  // )
+  // const [selectedCurrencySymobol, setSelectedCurrencySymobol] =
+  //   useState<string>('WMATIC')
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
   const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
     onError(error) {
       toast.error(error?.message)
-    }
-  })
-  const { data: currencyData, loading } = useQuery(MODULES_CURRENCY_QUERY, {
-    onCompleted() {
-      Logger.log('Query =>', `Fetched enabled module currencies`)
     }
   })
 
@@ -106,9 +95,9 @@ const Hours: NextPage = () => {
   })
 
   const form = useZodForm({
-    schema: newFundraiseSchema,
+    schema: newHourSchema,
     defaultValues: {
-      recipient: currentUser?.ownedBy
+      volunteer: currentUser?.ownedBy
     }
   })
 
@@ -192,12 +181,11 @@ const Hours: NextPage = () => {
     }
   )
 
-  const createFundraise = async (
-    title: string,
-    amount: string,
-    goal: string,
-    recipient: string,
-    referralFee: string,
+  const createHours = async (
+    orgID: string,
+    volunteer: string,
+    date: string,
+    totalMinutes: string,
     description: string | null
   ) => {
     if (!isAuthenticated) return toast.error(CONNECT_WALLET)
@@ -211,23 +199,23 @@ const Hours: NextPage = () => {
       external_url: null,
       image: cover ? cover : `https://avatar.tobi.sh/${uuid()}.png`,
       imageMimeType: coverType,
-      name: title,
+      name: orgID,
       contentWarning: null, // TODO
       attributes: [
         {
           traitType: 'string',
           key: 'type',
-          value: 'fundraise'
-        },
-        {
-          traitType: 'string',
-          key: 'goal',
-          value: goal
+          value: 'hours'
         }
+        // {
+        //   traitType: 'string',
+        //   key: 'goal',
+        //   value: goal
+        // }
       ],
       media: [],
       createdOn: new Date(),
-      appId: `${APP_NAME} Fundraise`
+      appId: `${APP_NAME} Hours`
     }).finally(() => setIsUploading(false))
 
     createPostTypedData({
@@ -239,11 +227,11 @@ const Hours: NextPage = () => {
           collectModule: {
             feeCollectModule: {
               amount: {
-                currency: selectedCurrency,
-                value: amount
+                // currency: selectedCurrency,
+                value: totalMinutes
               },
-              recipient,
-              referralFee: parseInt(referralFee),
+              volunteer,
+              // referralFee: parseInt(referralFee),
               followerOnly: false
             }
           },
@@ -254,8 +242,6 @@ const Hours: NextPage = () => {
       }
     })
   }
-
-  if (loading) return <PageLoading message="Loading create fundraise" />
   if (!isAuthenticated) return <Custom404 />
 
   return (
@@ -284,114 +270,58 @@ const Hours: NextPage = () => {
               form={form}
               className="p-5 space-y-4"
               onSubmit={({
-                title,
-                amount,
-                goal,
-                recipient,
-                referralFee,
+                orgID,
+                volunteer,
+                date,
+                totalMinutes,
                 description
               }) => {
-                createFundraise(
-                  title,
-                  amount,
-                  goal,
-                  recipient,
-                  referralFee,
-                  description
-                )
+                createHours(orgID, volunteer, date, totalMinutes, description)
               }}
             >
               <Input
                 label="Organization ID"
                 type="text"
-                placeholder={`${APP_NAME} DAO`}
-                {...form.register('title')}
-              />
-              <div>
-                <div className="label">Select Currency</div>
-                <select
-                  className="w-full bg-white rounded-xl border border-gray-300 outline-none dark:bg-gray-800 disabled:bg-gray-500 disabled:bg-opacity-20 disabled:opacity-60 dark:border-gray-700/80 focus:border-brand-500 focus:ring-brand-400"
-                  onChange={(e) => {
-                    const currency = e.target.value.split('-')
-                    setSelectedCurrency(currency[0])
-                    setSelectedCurrencySymobol(currency[1])
-                  }}
-                >
-                  {currencyData?.enabledModuleCurrencies?.map(
-                    (currency: Erc20) => (
-                      <option
-                        key={currency.address}
-                        value={`${currency.address}-${currency.symbol}`}
-                      >
-                        {currency.name}
-                      </option>
-                    )
-                  )}
-                </select>
-              </div>
-              <Input
-                label="Contribution amount"
-                type="number"
-                step="0.0001"
-                min="0"
-                max="100000"
-                prefix={
-                  <img
-                    className="w-6 h-6"
-                    height={24}
-                    width={24}
-                    src={getTokenImage(selectedCurrencySymobol)}
-                    alt={selectedCurrencySymobol}
-                  />
-                }
-                placeholder="5"
-                {...form.register('amount')}
+                placeholder={'Enter your organization ID'}
+                {...form.register('orgID')}
               />
               <Input
-                label="Funding Goal"
-                type="number"
-                step="0.0001"
-                min="0"
-                max="100000"
-                prefix={
-                  <img
-                    className="w-6 h-6"
-                    height={24}
-                    width={24}
-                    src={getTokenImage(selectedCurrencySymobol)}
-                    alt={selectedCurrencySymobol}
-                  />
-                }
-                placeholder="420"
-                {...form.register('goal')}
+                label="Date"
+                type="date"
+                placeholder={'Enter your date'}
+                // {...form.register('amount')}
               />
-              <Input
+              {/* <Input
                 label="Funds recipient"
                 type="text"
                 placeholder="0x3A5bd...5e3"
                 {...form.register('recipient')}
-              />
+              /> */}
               <Input
-                label="Referral Fee"
-                helper={
-                  <span>
-                    When someone mirrors the fundraise they will get some reward
-                    in percentage for referring it.
-                  </span>
-                }
+                label="Total Minutes"
                 type="number"
-                placeholder="5%"
-                min="0"
-                max="100"
-                {...form.register('referralFee')}
+                step="1"
+                min="1"
+                max="1440"
+                // prefix={
+                //   <img
+                //     className="w-6 h-6"
+                //     height={24}
+                //     width={24}
+                //     src={getTokenImage(selectedCurrencySymobol)}
+                //     alt={selectedCurrencySymobol}
+                //   />
+                // }
+                placeholder="5"
+                {...form.register('totalMinutes')}
               />
               <TextArea
-                label="Description"
-                placeholder="Booooo something about the fundraise!"
+                label="Activity Description"
+                placeholder="Tell us about your volunteer experience!"
                 {...form.register('description')}
               />
               <div className="space-y-1.5">
-                <div className="label">Cover Image</div>
+                <div className="label">Event Images (Optional)</div>
                 <div className="space-y-3">
                   {cover && (
                     <img
