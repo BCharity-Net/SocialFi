@@ -246,10 +246,10 @@ const Hours: NextPage = () => {
 
   return (
     <GridLayout>
-      <SEO title={`Submit Hours • ${APP_NAME}`} />
+      <SEO title={`Verify Hours • ${APP_NAME}`} />
       <GridItemFour>
         <SettingsHelper
-          heading="Submit Hours"
+          heading="Verify Hours"
           description="Submit hours to the LensHub network to earn rewards."
         />
       </GridItemFour>
