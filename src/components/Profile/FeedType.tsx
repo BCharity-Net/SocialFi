@@ -1,6 +1,7 @@
 import { ProfileStats } from '@generated/types'
 import {
   ChatAlt2Icon,
+  ClockIcon,
   PencilAltIcon,
   PhotographIcon,
   SwitchHorizontalIcon
@@ -83,6 +84,12 @@ const FeedType: FC<Props> = ({ stats, setFeedType, feedType }) => {
         name="NFTs"
         icon={<PhotographIcon className="w-4 h-4" />}
         type="NFT"
+        testId="type-nfts"
+      />
+      <FeedLink
+        name="Hours"
+        icon={<ClockIcon className="w-4 h-4" />}
+        type="hour"
         testId="type-nfts"
       />
     </div>
