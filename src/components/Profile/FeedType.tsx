@@ -8,15 +8,27 @@ import {
 } from '@heroicons/react/outline'
 import nFormatter from '@lib/nFormatter'
 import clsx from 'clsx'
-import React, { Dispatch, FC, ReactNode } from 'react'
+import React, { Dispatch, FC, ReactNode, useEffect, useState } from 'react'
+import { getBalanceOf } from 'src/web3'
 
 interface Props {
   stats: ProfileStats
+  address: string
   setFeedType: Dispatch<string>
   feedType: string
 }
 
-const FeedType: FC<Props> = ({ stats, setFeedType, feedType }) => {
+const FeedType: FC<Props> = ({ stats, address, setFeedType, feedType }) => {
+  const [vhrBalance, setVhrBalance] = useState<number>(0)
+
+  useEffect(() => {
+    const balance = async () => {
+      const data = await getBalanceOf(address)
+      setVhrBalance(data)
+    }
+    balance().catch(console.error)
+  }, [address])
+
   interface FeedLinkProps {
     name: string
     icon: ReactNode
@@ -90,6 +102,7 @@ const FeedType: FC<Props> = ({ stats, setFeedType, feedType }) => {
         name="Hours"
         icon={<ClockIcon className="w-4 h-4" />}
         type="hour"
+        count={vhrBalance}
         testId="type-nfts"
       />
     </div>

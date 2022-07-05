@@ -115,6 +115,7 @@ const ViewProfile: NextPage = () => {
         <GridItemEight className="space-y-5">
           <FeedType
             stats={profile?.stats}
+            address={profile?.ownedBy}
             setFeedType={setFeedType}
             feedType={feedType}
           />

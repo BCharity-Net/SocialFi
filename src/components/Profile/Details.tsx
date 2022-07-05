@@ -23,7 +23,6 @@ import { useTheme } from 'next-themes'
 import React, { FC, ReactElement, useEffect, useState } from 'react'
 import { STATIC_ASSETS } from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
-import { getBalanceOf } from 'src/web3'
 
 import Followerings from './Followerings'
 import ProfileMod from './Mod'
@@ -34,7 +33,6 @@ interface Props {
 
 const Details: FC<Props> = ({ profile }) => {
   const [followersCount, setFollowersCount] = useState<number>(0)
-  const [vhrBalance, setVhrBalance] = useState<number>(0)
   const [following, setFollowing] = useState<boolean>(profile?.isFollowedByMe)
   const { currentUser, staffMode } = useAppPersistStore()
   const { resolvedTheme } = useTheme()
@@ -45,14 +43,6 @@ const Details: FC<Props> = ({ profile }) => {
       setFollowersCount(profile?.stats?.totalFollowers)
     }
   }, [profile?.stats?.totalFollowers])
-
-  useEffect(() => {
-    const balance = async () => {
-      const data = await getBalanceOf(profile?.ownedBy)
-      setVhrBalance(data)
-    }
-    balance().catch(console.error)
-  }, [profile?.ownedBy])
 
   const MetaDetails = ({
     children,
@@ -120,11 +110,7 @@ const Details: FC<Props> = ({ profile }) => {
         </div>
       </div>
       <div className="space-y-5">
-        <Followerings
-          followersCount={followersCount}
-          vhrBalance={vhrBalance}
-          profile={profile}
-        />
+        <Followerings followersCount={followersCount} profile={profile} />
         <div className="flex items-center space-x-2" data-test="profile-follow">
           {followType !== 'RevertFollowModuleSettings' ? (
             following ? (
