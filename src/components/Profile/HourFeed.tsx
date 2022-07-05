@@ -1,102 +1,107 @@
 /* eslint-disable react/jsx-key */
+import { gql, useQuery } from '@apollo/client'
+import { Card } from '@components/UI/Card'
 import { Profile } from '@generated/types'
-import React, { FC } from 'react'
+import Logger from '@lib/logger'
+import React, { FC, useState } from 'react'
 import { Column, useTable } from 'react-table'
+
+const PROFILE_HOURS_FEED_QUERY = gql`
+  query HourFeed($request: HourFeedRequest!) {
+    hours(request: $request) {
+      items {
+        orgID
+        volunteer
+        date
+        totalMinutes
+      }
+    }
+  }
+`
+
+interface Data {
+  items: {
+    orgID: string
+    volunteer: string
+    date: string
+    totalMinutes: number
+  }
+}
 
 interface Props {
   profile: Profile
 }
 
-const data = [
-  {
-    txn: '0x123',
-    organization: 'ECSSEN',
-    event: 'Food Distribution',
-    organizer: 'John',
-    date: '05/12/2022',
-    vhr: 5
-  },
-  {
-    txn: '0x123',
-    organization: 'Team Trees',
-    event: 'Planting',
-    organizer: 'Wendy',
-    date: '04/08/2022',
-    vhr: 7
-  },
-  {
-    txn: '0x123',
-    organization: 'Food Bank YYC',
-    event: 'Distribution',
-    organizer: 'Ben',
-    date: '02/29/2022',
-    vhr: 3
-  },
-  {
-    txn: '0x123',
-    organization: 'Mustard Seed',
-    event: 'Hospitality',
-    organizer: 'Cody',
-    date: '02/13/2022',
-    vhr: 4
-  }
-]
-
-const columns: Column<typeof data[0]>[] = [
-  {
-    Header: 'Txn',
-    accessor: 'txn'
-  },
+const columns: Column<any>[] = [
   {
     Header: 'Organization',
     accessor: 'organization'
   },
   {
-    Header: 'Event',
-    accessor: 'event'
+    Header: 'Volunteer',
+    accessor: 'volunteer'
   },
   {
     Header: 'Date',
     accessor: 'date'
   },
   {
-    Header: 'VHR',
-    accessor: 'vhr'
+    Header: 'Total Minutes',
+    accessor: 'totalMinutes'
   }
 ]
 
 const HourFeed: FC<Props> = ({ profile }) => {
+  const [data, setData] = useState<Data[]>([])
   const table = useTable({ columns, data })
+
+  useQuery(PROFILE_HOURS_FEED_QUERY, {
+    variables: {
+      request: { profileId: profile?.id, limit: 10 }
+    },
+    skip: !profile?.ownedBy,
+    onCompleted(data) {
+      setData(data)
+      Logger.log('Query =>', `Fetched first 10 hour submissions:${profile?.id}`)
+    }
+  })
+
   return (
     <>
-      <p>{profile?.handle}</p>
-      <p>{'\nVHR feed here'}</p>
-      <table
-        className="w-full text-md bg-white shadow-md rounded mb-4"
-        {...table.getTableProps()}
-      >
-        <thead>
-          {table.headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...table.getTableBodyProps()}>
-          {table.rows.map((row) => {
-            table.prepareRow(row)
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                })}
+      <Card>
+        <table
+          className="w-full text-md text-center mb-2 mt-2"
+          {...table.getTableProps()}
+        >
+          <thead>
+            {table.headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <th className="p-4" {...column.getHeaderProps()}>
+                    {column.render('Header')}
+                  </th>
+                ))}
               </tr>
-            )
-          })}
-        </tbody>
-      </table>
+            ))}
+          </thead>
+          <tbody {...table.getTableBodyProps()}>
+            {table.rows.map((row) => {
+              table.prepareRow(row)
+              return (
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <td className="p-4" {...cell.getCellProps()}>
+                        {cell.render('Cell')}
+                      </td>
+                    )
+                  })}
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </Card>
     </>
   )
 }
