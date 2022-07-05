@@ -125,7 +125,7 @@ const ViewProfile: NextPage = () => {
             <Feed profile={profile} type={feedType} />
           )}
           {feedType === 'NFT' && <NFTFeed profile={profile} />}
-          {feedType === 'hour' && <HourFeed profile={profile} />}
+          {feedType === 'vhr' && <HourFeed profile={profile} />}
         </GridItemEight>
       </GridLayout>
     </>
