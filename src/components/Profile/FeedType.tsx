@@ -99,9 +99,9 @@ const FeedType: FC<Props> = ({ stats, address, setFeedType, feedType }) => {
         testId="type-nfts"
       />
       <FeedLink
-        name="Hours"
+        name="VHR"
         icon={<ClockIcon className="w-4 h-4" />}
-        type="hour"
+        type="vhr"
         count={vhrBalance}
         testId="type-nfts"
       />
