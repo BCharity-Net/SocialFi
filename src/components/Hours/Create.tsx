@@ -195,7 +195,7 @@ const Hours: NextPage = () => {
       version: '1.0.0',
       metadata_id: uuid(),
       description: description,
-      content: description,
+      date: date,
       external_url: null,
       image: cover ? cover : `https://avatar.tobi.sh/${uuid()}.png`,
       imageMimeType: coverType,
@@ -225,13 +225,7 @@ const Hours: NextPage = () => {
           profileId: currentUser?.id,
           contentURI: `https://ipfs.infura.io/ipfs/${path}`,
           collectModule: {
-            feeCollectModule: {
-              amount: {
-                // currency: selectedCurrency,
-                value: totalMinutes
-              },
-              volunteer,
-              // referralFee: parseInt(referralFee),
+            freeCollectModule: {
               followerOnly: false
             }
           },
@@ -269,14 +263,14 @@ const Hours: NextPage = () => {
             <Form
               form={form}
               className="p-5 space-y-4"
-              onSubmit={({
-                orgID,
-                volunteer,
-                date,
-                totalMinutes,
-                description
-              }) => {
-                createHours(orgID, volunteer, date, totalMinutes, description)
+              onSubmit={({ orgID, date, totalMinutes, description }) => {
+                createHours(
+                  orgID,
+                  currentUser?.ownedBy,
+                  date,
+                  totalMinutes,
+                  description
+                )
               }}
             >
               <Input
@@ -289,7 +283,7 @@ const Hours: NextPage = () => {
                 label="Date"
                 type="date"
                 placeholder={'Enter your date'}
-                // {...form.register('amount')}
+                {...form.register('date')}
               />
               {/* <Input
                 label="Funds recipient"
