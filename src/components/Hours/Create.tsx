@@ -39,9 +39,12 @@ import { useContractWrite, useSignTypedData } from 'wagmi'
 import { object, string } from 'zod'
 
 const newHourSchema = object({
-  orgID: string()
-    .min(11, { message: 'Not a valid Organization' })
-    .max(11, { message: 'Not a valid Organization' }),
+  orgName: string()
+    .min(2, { message: 'Name should be at least 2 characters' })
+    .max(100, { message: 'Name should not exceed 100 characters' }),
+  orgWalletAddress: string()
+    .max(42, { message: 'Ethereum address should be within 42 characters' })
+    .regex(/^0x[a-fA-F0-9]{40}$/, { message: 'Invalid Ethereum address' }),
   // amount: string().min(1, { message: 'Invalid amount' }),
   // goal: string(),
   volunteer: string()
@@ -182,7 +185,8 @@ const Hours: NextPage = () => {
   )
 
   const createHours = async (
-    orgID: string,
+    orgName: string,
+    orgWalletAddress: string,
     date: string,
     totalMinutes: string,
     description: string | null
@@ -198,13 +202,18 @@ const Hours: NextPage = () => {
       external_url: null,
       image: cover ? cover : `https://avatar.tobi.sh/${uuid()}.png`,
       imageMimeType: coverType,
-      name: orgID,
+      name: orgName,
       contentWarning: null, // TODO
       attributes: [
         {
           traitType: 'string',
           key: 'type',
           value: 'hours'
+        },
+        {
+          traitType: 'string',
+          key: 'orgWalletAddress',
+          value: orgWalletAddress
         },
         {
           traitType: 'string',
@@ -267,15 +276,33 @@ const Hours: NextPage = () => {
             <Form
               form={form}
               className="p-5 space-y-4"
-              onSubmit={({ orgID, date, totalMinutes, description }) => {
-                createHours(orgID, date, totalMinutes, description)
+              onSubmit={({
+                orgName,
+                orgWalletAddress,
+                date,
+                totalMinutes,
+                description
+              }) => {
+                createHours(
+                  orgName,
+                  orgWalletAddress,
+                  date,
+                  totalMinutes,
+                  description
+                )
               }}
             >
               <Input
-                label="Organization ID"
+                label="Organization Name"
                 type="text"
-                placeholder={'Enter your organization ID'}
-                {...form.register('orgID')}
+                placeholder={'BCharity'}
+                {...form.register('orgName')}
+              />
+              <Input
+                label="Organization Wallet Address"
+                type="text"
+                placeholder={'0x3A5bd...5e3'}
+                {...form.register('orgWalletAddress')}
               />
               <Input
                 label="Date"
