@@ -183,7 +183,6 @@ const Hours: NextPage = () => {
 
   const createHours = async (
     orgID: string,
-    volunteer: string,
     date: string,
     totalMinutes: string,
     description: string | null
@@ -195,7 +194,7 @@ const Hours: NextPage = () => {
       version: '1.0.0',
       metadata_id: uuid(),
       description: description,
-      date: date,
+      content: description,
       external_url: null,
       image: cover ? cover : `https://avatar.tobi.sh/${uuid()}.png`,
       imageMimeType: coverType,
@@ -206,12 +205,17 @@ const Hours: NextPage = () => {
           traitType: 'string',
           key: 'type',
           value: 'hours'
+        },
+        {
+          traitType: 'string',
+          key: 'date',
+          value: date
+        },
+        {
+          traitType: 'number',
+          key: 'totalMinutes',
+          value: totalMinutes
         }
-        // {
-        //   traitType: 'string',
-        //   key: 'goal',
-        //   value: goal
-        // }
       ],
       media: [],
       createdOn: new Date(),
@@ -264,13 +268,7 @@ const Hours: NextPage = () => {
               form={form}
               className="p-5 space-y-4"
               onSubmit={({ orgID, date, totalMinutes, description }) => {
-                createHours(
-                  orgID,
-                  currentUser?.ownedBy,
-                  date,
-                  totalMinutes,
-                  description
-                )
+                createHours(orgID, date, totalMinutes, description)
               }}
             >
               <Input
