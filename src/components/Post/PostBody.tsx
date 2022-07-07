@@ -99,6 +99,7 @@ const PostBody: FC<Props> = ({ post }) => {
           <IFramely url={getURLs(post?.metadata?.content)[0]} />
         )
       )}
+      {postType === 'hours' && <>{'test'}</>}
     </div>
   )
 }
