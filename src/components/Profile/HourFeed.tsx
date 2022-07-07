@@ -92,8 +92,8 @@ const HourFeed: FC<Props> = ({ profile }) => {
         return {
           orgID: i.metadata.name,
           description: i.metadata.description,
-          date: i.metadata.attributes[1].value,
-          totalMinutes: i.metadata.attributes[2].value
+          date: i.metadata.attributes[2].value,
+          totalMinutes: i.metadata.attributes[3].value
         }
       })
       setTableData(result)
