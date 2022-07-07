@@ -20,11 +20,11 @@ const Hero: React.FC = () => {
               permissionless public good sector Web3 built on blockchains.
             </div>
             <div className="text-2xl font-extrabold text-black sm:text-2xl">
-              VHR Crypto OnChain Volunteer Hours
+              VHR Web3 - Volunteer Soulbound Token
             </div>
             <div className="leading-7 text-gray-700">
               Firstever native utility token to track global donation
-              transparently spent on volunteerism. --- Forever Love On-Chain!
+              transparently spent in volunteerism. --- Forever Love On-Chain!
             </div>
           </div>
           <div className="hidden flex-1 flex-shrink-0 w-full sm:block"></div>
