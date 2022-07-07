@@ -79,7 +79,7 @@ const ViewProfile: NextPage = () => {
   } = useRouter()
   const { currentUser } = useAppPersistStore()
   const [feedType, setFeedType] = useState<string>(
-    type && ['post', 'comment', 'mirror', 'nft'].includes(type as string)
+    type && ['post', 'comment', 'mirror', 'nft', 'vhr'].includes(type as string)
       ? type?.toString().toUpperCase()
       : 'POST'
   )
