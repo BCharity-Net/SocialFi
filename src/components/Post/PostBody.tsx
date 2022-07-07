@@ -69,7 +69,7 @@ const PostBody: FC<Props> = ({ post }) => {
       ) : postType === 'fundraise' ? (
         <Fundraise fund={post} />
       ) : postType === 'hours' ? (
-        <Hours fund={post} />
+        <Hours post={post} />
       ) : (
         <>
           <div
