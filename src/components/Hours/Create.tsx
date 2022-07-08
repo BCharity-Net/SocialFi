@@ -9,6 +9,7 @@ import { Button } from '@components/UI/Button'
 import { Card } from '@components/UI/Card'
 import { Form, useZodForm } from '@components/UI/Form'
 import { Input } from '@components/UI/Input'
+import { OrganizationNameInput } from '@components/UI/OrganizationNameInput'
 import { Spinner } from '@components/UI/Spinner'
 import { TextArea } from '@components/UI/TextArea'
 import SEO from '@components/utils/SEO'
@@ -34,14 +35,15 @@ import {
 } from 'src/constants'
 import Custom404 from 'src/pages/404'
 import { useAppPersistStore, useAppStore } from 'src/store/app'
+import { usePublicationPersistStore } from 'src/store/publication'
 import { v4 as uuid } from 'uuid'
 import { useContractWrite, useSignTypedData } from 'wagmi'
 import { object, string } from 'zod'
 
 const newHourSchema = object({
-  orgName: string()
-    .min(2, { message: 'Name should be at least 2 characters' })
-    .max(100, { message: 'Name should not exceed 100 characters' }),
+  // orgName: string()
+  //   .min(2, { message: 'Name should be at least 2 characters' })
+  //   .max(100, { message: 'Name should not exceed 100 characters' }),
   orgWalletAddress: string()
     .max(42, { message: 'Ethereum address should be within 42 characters' })
     .regex(/^0x[a-fA-F0-9]{40}$/, { message: 'Invalid Ethereum address' }),
@@ -66,13 +68,11 @@ const Hours: NextPage = () => {
   const [coverType, setCoverType] = useState<string>()
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [uploading, setUploading] = useState<boolean>(false)
-  // const [selectedCurrency, setSelectedCurrency] = useState<string>(
-  //   DEFAULT_COLLECT_TOKEN
-  // )
-  // const [selectedCurrencySymobol, setSelectedCurrencySymobol] =
-  //   useState<string>('WMATIC')
+  const [postContentError, setPostContentError] = useState<string>('')
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
+  const { persistedPublication, setPersistedPublication } =
+    usePublicationPersistStore()
   const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
     onError(error) {
       toast.error(error?.message)
@@ -177,7 +177,6 @@ const Hours: NextPage = () => {
   )
 
   const createHours = async (
-    orgName: string,
     orgWalletAddress: string,
     date: string,
     totalMinutes: string,
@@ -190,11 +189,11 @@ const Hours: NextPage = () => {
       version: '1.0.0',
       metadata_id: uuid(),
       description: description,
-      content: description,
+      content: `@${persistedPublication} VHR submission`,
       external_url: null,
       image: cover ? cover : `https://avatar.tobi.sh/${uuid()}.png`,
       imageMimeType: coverType,
-      name: orgName,
+      name: persistedPublication,
       contentWarning: null, // TODO
       attributes: [
         {
@@ -269,26 +268,20 @@ const Hours: NextPage = () => {
               form={form}
               className="p-5 space-y-4"
               onSubmit={({
-                orgName,
                 orgWalletAddress,
                 date,
                 totalMinutes,
                 description
               }) => {
-                createHours(
-                  orgName,
-                  orgWalletAddress,
-                  date,
-                  totalMinutes,
-                  description
-                )
+                createHours(orgWalletAddress, date, totalMinutes, description)
               }}
             >
-              <Input
+              <OrganizationNameInput
                 label="Organization Name"
-                type="text"
+                error={postContentError}
+                setError={setPostContentError}
                 placeholder={'BCharity'}
-                {...form.register('orgName')}
+                // {...form.register('orgName')}
               />
               <Input
                 label="Organization Wallet Address"
