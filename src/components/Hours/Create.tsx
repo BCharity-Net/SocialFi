@@ -45,11 +45,6 @@ const newHourSchema = object({
   orgWalletAddress: string()
     .max(42, { message: 'Ethereum address should be within 42 characters' })
     .regex(/^0x[a-fA-F0-9]{40}$/, { message: 'Invalid Ethereum address' }),
-  // amount: string().min(1, { message: 'Invalid amount' }),
-  // goal: string(),
-  volunteer: string()
-    .max(42, { message: 'Ethereum address should be within 42 characters' })
-    .regex(/^0x[a-fA-F0-9]{40}$/, { message: 'Invalid Ethereum address' }),
 
   date: string()
     .max(10, { message: 'Invalid date' })
@@ -98,10 +93,7 @@ const Hours: NextPage = () => {
   })
 
   const form = useZodForm({
-    schema: newHourSchema,
-    defaultValues: {
-      volunteer: currentUser?.ownedBy
-    }
+    schema: newHourSchema
   })
 
   const handleUpload = async (evt: ChangeEvent<HTMLInputElement>) => {
