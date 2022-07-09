@@ -15,7 +15,7 @@
         <img src="https://badgen.net/github/last-commit/bcharity/bcharity" alt="Last Commit">
     </a>
     <a href="https://github.com/BCharity-Net/SocialFi/blob/main/LICENSE">
-        <img src="https://badgen.net/github/license/bcharity/bcharity" alt="Licence">
+        <img src="https://badgen.net/github/license/bcharity/bcharity" alt="License">
     </a>
     <a href="https://discord.gg/4vKS59q5kV">
         <img src="https://img.shields.io/discord/953679040722665512.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" alt="Discord">

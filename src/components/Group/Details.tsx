@@ -88,13 +88,13 @@ const Details: FC<Props> = ({ group }) => {
                 variant="secondary"
                 className="!py-1.5"
                 icon={<PencilAltIcon className="w-5 h-5" />}
-                onClick={() => setShowSettingsModal(!showSettingsModal)}
+                onClick={() => setShowSettingsModal(false)}
               />
               <Modal
                 title="Settings"
                 icon={<CogIcon className="w-5 h-5 text-brand" />}
                 show={showSettingsModal}
-                onClose={() => setShowSettingsModal(!showSettingsModal)}
+                onClose={() => setShowSettingsModal(false)}
               >
                 <Settings group={group} />
               </Modal>
@@ -107,10 +107,7 @@ const Details: FC<Props> = ({ group }) => {
           </MetaDetails>
           <MetaDetails icon={<UsersIcon className="w-4 h-4" />}>
             <>
-              <button
-                type="button"
-                onClick={() => setShowMembersModal(!showMembersModal)}
-              >
+              <button type="button" onClick={() => setShowMembersModal(false)}>
                 {nFormatter(group?.stats?.totalAmountOfCollects)}{' '}
                 {group?.stats?.totalAmountOfCollects === 1
                   ? 'member'
@@ -120,7 +117,7 @@ const Details: FC<Props> = ({ group }) => {
                 title="Members"
                 icon={<UsersIcon className="w-5 h-5 text-brand" />}
                 show={showMembersModal}
-                onClose={() => setShowMembersModal(!showMembersModal)}
+                onClose={() => setShowMembersModal(false)}
               >
                 <Collectors pubId={group.id} />
               </Modal>

@@ -27,8 +27,10 @@ import Fund from './Fund'
 export const PUBLICATION_REVENUE_QUERY = gql`
   query PublicationRevenue($request: PublicationRevenueQueryRequest!) {
     publicationRevenue(request: $request) {
-      earnings {
-        value
+      revenue {
+        total {
+          value
+        }
       }
     }
   }
@@ -156,7 +158,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
                     title="Funders"
                     icon={<CashIcon className="w-5 h-5 text-brand" />}
                     show={showFundersModal}
-                    onClose={() => setShowFundersModal(!showFundersModal)}
+                    onClose={() => setShowFundersModal(false)}
                   >
                     <Collectors pubId={fund?.pubId ?? fund?.id} />
                   </Modal>
