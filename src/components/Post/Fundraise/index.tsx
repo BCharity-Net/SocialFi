@@ -217,7 +217,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
                         : percentageReached
                     }%`
                   }}
-                  data-test="fundraise-progress-bar"
+                  data-test="crowdfund-progress-bar"
                 />
               </div>
             </Tooltip>
