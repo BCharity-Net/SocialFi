@@ -24,6 +24,7 @@ import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
 import uploadToIPFS from '@lib/uploadToIPFS'
 import { NextPage } from 'next'
 import React, { ChangeEvent, useState } from 'react'
+import { Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import {
   APP_NAME,
@@ -35,15 +36,14 @@ import {
 } from 'src/constants'
 import Custom404 from 'src/pages/404'
 import { useAppPersistStore, useAppStore } from 'src/store/app'
-import { usePublicationPersistStore } from 'src/store/publication'
 import { v4 as uuid } from 'uuid'
 import { useContractWrite, useSignTypedData } from 'wagmi'
 import { object, string } from 'zod'
 
 const newHourSchema = object({
-  // orgName: string()
-  //   .min(2, { message: 'Name should be at least 2 characters' })
-  //   .max(100, { message: 'Name should not exceed 100 characters' }),
+  orgName: string()
+    .min(2, { message: 'Name should be at least 2 characters' })
+    .max(100, { message: 'Name should not exceed 100 characters' }),
   orgWalletAddress: string()
     .max(42, { message: 'Ethereum address should be within 42 characters' })
     .regex(/^0x[a-fA-F0-9]{40}$/, { message: 'Invalid Ethereum address' }),
@@ -76,8 +76,6 @@ const Hours: NextPage = () => {
   const [postContentError, setPostContentError] = useState<string>('')
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
-  const { persistedPublication, setPersistedPublication } =
-    usePublicationPersistStore()
   const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
     onError(error) {
       toast.error(error?.message)
@@ -182,6 +180,7 @@ const Hours: NextPage = () => {
   )
 
   const createHours = async (
+    orgName: string,
     orgWalletAddress: string,
     startDate: string,
     endDate: string,
@@ -195,11 +194,11 @@ const Hours: NextPage = () => {
       version: '1.0.0',
       metadata_id: uuid(),
       description: description,
-      content: `@${persistedPublication} VHR submission`,
+      content: `@${orgName} VHR submission`,
       external_url: null,
       image: cover ? cover : `https://avatar.tobi.sh/${uuid()}.png`,
       imageMimeType: coverType,
-      name: persistedPublication,
+      name: orgName,
       contentWarning: null, // TODO
       attributes: [
         {
@@ -279,21 +278,38 @@ const Hours: NextPage = () => {
               form={form}
               className="p-5 space-y-4"
               onSubmit={({
+                orgName,
                 orgWalletAddress,
                 startDate,
                 endDate,
                 totalMinutes,
                 description
               }) => {
-                createHours(orgWalletAddress, startDate, endDate, totalMinutes, description)
+                createHours(
+                  orgName,
+                  orgWalletAddress,
+                  startDate,
+                  endDate,
+                  totalMinutes,
+                  description
+                )
               }}
             >
-              <OrganizationNameInput
-                label="Organization Name"
-                error={postContentError}
-                setError={setPostContentError}
-                placeholder={'BCharity'}
-                // {...form.register('orgName')}
+              <Controller
+                control={form.control}
+                name="orgName"
+                render={({
+                  field: { value, onChange },
+                  fieldState: { error }
+                }) => (
+                  <OrganizationNameInput
+                    label="Organization Name"
+                    error={error?.message}
+                    placeholder={'BCharity'}
+                    value={value}
+                    onChange={onChange}
+                  />
+                )}
               />
               <Input
                 label="Organization Wallet Address"
@@ -315,28 +331,12 @@ const Hours: NextPage = () => {
                 placeholder={'Enter your end date'}
                 {...form.register('endDate')}
               />
-
-              {/* <Input
-                label="Funds recipient"
-                type="text"
-                placeholder="0x3A5bd...5e3"
-                {...form.register('recipient')}
-              /> */}
               <Input
                 label="Total Minutes"
                 type="number"
                 step="1"
                 min="1"
                 max="1440"
-                // prefix={
-                //   <img
-                //     className="w-6 h-6"
-                //     height={24}
-                //     width={24}
-                //     src={getTokenImage(selectedCurrencySymobol)}
-                //     alt={selectedCurrencySymobol}
-                //   />
-                // }
                 placeholder="5"
                 {...form.register('totalMinutes')}
               />
