@@ -53,19 +53,11 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.33.1",
     "react-hot-toast": "^2.2.0",
-<<<<<<< HEAD
     "react-mentions": "4.4.5",
     "react-table": "^7.8.0",
     "use-streak": "^1.0.4",
     "uuid": "^8.3.2",
     "wagmi": "^0.5.9",
-=======
-    "react-mentions": "4.4.4",
-    "react-table": "^7.8.0",
-    "use-streak": "^1.0.4",
-    "uuid": "^8.3.2",
-    "wagmi": "^0.5.8",
->>>>>>> e9a1aef67fc763ffd4a9ab87f62cfc1de4a3d825
     "web3": "^1.7.4",
     "zod": "^3.17.3",
     "zustand": "^4.0.0-rc.1"
