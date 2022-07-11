@@ -8,9 +8,8 @@ import imagekitURL from '@lib/imagekitURL'
 import isVerified from '@lib/isVerified'
 import Logger from '@lib/logger'
 import clsx from 'clsx'
-import { Dispatch, FC } from 'react'
+import { Dispatch, FC, useState } from 'react'
 import { Mention, MentionsInput } from 'react-mentions'
-import { usePublicationPersistStore } from 'src/store/publication'
 
 interface UserProps {
   suggestion: UserSuggestion
@@ -48,24 +47,25 @@ interface Props {
   error: string
   setError: Dispatch<string>
   placeholder?: string
+  onChange: Function
 }
 
 export const OrganizationNameInput: FC<Props> = ({
   label,
   error,
   setError,
-  placeholder = ''
+  placeholder = '',
+  onChange
 }) => {
-  const { persistedPublication, setPersistedPublication } =
-    usePublicationPersistStore()
   const [searchUsers] = useLazyQuery(SEARCH_USERS_QUERY, {
     onCompleted(data) {
       Logger.log(
         'Lazy Query =>',
-        `Fetched ${data?.search?.items?.length} user mention result for ${persistedPublication}`
+        `Fetched ${data?.search?.items?.length} user mention result`
       )
     }
   })
+  const [inputValue, setInputValue] = useState<string>('')
 
   const fetchUsers = (query: string, callback: any) => {
     if (!query) return
@@ -101,11 +101,12 @@ export const OrganizationNameInput: FC<Props> = ({
       )}
       <MentionsInput
         className="mention-input-single"
-        value={persistedPublication}
+        value={inputValue}
         placeholder={placeholder}
         // singleLine={true}
         onChange={(e) => {
-          setPersistedPublication(e.target.value)
+          setInputValue(e.target.value)
+          onChange(e.target.value)
           setError('')
         }}
       >
