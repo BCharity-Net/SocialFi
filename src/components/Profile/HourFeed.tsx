@@ -50,8 +50,10 @@ interface Props {
 interface Data {
   orgID: string
   description: string
-  date: string
+  startDate: string
+  endDate: string
   totalMinutes: number
+  verified: boolean
 }
 
 const columns: Column<any>[] = [
@@ -64,13 +66,21 @@ const columns: Column<any>[] = [
     accessor: 'description'
   },
   {
-    Header: 'Date',
-    accessor: 'date'
+    Header: 'Start Date',
+    accessor: 'startDate'
+  },
+  {
+    Header: 'End Date',
+    accessor: 'endDate'
   },
   {
     Header: 'Total Minutes',
     accessor: 'totalMinutes'
   }
+  // {
+  //   Header: 'Status',
+  //   accessor: 'verified'
+  // }
 ]
 
 const HourFeed: FC<Props> = ({ profile }) => {
@@ -88,12 +98,20 @@ const HourFeed: FC<Props> = ({ profile }) => {
       const hours = data?.publications?.items.filter((i: any) => {
         return i.metadata.attributes[0].value == 'hours'
       })
+      // var verified = 'False'
       const result: Data[] = hours.map((i: any) => {
+        // if (i.metadata.attributes[3].value == 60) {
+        //   verified = 'True'
+        // }
+        console.log('This is the metadata')
+        console.log(i)
         return {
           orgID: i.metadata.name,
           description: i.metadata.description,
-          date: i.metadata.attributes[2].value,
-          totalMinutes: i.metadata.attributes[3].value
+          startDate: i.metadata.attributes[2].value,
+          endDate: i.metadata.attributes[3].value,
+          totalMinutes: i.metadata.attributes[4].value
+          // verified: verified
         }
       })
       setTableData(result)
@@ -101,7 +119,6 @@ const HourFeed: FC<Props> = ({ profile }) => {
   })
 
   const table = useTable({ columns, data: tableData })
-
   return (
     <>
       {loading && <PostsShimmer />}
@@ -118,42 +135,40 @@ const HourFeed: FC<Props> = ({ profile }) => {
       )}
       <ErrorMessage title="Failed to load hours" error={error} />
       {!error && !loading && data?.publications?.items?.length !== 0 && (
-        <>
-          <Card>
-            <table
-              className="w-full text-md text-center mb-2 mt-2"
-              {...table.getTableProps()}
-            >
-              <thead>
-                {table.headerGroups.map((headerGroup) => (
-                  <tr {...headerGroup.getHeaderGroupProps()}>
-                    {headerGroup.headers.map((column) => (
-                      <th className="p-4" {...column.getHeaderProps()}>
-                        {column.render('Header')}
-                      </th>
-                    ))}
+        <Card>
+          <table
+            className="w-full text-md text-center mb-2 mt-2"
+            {...table.getTableProps()}
+          >
+            <thead>
+              {table.headerGroups.map((headerGroup) => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => (
+                    <th className="p-4" {...column.getHeaderProps()}>
+                      {column.render('Header')}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody {...table.getTableBodyProps()}>
+              {table.rows.map((row) => {
+                table.prepareRow(row)
+                return (
+                  <tr {...row.getRowProps()}>
+                    {row.cells.map((cell) => {
+                      return (
+                        <td className="p-4" {...cell.getCellProps()}>
+                          {cell.render('Cell')}
+                        </td>
+                      )
+                    })}
                   </tr>
-                ))}
-              </thead>
-              <tbody {...table.getTableBodyProps()}>
-                {table.rows.map((row) => {
-                  table.prepareRow(row)
-                  return (
-                    <tr {...row.getRowProps()}>
-                      {row.cells.map((cell) => {
-                        return (
-                          <td className="p-4" {...cell.getCellProps()}>
-                            {cell.render('Cell')}
-                          </td>
-                        )
-                      })}
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </Card>
-        </>
+                )
+              })}
+            </tbody>
+          </table>
+        </Card>
       )}
     </>
   )
