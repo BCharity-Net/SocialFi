@@ -51,7 +51,7 @@ const newHourSchema = object({
   startDate: string()
     .max(10, { message: 'Invalid date' })
     .min(10, { message: 'Invalid date' }),
-    
+
   endDate: string()
     .max(10, { message: 'Invalid date' })
     .min(10, { message: 'Invalid date' }),
@@ -73,7 +73,6 @@ const Hours: NextPage = () => {
   const [coverType, setCoverType] = useState<string>()
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [uploading, setUploading] = useState<boolean>(false)
-  const [postContentError, setPostContentError] = useState<string>('')
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
   const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
