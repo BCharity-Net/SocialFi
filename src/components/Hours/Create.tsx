@@ -24,6 +24,7 @@ import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
 import uploadToIPFS from '@lib/uploadToIPFS'
 import { NextPage } from 'next'
 import React, { ChangeEvent, useState } from 'react'
+import { Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import {
   APP_NAME,
@@ -294,14 +295,21 @@ const Hours: NextPage = () => {
                 )
               }}
             >
-              <OrganizationNameInput
-                label="Organization Name"
-                error={postContentError}
-                setError={setPostContentError}
-                placeholder={'BCharity'}
-                onChange={(val: string) => {
-                  form.setValue('orgName', val)
-                }}
+              <Controller
+                control={form.control}
+                name="orgName"
+                render={({
+                  field: { value, onChange },
+                  fieldState: { error }
+                }) => (
+                  <OrganizationNameInput
+                    label="Organization Name"
+                    error={error?.message}
+                    placeholder={'BCharity'}
+                    value={value}
+                    onChange={onChange}
+                  />
+                )}
               />
               <Input
                 label="Organization Wallet Address"
