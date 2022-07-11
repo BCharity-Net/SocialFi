@@ -359,13 +359,6 @@ const Hours: NextPage = () => {
                 placeholder={'Enter your end date'}
                 {...form.register('endDate')}
               />
-
-              {/* <Input
-                label="Funds recipient"
-                type="text"
-                placeholder="0x3A5bd...5e3"
-                {...form.register('recipient')}
-              /> */}
               <Input
                 label="Total Minutes"
                 type="number"
