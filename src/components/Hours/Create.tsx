@@ -35,15 +35,14 @@ import {
 } from 'src/constants'
 import Custom404 from 'src/pages/404'
 import { useAppPersistStore, useAppStore } from 'src/store/app'
-import { usePublicationPersistStore } from 'src/store/publication'
 import { v4 as uuid } from 'uuid'
 import { useContractWrite, useSignTypedData } from 'wagmi'
 import { object, string } from 'zod'
 
 const newHourSchema = object({
-  // orgName: string()
-  //   .min(2, { message: 'Name should be at least 2 characters' })
-  //   .max(100, { message: 'Name should not exceed 100 characters' }),
+  orgName: string()
+    .min(2, { message: 'Name should be at least 2 characters' })
+    .max(100, { message: 'Name should not exceed 100 characters' }),
   orgWalletAddress: string()
     .max(42, { message: 'Ethereum address should be within 42 characters' })
     .regex(/^0x[a-fA-F0-9]{40}$/, { message: 'Invalid Ethereum address' }),
@@ -51,7 +50,7 @@ const newHourSchema = object({
   startDate: string()
     .max(10, { message: 'Invalid date' })
     .min(10, { message: 'Invalid date' }),
-    
+
   endDate: string()
     .max(10, { message: 'Invalid date' })
     .min(10, { message: 'Invalid date' }),
@@ -76,8 +75,6 @@ const Hours: NextPage = () => {
   const [postContentError, setPostContentError] = useState<string>('')
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
-  const { persistedPublication, setPersistedPublication } =
-    usePublicationPersistStore()
   const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
     onError(error) {
       toast.error(error?.message)
@@ -182,6 +179,7 @@ const Hours: NextPage = () => {
   )
 
   const createHours = async (
+    orgName: string,
     orgWalletAddress: string,
     startDate: string,
     endDate: string,
@@ -195,11 +193,11 @@ const Hours: NextPage = () => {
       version: '1.0.0',
       metadata_id: uuid(),
       description: description,
-      content: `@${persistedPublication} VHR submission`,
+      content: `@${orgName} VHR submission`,
       external_url: null,
       image: cover ? cover : `https://avatar.tobi.sh/${uuid()}.png`,
       imageMimeType: coverType,
-      name: persistedPublication,
+      name: orgName,
       contentWarning: null, // TODO
       attributes: [
         {
@@ -279,13 +277,21 @@ const Hours: NextPage = () => {
               form={form}
               className="p-5 space-y-4"
               onSubmit={({
+                orgName,
                 orgWalletAddress,
                 startDate,
                 endDate,
                 totalMinutes,
                 description
               }) => {
-                createHours(orgWalletAddress, startDate, endDate, totalMinutes, description)
+                createHours(
+                  orgName,
+                  orgWalletAddress,
+                  startDate,
+                  endDate,
+                  totalMinutes,
+                  description
+                )
               }}
             >
               <OrganizationNameInput
@@ -293,7 +299,9 @@ const Hours: NextPage = () => {
                 error={postContentError}
                 setError={setPostContentError}
                 placeholder={'BCharity'}
-                // {...form.register('orgName')}
+                onChange={(val: string) => {
+                  form.setValue('orgName', val)
+                }}
               />
               <Input
                 label="Organization Wallet Address"
@@ -328,15 +336,6 @@ const Hours: NextPage = () => {
                 step="1"
                 min="1"
                 max="1440"
-                // prefix={
-                //   <img
-                //     className="w-6 h-6"
-                //     height={24}
-                //     width={24}
-                //     src={getTokenImage(selectedCurrencySymobol)}
-                //     alt={selectedCurrencySymobol}
-                //   />
-                // }
                 placeholder="5"
                 {...form.register('totalMinutes')}
               />

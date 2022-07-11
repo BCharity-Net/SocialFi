@@ -27,7 +27,7 @@ const Hours: FC<Props> = ({ post }) => {
   const cover = post?.metadata?.cover?.original?.url
 
   return (
-    <Card forceRounded testId="fundraise">
+    <Card forceRounded testId="hours">
       <div
         className="h-40 rounded-t-xl border-b sm:h-52 dark:border-b-gray-700/80"
         style={{
