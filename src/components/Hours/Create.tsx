@@ -22,6 +22,7 @@ import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
 import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
 import uploadToIPFS from '@lib/uploadToIPFS'
+import { size } from 'cypress/types/lodash'
 import { NextPage } from 'next'
 import React, { ChangeEvent, useState } from 'react'
 import { Controller } from 'react-hook-form'
@@ -76,6 +77,8 @@ const newHourSchema = object({
     .max(250, { message: 'Description should not exceed 250 characters' })
     .nullable()
 })
+
+
 
 const Hours: NextPage = () => {
   const [cover, setCover] = useState<string>()
