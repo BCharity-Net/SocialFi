@@ -1,5 +1,5 @@
 import { LensHubProxy } from '@abis/LensHubProxy'
-import { useMutation } from '@apollo/client'
+import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import { GridItemEight, GridItemFour, GridLayout } from '@components/GridLayout'
 import { CREATE_POST_TYPED_DATA_MUTATION } from '@components/Post/NewPost'
 import ChooseFile from '@components/Shared/ChooseFile'
@@ -39,6 +39,15 @@ import { useAppPersistStore, useAppStore } from 'src/store/app'
 import { v4 as uuid } from 'uuid'
 import { useContractWrite, useSignTypedData } from 'wagmi'
 import { object, string } from 'zod'
+
+export const PROFILE_QUERY = gql`
+  query Profile($request: SingleProfileQueryRequest!) {
+    profile(request: $request) {
+      id
+      ownedBy
+    }
+  }
+`
 
 const newHourSchema = object({
   orgName: string()
@@ -80,6 +89,20 @@ const Hours: NextPage = () => {
       toast.error(error?.message)
     }
   })
+
+  const [getWalletAddress] = useLazyQuery(PROFILE_QUERY, {
+    onCompleted(data) {
+      Logger.log('Lazy Query =>', `Fetched ${data?.id} profile result`)
+    }
+  })
+  const fetchWalletAddress = (username: string) =>
+    getWalletAddress({
+      variables: {
+        request: { handle: username }
+      }
+    }).then(({ data }) => {
+      return data.profile.ownedBy
+    })
 
   const {
     data,
@@ -307,6 +330,12 @@ const Hours: NextPage = () => {
                     placeholder={'BCharity'}
                     value={value}
                     onChange={onChange}
+                    onAdd={async (e: string) => {
+                      form.setValue(
+                        'orgWalletAddress',
+                        await fetchWalletAddress(e)
+                      )
+                    }}
                   />
                 )}
               />

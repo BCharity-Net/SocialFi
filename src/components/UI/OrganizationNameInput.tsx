@@ -48,6 +48,7 @@ interface Props {
   placeholder?: string
   value: string
   onChange: Function
+  onAdd: Function
 }
 
 export const OrganizationNameInput: FC<Props> = ({
@@ -55,7 +56,8 @@ export const OrganizationNameInput: FC<Props> = ({
   error,
   placeholder = '',
   value,
-  onChange
+  onChange,
+  onAdd
 }) => {
   const [searchUsers] = useLazyQuery(SEARCH_USERS_QUERY, {
     onCompleted(data) {
@@ -104,7 +106,6 @@ export const OrganizationNameInput: FC<Props> = ({
         placeholder={placeholder}
         // singleLine={true}
         onChange={(e) => {
-          // setInputValue(e.target.value)
           onChange(e.target.value)
         }}
       >
@@ -121,6 +122,9 @@ export const OrganizationNameInput: FC<Props> = ({
             focused
           ) => <User suggestion={suggestion} focused={focused} />}
           data={fetchUsers}
+          onAdd={(e) => {
+            onAdd(e)
+          }}
         />
       </MentionsInput>
       {error && (
