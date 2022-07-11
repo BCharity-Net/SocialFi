@@ -91,6 +91,10 @@ const columns: Column<any>[] = [
     Header: 'Status',
     accessor: 'verified'
   }
+  // {
+  //   Header: 'Status',
+  //   accessor: 'verified'
+  // }
 ]
 
 const HourFeed: FC<Props> = ({ profile }) => {
