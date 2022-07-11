@@ -48,9 +48,14 @@ const newHourSchema = object({
     .max(42, { message: 'Ethereum address should be within 42 characters' })
     .regex(/^0x[a-fA-F0-9]{40}$/, { message: 'Invalid Ethereum address' }),
 
-  date: string()
+  startDate: string()
     .max(10, { message: 'Invalid date' })
     .min(10, { message: 'Invalid date' }),
+    
+  endDate: string()
+    .max(10, { message: 'Invalid date' })
+    .min(10, { message: 'Invalid date' }),
+
   totalMinutes: string()
     .min(1, {
       message: 'Invalid total minutes (Enter a number between 1 and 1440)'
@@ -178,7 +183,8 @@ const Hours: NextPage = () => {
 
   const createHours = async (
     orgWalletAddress: string,
-    date: string,
+    startDate: string,
+    endDate: string,
     totalMinutes: string,
     description: string | null
   ) => {
@@ -208,8 +214,13 @@ const Hours: NextPage = () => {
         },
         {
           traitType: 'string',
-          key: 'date',
-          value: date
+          key: 'startDate',
+          value: startDate
+        },
+        {
+          traitType: 'string',
+          key: 'endDate',
+          value: endDate
         },
         {
           traitType: 'number',
@@ -269,11 +280,12 @@ const Hours: NextPage = () => {
               className="p-5 space-y-4"
               onSubmit={({
                 orgWalletAddress,
-                date,
+                startDate,
+                endDate,
                 totalMinutes,
                 description
               }) => {
-                createHours(orgWalletAddress, date, totalMinutes, description)
+                createHours(orgWalletAddress, startDate, endDate, totalMinutes, description)
               }}
             >
               <OrganizationNameInput
@@ -289,12 +301,21 @@ const Hours: NextPage = () => {
                 placeholder={'0x3A5bd...5e3'}
                 {...form.register('orgWalletAddress')}
               />
+
               <Input
-                label="Date"
+                label="Start Date"
                 type="date"
-                placeholder={'Enter your date'}
-                {...form.register('date')}
+                placeholder={'Enter your start date'}
+                {...form.register('startDate')}
               />
+
+              <Input
+                label="End Date"
+                type="date"
+                placeholder={'Enter your end date'}
+                {...form.register('endDate')}
+              />
+
               {/* <Input
                 label="Funds recipient"
                 type="text"
