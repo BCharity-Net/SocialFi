@@ -103,8 +103,6 @@ const HourFeed: FC<Props> = ({ profile }) => {
         // if (i.metadata.attributes[3].value == 60) {
         //   verified = 'True'
         // }
-        console.log('This is the metadata')
-        console.log(i)
         return {
           orgID: i.metadata.name,
           description: i.metadata.description,

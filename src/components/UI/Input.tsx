@@ -29,7 +29,7 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
           <div className="font-medium text-gray-800 dark:text-gray-200">
             {label}
           </div>
-          {label === 'End Date' && (
+          {type === 'endDate' && (
             <Button
               size="sm"
               onClick={() => {
@@ -58,7 +58,7 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
             'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700/80 focus:border-brand-500 focus:ring-brand-400 disabled:opacity-60 disabled:bg-gray-500 disabled:bg-opacity-20 outline-none w-full',
             className
           )}
-          type={type}
+          type={type === 'endDate' ? 'date' : type}
           ref={ref}
           {...props}
         />

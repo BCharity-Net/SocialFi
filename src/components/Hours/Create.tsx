@@ -353,7 +353,7 @@ const Hours: NextPage = () => {
               />
               <Input
                 label="End Date"
-                type="date"
+                type="endDate"
                 placeholder={'Enter your end date'}
                 {...form.register('endDate')}
                 click={() => {
