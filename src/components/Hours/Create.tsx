@@ -244,7 +244,7 @@ const Hours: NextPage = () => {
         {
           traitType: 'string',
           key: 'endDate',
-          value: endDate
+          value: (singleDay ? startDate : endDate)
         },
         {
           traitType: 'number',
@@ -350,9 +350,22 @@ const Hours: NextPage = () => {
               />
               <Input
                 label="Start Date"
-                type="date"
+                type="startDate"
                 placeholder={'Enter your start date'}
+                change={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  if(singleDay === true){
+                    setSingleDay(false)
+                  } else {
+                    setSingleDay(true)
+                  }
+                  const startDate = form.getValues('startDate')
+                  const endDate = form.getValues('endDate')
+                  if(endDate === '') form.setValue('endDate', startDate)
+                  console.log('1')
+                }}
+
                 {...form.register('startDate')}
+
               />
               <Input
                 label="End Date"
