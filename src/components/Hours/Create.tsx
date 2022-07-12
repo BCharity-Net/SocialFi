@@ -349,7 +349,7 @@ const Hours: NextPage = () => {
                 {...form.register('orgWalletAddress')}
               />
               <Input
-                label="Start Date"
+                label={singleDay ? "Date" : "Start Date"}
                 type="startDate"
                 placeholder={'Enter your start date'}
                 change={(e: React.ChangeEvent<HTMLInputElement>) => {
