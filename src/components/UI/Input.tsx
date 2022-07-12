@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import dynamic from 'next/dynamic'
 import { ComponentProps, forwardRef, ReactNode, useId } from 'react'
 
+import { Button } from './Button'
 import { FieldError } from './Form'
 
 const HelpTooltip = dynamic(() => import('./HelpTooltip'))
@@ -12,6 +13,7 @@ interface Props extends Omit<ComponentProps<'input'>, 'prefix'> {
   className?: string
   helper?: ReactNode
   error?: boolean
+  click?: Function
 }
 
 export const Input = forwardRef<HTMLInputElement, Props>(function Input(
@@ -27,6 +29,17 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
           <div className="font-medium text-gray-800 dark:text-gray-200">
             {label}
           </div>
+          {label === 'End Date' && (
+            <Button
+              size="sm"
+              onClick={() => {
+                if (!props.click) return
+                props.click()
+              }}
+            >
+              Set same as start date
+            </Button>
+          )}
           <HelpTooltip content={helper} />
         </div>
       )}

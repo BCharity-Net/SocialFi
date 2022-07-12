@@ -345,19 +345,22 @@ const Hours: NextPage = () => {
                 placeholder={'0x3A5bd...5e3'}
                 {...form.register('orgWalletAddress')}
               />
-
               <Input
                 label="Start Date"
                 type="date"
                 placeholder={'Enter your start date'}
                 {...form.register('startDate')}
               />
-
               <Input
                 label="End Date"
                 type="date"
                 placeholder={'Enter your end date'}
                 {...form.register('endDate')}
+                click={() => {
+                  const startDate = form.getValues('startDate')
+                  if (!startDate) return
+                  form.setValue('endDate', startDate)
+                }}
               />
               <Input
                 label="Total Minutes"
