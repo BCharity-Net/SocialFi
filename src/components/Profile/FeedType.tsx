@@ -8,8 +8,9 @@ import {
 } from '@heroicons/react/outline'
 import nFormatter from '@lib/nFormatter'
 import clsx from 'clsx'
-import React, { Dispatch, FC, ReactNode, useEffect, useState } from 'react'
-import { getBalanceOf } from 'src/web3'
+import React, { Dispatch, FC, ReactNode } from 'react'
+import { VHR_TOKEN } from 'src/constants'
+import { useBalance } from 'wagmi'
 
 interface Props {
   stats: ProfileStats
@@ -19,15 +20,11 @@ interface Props {
 }
 
 const FeedType: FC<Props> = ({ stats, address, setFeedType, feedType }) => {
-  const [vhrBalance, setVhrBalance] = useState<number>(0)
-
-  useEffect(() => {
-    const balance = async () => {
-      const data = await getBalanceOf(address)
-      setVhrBalance(data)
-    }
-    balance().catch(console.error)
-  }, [address])
+  const { data: vhrBalance } = useBalance({
+    addressOrName: address,
+    token: VHR_TOKEN,
+    watch: true
+  })
 
   interface FeedLinkProps {
     name: string
@@ -102,7 +99,7 @@ const FeedType: FC<Props> = ({ stats, address, setFeedType, feedType }) => {
         name="VHR"
         icon={<ClockIcon className="w-4 h-4" />}
         type="vhr"
-        count={vhrBalance}
+        count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
         testId="type-nfts"
       />
     </div>
