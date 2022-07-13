@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { gql, useQuery } from '@apollo/client'
+import { gql, useLazyQuery, useQuery } from '@apollo/client'
 import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
 import { Card } from '@components/UI/Card'
 import { EmptyState } from '@components/UI/EmptyState'
@@ -9,10 +9,20 @@ import { CommentFields } from '@gql/CommentFields'
 import { MirrorFields } from '@gql/MirrorFields'
 import { PostFields } from '@gql/PostFields'
 import { CollectionIcon } from '@heroicons/react/outline'
-// import Logger from '@lib/logger'
+import Logger from '@lib/logger'
 import React, { FC, useState } from 'react'
 import { Column, useTable } from 'react-table'
 import { useAppPersistStore } from 'src/store/app'
+
+const WHO_COLLECTED_QUERY = gql`
+  query WhoCollected($request: WhoCollectedPublicationRequest!) {
+    whoCollectedPublication(request: $request) {
+      items {
+        address
+      }
+    }
+  }
+`
 
 const PROFILE_FEED_QUERY = gql`
   query ProfileFeed(
@@ -76,16 +86,31 @@ const columns: Column<any>[] = [
   {
     Header: 'Total Minutes',
     accessor: 'totalMinutes'
+  },
+  {
+    Header: 'Status',
+    accessor: 'verified'
   }
-  // {
-  //   Header: 'Status',
-  //   accessor: 'verified'
-  // }
 ]
 
 const HourFeed: FC<Props> = ({ profile }) => {
   const { currentUser } = useAppPersistStore()
   const [tableData, setTableData] = useState<Data[]>([])
+  const [getCollectAddress] = useLazyQuery(WHO_COLLECTED_QUERY, {
+    onCompleted() {
+      Logger.log('Lazy Query =>', `Fetched collected result`)
+    }
+  })
+
+  const fetchCollectAddress = (pubId: string) =>
+    getCollectAddress({
+      variables: {
+        request: { publicationId: pubId }
+      }
+    }).then(({ data }) => {
+      return data.whoCollectedPublication.items
+    })
+
   const { data, loading, error } = useQuery(PROFILE_FEED_QUERY, {
     variables: {
       request: { publicationTypes: 'POST', profileId: profile?.id, limit: 10 },
@@ -98,21 +123,27 @@ const HourFeed: FC<Props> = ({ profile }) => {
       const hours = data?.publications?.items.filter((i: any) => {
         return i.metadata.attributes[0].value == 'hours'
       })
-      // var verified = 'False'
-      const result: Data[] = hours.map((i: any) => {
-        // if (i.metadata.attributes[3].value == 60) {
-        //   verified = 'True'
-        // }
-        return {
-          orgID: i.metadata.name,
-          description: i.metadata.description,
-          startDate: i.metadata.attributes[2].value,
-          endDate: i.metadata.attributes[3].value,
-          totalMinutes: i.metadata.attributes[4].value
-          // verified: verified
-        }
+      Promise.all(
+        hours.map(async (i: any) => {
+          let verified = false
+          await fetchCollectAddress(i.id).then((data) => {
+            data.forEach((item: any) => {
+              if (verified) return
+              verified = item.address === i.metadata.attributes[1].value
+            })
+          })
+          return {
+            orgID: i.metadata.name,
+            description: i.metadata.description,
+            startDate: i.metadata.attributes[2].value,
+            endDate: i.metadata.attributes[3].value,
+            totalMinutes: i.metadata.attributes[4].value,
+            verified: verified ? 'True' : 'False'
+          }
+        })
+      ).then((result) => {
+        setTableData(result)
       })
-      setTableData(result)
     }
   })
 
