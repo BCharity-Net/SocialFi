@@ -67,7 +67,7 @@ const Groups: NextPage = () => {
     },
     onCompleted() {
       Logger.log(
-        'Query =>',
+        '[Query]',
         `Fetched 10 TOP_COMMENTED, TOP_COLLECTED and LATEST groups`
       )
     }
