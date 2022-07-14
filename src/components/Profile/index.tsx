@@ -88,7 +88,7 @@ const ViewProfile: NextPage = () => {
     skip: !username,
     onCompleted(data) {
       Logger.log(
-        'Query =>',
+        '[Query]',
         `Fetched profile details Profile:${data?.profile?.id}`
       )
     }

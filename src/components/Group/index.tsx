@@ -37,7 +37,7 @@ const ViewGroup: NextPage = () => {
     variables: { request: { publicationId: id } },
     skip: !id,
     onCompleted() {
-      Logger.log('Query =>', `Fetched group details Group:${id}`)
+      Logger.log('[Query]', `Fetched group details Group:${id}`)
     }
   })
 
