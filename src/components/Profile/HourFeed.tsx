@@ -14,6 +14,8 @@ import React, { FC, useState } from 'react'
 import { Column, useTable } from 'react-table'
 import { useAppPersistStore } from 'src/store/app'
 
+import NFTDetails from './NFTDetails'
+
 const WHO_COLLECTED_QUERY = gql`
   query WhoCollected($request: WhoCollectedPublicationRequest!) {
     whoCollectedPublication(request: $request) {
@@ -58,7 +60,7 @@ interface Props {
 }
 
 interface Data {
-  orgID: string
+  orgName: string
   description: string
   startDate: string
   endDate: string
@@ -69,7 +71,7 @@ interface Data {
 const columns: Column<any>[] = [
   {
     Header: 'Organization',
-    accessor: 'orgID'
+    accessor: 'orgName'
   },
   {
     Header: 'Description',
@@ -100,6 +102,7 @@ const columns: Column<any>[] = [
 const HourFeed: FC<Props> = ({ profile }) => {
   const { currentUser } = useAppPersistStore()
   const [tableData, setTableData] = useState<Data[]>([])
+  const [addressData, setAddressData] = useState<string[]>([])
   const [getCollectAddress] = useLazyQuery(WHO_COLLECTED_QUERY, {
     onCompleted() {
       Logger.log('Lazy Query =>', `Fetched collected result`)
@@ -116,11 +119,8 @@ const HourFeed: FC<Props> = ({ profile }) => {
     })
 
   const handleTableData = async (data: any) => {
-    const hours = data?.publications?.items.filter((i: any) => {
-      return i.metadata.attributes[0].value == 'hours'
-    })
     return Promise.all(
-      hours.map(async (i: any) => {
+      data.map(async (i: any) => {
         let verified = false
         await fetchCollectAddress(i.id).then((data) => {
           data.forEach((item: any) => {
@@ -129,7 +129,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
           })
         })
         return {
-          orgID: i.metadata.name,
+          orgName: i.metadata.name,
           description: i.metadata.description,
           startDate: i.metadata.attributes[2].value,
           endDate: i.metadata.attributes[3].value,
@@ -139,6 +139,23 @@ const HourFeed: FC<Props> = ({ profile }) => {
       })
     )
   }
+
+  const handleNFTData = (data: any, index: number) =>
+    fetch(data)
+      .then((i) => i)
+      .then((result) => {
+        result.json().then((metadata) => {
+          tableData[index] = {
+            orgName: metadata.name,
+            description: metadata.description,
+            startDate: metadata.attributes[2].value,
+            endDate: metadata.attributes[3].value,
+            totalHours: metadata.attributes[4].value,
+            verified: 'Verified'
+          }
+          setTableData(tableData)
+        })
+      })
 
   const tableLimit = 10
   const { data, loading, error, fetchMore } = useQuery(PROFILE_FEED_QUERY, {
@@ -154,7 +171,10 @@ const HourFeed: FC<Props> = ({ profile }) => {
     skip: !profile?.id,
     fetchPolicy: 'no-cache',
     onCompleted(data) {
-      handleTableData(data).then((result: Data[]) => {
+      const hours = data?.publications?.items.filter((i: any) => {
+        return i.metadata.attributes[0].value == 'hours'
+      })
+      handleTableData(hours).then((result: Data[]) => {
         setTableData([...tableData, ...result])
         if (tableData.length != tableLimit) {
           fetchMore({
@@ -164,6 +184,10 @@ const HourFeed: FC<Props> = ({ profile }) => {
           })
         }
       })
+      const addresses: string[] = hours.map((i: any) => {
+        return i.collectNftAddress
+      })
+      setAddressData([...addressData, ...addresses])
     }
   })
 
@@ -201,18 +225,26 @@ const HourFeed: FC<Props> = ({ profile }) => {
               ))}
             </thead>
             <tbody {...table.getTableBodyProps()}>
-              {table.rows.map((row) => {
+              {table.rows.map((row, index) => {
                 table.prepareRow(row)
                 return (
-                  <tr {...row.getRowProps()}>
-                    {row.cells.map((cell) => {
-                      return (
-                        <td className="p-4" {...cell.getCellProps()}>
-                          {cell.render('Cell')}
-                        </td>
-                      )
-                    })}
-                  </tr>
+                  <>
+                    <tr {...row.getRowProps()}>
+                      {row.cells.map((cell) => {
+                        return (
+                          <td className="p-4" {...cell.getCellProps()}>
+                            {cell.render('Cell')}
+                          </td>
+                        )
+                      })}
+                    </tr>
+                    <NFTDetails
+                      address={addressData[index]}
+                      callback={(data: any) => {
+                        handleNFTData(data, index)
+                      }}
+                    />
+                  </>
                 )
               })}
             </tbody>
