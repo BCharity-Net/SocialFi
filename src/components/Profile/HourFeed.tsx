@@ -62,8 +62,8 @@ interface Data {
   description: string
   startDate: string
   endDate: string
-  totalMinutes: number
-  verified: boolean
+  totalHours: number
+  verified: string
 }
 
 const columns: Column<any>[] = [
@@ -84,8 +84,8 @@ const columns: Column<any>[] = [
     accessor: 'endDate'
   },
   {
-    Header: 'Total Minutes',
-    accessor: 'totalMinutes'
+    Header: 'Total Hours',
+    accessor: 'totalHours'
   },
   {
     Header: 'Status',
@@ -129,24 +129,36 @@ const HourFeed: FC<Props> = ({ profile }) => {
           description: i.metadata.description,
           startDate: i.metadata.attributes[2].value,
           endDate: i.metadata.attributes[3].value,
-          totalMinutes: i.metadata.attributes[4].value,
-          verified: verified ? 'True' : 'False'
+          totalHours: i.metadata.attributes[4].value,
+          verified: verified ? 'Verified' : 'Unverified'
         }
       })
     )
   }
 
+  const tableLimit = 10
   const { data, loading, error, fetchMore } = useQuery(PROFILE_FEED_QUERY, {
     variables: {
-      request: { publicationTypes: 'POST', profileId: profile?.id, limit: 10 },
+      request: {
+        publicationTypes: 'POST',
+        profileId: profile?.id,
+        limit: tableLimit
+      },
       reactionRequest: currentUser ? { profileId: currentUser?.id } : null,
       profileId: currentUser?.id ?? null
     },
     skip: !profile?.id,
     fetchPolicy: 'no-cache',
     onCompleted(data) {
-      handleTableData(data).then((result) => {
-        setTableData(result)
+      handleTableData(data).then((result: Data[]) => {
+        setTableData([...tableData, ...result])
+        if (tableData.length != tableLimit) {
+          fetchMore({
+            variables: {
+              offset: tableLimit - tableData.length
+            }
+          })
+        }
       })
     }
   })

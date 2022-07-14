@@ -63,7 +63,7 @@ const Hours: FC<Props> = ({ post }) => {
           <Badge
             title={
               <div className="flex items-center space-x-1">
-                <div>Total Minutes</div>
+                <div>Total Hours</div>
               </div>
             }
             value={post.metadata.attributes[4].value}

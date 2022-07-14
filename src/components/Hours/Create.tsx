@@ -65,12 +65,12 @@ const newHourSchema = object({
     .max(10, { message: 'Invalid date' })
     .min(10, { message: 'Invalid date' }),
 
-  totalMinutes: string()
-    .min(1, {
-      message: 'Invalid total minutes (Enter a number between 1 and 1440)'
+  totalHours: string()
+    .regex(/^(0*[1-9][0-9]*(\.[0-9]+)?|0+\.[0-9]*[1-9][0-9]*)$/, {
+      message: 'Total hours should be larger than zero'
     })
-    .max(4, {
-      message: 'Invalid total minutes (Enter a number between 1 and 1440)'
+    .regex(/^\d+(?:\.\d{1})?$/, {
+      message: 'Total hours should be a whole number or to one decimal place'
     }),
   description: string()
     .max(250, { message: 'Description should not exceed 250 characters' })
@@ -206,7 +206,7 @@ const Hours: NextPage = () => {
     orgWalletAddress: string,
     startDate: string,
     endDate: string,
-    totalMinutes: string,
+    totalHours: string,
     description: string | null
   ) => {
     if (!isAuthenticated) return toast.error(CONNECT_WALLET)
@@ -245,8 +245,8 @@ const Hours: NextPage = () => {
         },
         {
           traitType: 'number',
-          key: 'totalMinutes',
-          value: totalMinutes
+          key: 'totalHours',
+          value: totalHours
         }
       ],
       media: [],
@@ -304,7 +304,7 @@ const Hours: NextPage = () => {
                 orgWalletAddress,
                 startDate,
                 endDate,
-                totalMinutes,
+                totalHours,
                 description
               }) => {
                 createHours(
@@ -312,7 +312,7 @@ const Hours: NextPage = () => {
                   orgWalletAddress,
                   startDate,
                   endDate,
-                  totalMinutes,
+                  totalHours,
                   description
                 )
               }}
@@ -363,13 +363,12 @@ const Hours: NextPage = () => {
                 }}
               />
               <Input
-                label="Total Minutes"
+                label="Total Hours"
                 type="number"
-                step="1"
-                min="1"
-                max="1440"
+                step="0.1"
+                min="0.1"
                 placeholder="5"
-                {...form.register('totalMinutes')}
+                {...form.register('totalHours')}
               />
               <TextArea
                 label="Activity Description"
