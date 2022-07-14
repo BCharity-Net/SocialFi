@@ -12,7 +12,7 @@ module.exports = withTM(
     {
       reactStrictMode: true,
       trailingSlash: false,
-      maximumFileSizeToCacheInBytes: 5000000,
+      maximumFileSizeToCacheInBytes: 8000000,
       async rewrites() {
         return [
           {
