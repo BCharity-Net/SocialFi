@@ -111,7 +111,32 @@ const HourFeed: FC<Props> = ({ profile }) => {
       return data.whoCollectedPublication.items
     })
 
-  const { data, loading, error } = useQuery(PROFILE_FEED_QUERY, {
+  const handleTableData = async (data: any) => {
+    const hours = data?.publications?.items.filter((i: any) => {
+      return i.metadata.attributes[0].value == 'hours'
+    })
+    return Promise.all(
+      hours.map(async (i: any) => {
+        let verified = false
+        await fetchCollectAddress(i.id).then((data) => {
+          data.forEach((item: any) => {
+            if (verified) return
+            verified = item.address === i.metadata.attributes[1].value
+          })
+        })
+        return {
+          orgID: i.metadata.name,
+          description: i.metadata.description,
+          startDate: i.metadata.attributes[2].value,
+          endDate: i.metadata.attributes[3].value,
+          totalMinutes: i.metadata.attributes[4].value,
+          verified: verified ? 'True' : 'False'
+        }
+      })
+    )
+  }
+
+  const { data, loading, error, fetchMore } = useQuery(PROFILE_FEED_QUERY, {
     variables: {
       request: { publicationTypes: 'POST', profileId: profile?.id, limit: 10 },
       reactionRequest: currentUser ? { profileId: currentUser?.id } : null,
@@ -120,28 +145,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
     skip: !profile?.id,
     fetchPolicy: 'no-cache',
     onCompleted(data) {
-      const hours = data?.publications?.items.filter((i: any) => {
-        return i.metadata.attributes[0].value == 'hours'
-      })
-      Promise.all(
-        hours.map(async (i: any) => {
-          let verified = false
-          await fetchCollectAddress(i.id).then((data) => {
-            data.forEach((item: any) => {
-              if (verified) return
-              verified = item.address === i.metadata.attributes[1].value
-            })
-          })
-          return {
-            orgID: i.metadata.name,
-            description: i.metadata.description,
-            startDate: i.metadata.attributes[2].value,
-            endDate: i.metadata.attributes[3].value,
-            totalMinutes: i.metadata.attributes[4].value,
-            verified: verified ? 'True' : 'False'
-          }
-        })
-      ).then((result) => {
+      handleTableData(data).then((result) => {
         setTableData(result)
       })
     }
