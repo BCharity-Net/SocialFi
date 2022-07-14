@@ -22,6 +22,7 @@ export const PostFields = gql`
     collectModule {
       ...MinimalCollectModuleFields
     }
+    collectNftAddress
     stats {
       ...StatsFields
     }
