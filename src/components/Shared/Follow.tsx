@@ -10,6 +10,7 @@ import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
 import { Dispatch, FC } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
   CONNECT_WALLET,
   ERROR_MESSAGE,
@@ -67,6 +68,7 @@ const Follow: FC<Props> = ({
   followersCount,
   setFollowersCount
 }) => {
+  const { t } = useTranslation('common')
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
   const { address } = useAccount()
@@ -193,7 +195,7 @@ const Follow: FC<Props> = ({
         )
       }
     >
-      {showText && 'Follow'}
+      {showText && t('Follow')}
     </Button>
   )
 }

@@ -8,6 +8,7 @@ import Logger from '@lib/logger'
 import clsx from 'clsx'
 import { NextPage } from 'next'
 import React, { FC, ReactNode, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { APP_NAME } from 'src/constants'
 import Custom404 from 'src/pages/404'
 import Custom500 from 'src/pages/500'
@@ -53,6 +54,7 @@ const PROFILE_SETTINGS_QUERY = gql`
 `
 
 const ProfileSettings: NextPage = () => {
+  const { t } = useTranslation('common')
   const { currentUser } = useAppPersistStore()
   const [settingsType, setSettingsType] = useState<'NFT' | 'AVATAR'>('AVATAR')
   const { data, loading, error } = useQuery(PROFILE_SETTINGS_QUERY, {
@@ -65,7 +67,7 @@ const ProfileSettings: NextPage = () => {
   })
 
   if (error) return <Custom500 />
-  if (loading) return <PageLoading message="Loading settings" />
+  if (loading) return <PageLoading message={t('Loading settings')} />
   if (!currentUser) return <Custom404 />
 
   const profile = data?.profile
@@ -109,12 +111,12 @@ const ProfileSettings: NextPage = () => {
               <TypeButton
                 icon={<PhotographIcon className="w-5 h-5" />}
                 type="AVATAR"
-                name="Upload avatar"
+                name={t('Upload avatar')}
               />
               <TypeButton
                 icon={<PhotographIcon className="w-5 h-5" />}
                 type="NFT"
-                name="NFT Avatar"
+                name={t('NFT Avatar')}
               />
             </div>
             {settingsType === 'NFT' ? (

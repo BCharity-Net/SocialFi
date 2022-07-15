@@ -14,8 +14,8 @@ import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
 import React, { FC, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
-  APP_NAME,
   CONNECT_WALLET,
   ERROR_MESSAGE,
   ERRORS,
@@ -59,6 +59,7 @@ const CREATE_SET_DEFAULT_PROFILE_DATA_MUTATION = gql`
 `
 
 const SetProfile: FC = () => {
+  const { t } = useTranslation('common')
   const { profiles, userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated } = useAppPersistStore()
   const [selectedUser, setSelectedUser] = useState<string>()
@@ -173,30 +174,24 @@ const SetProfile: FC = () => {
         {error && <ErrorMessage title="Transaction failed!" error={error} />}
         {hasDefaultProfile ? (
           <>
-            <div className="text-lg font-bold">Your default profile</div>
+            <div className="text-lg font-bold">{t('Your default profile')}</div>
             <UserProfile profile={sortedProfiles[0]} />
           </>
         ) : (
           <div className="flex items-center space-x-1.5 font-bold text-yellow-500">
             <ExclamationIcon className="w-5 h-5" />
-            <div>You don&rsquo;t have any default profile set!</div>
+            <div>{t('No default profile')}</div>
           </div>
         )}
-        <div className="text-lg font-bold">Select default profile</div>
-        <p>
-          Selecting your default account helps to display the selected profile
-          across {APP_NAME}, you can change your default profile anytime.
-        </p>
-        <div className="text-lg font-bold">What else you should know</div>
+        <div className="text-lg font-bold">{t('Select default profile')}</div>
+        <p>{t('Select default profile description')}</p>
+        <div className="text-lg font-bold">{t('What else')}</div>
         <div className="text-sm text-gray-500 divide-y dark:divide-gray-700">
-          <p className="pb-3">
-            Only the default profile will be visible across the {APP_NAME},
-            example notifications, follow etc.
-          </p>
-          <p className="py-3">You can change default profile anytime here.</p>
+          <p className="pb-3">{t('What else1')}</p>
+          <p className="py-3">{t('What else2')}</p>
         </div>
         <div>
-          <div className="label">Select profile</div>
+          <div className="label">{t('Select profile')}</div>
           <select
             className="w-full bg-white rounded-xl border border-gray-300 outline-none dark:bg-gray-800 disabled:bg-gray-500 disabled:bg-opacity-20 disabled:opacity-60 dark:border-gray-700/80 focus:border-brand-500 focus:ring-brand-400"
             onChange={(e) => setSelectedUser(e.target.value)}
@@ -230,7 +225,7 @@ const SetProfile: FC = () => {
               )
             }
           >
-            Save
+            {t('Save')}
           </Button>
           {writeData?.hash ?? broadcastData?.broadcast?.txHash ? (
             <IndexStatus

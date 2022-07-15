@@ -5,6 +5,7 @@ import { EnabledModule, Erc20 } from '@generated/types'
 import { ArrowLeftIcon } from '@heroicons/react/outline'
 import { defaultModuleData, FEE_DATA_TYPE } from '@lib/getModule'
 import { Dispatch, FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { DEFAULT_COLLECT_TOKEN } from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
 import { object, string } from 'zod'
@@ -41,6 +42,7 @@ const FeeEntry: FC<Props> = ({
   feeData,
   setFeeData
 }) => {
+  const { t } = useTranslation('common')
   const { currentUser } = useAppPersistStore()
   const [followerOnly, setFollowerOnly] = useState<boolean>(false)
   const [selectedCurrency, setSelectedCurrency] = useState<string>(
@@ -73,7 +75,7 @@ const FeeEntry: FC<Props> = ({
       </button>
       <Form form={form} className="space-y-4" onSubmit={({}) => {}}>
         <div>
-          <div className="label">Select Currency</div>
+          <div className="label">{t('Select currency')}</div>
           <select
             className="w-full bg-white rounded-xl border border-gray-300 outline-none dark:bg-gray-800 disabled:bg-gray-500 disabled:bg-opacity-20 disabled:opacity-60 dark:border-gray-700/80 focus:border-brand-500 focus:ring-brand-400"
             onChange={(e) => setSelectedCurrency(e.target.value)}
@@ -105,12 +107,7 @@ const FeeEntry: FC<Props> = ({
         />
         <Input
           label="Referral Fee"
-          helper={
-            <span>
-              When someone mirrors the publication they will get some reward in
-              percentage for referring it.
-            </span>
-          }
+          helper={<span>{t('Mirror description')}</span>}
           type="number"
           placeholder="5%"
           min="0"
@@ -118,13 +115,13 @@ const FeeEntry: FC<Props> = ({
           {...form.register('referralFee')}
         />
         <div>
-          <div className="label">Permission</div>
+          <div className="label">{t('Permission')}</div>
           <select
             className="w-full bg-white rounded-xl border border-gray-300 outline-none dark:bg-gray-800 disabled:bg-gray-500 disabled:bg-opacity-20 disabled:opacity-60 dark:border-gray-700/80 focus:border-brand-500 focus:ring-brand-400"
             onChange={(e) => setFollowerOnly(e.target.value === 'true')}
           >
-            <option value="false">Everyone can collect</option>
-            <option value="true">Only followers can collect</option>
+            <option value="false">{t('Everyone')}</option>
+            <option value="true">{t('Followers only')}</option>
           </select>
         </div>
         <Button
@@ -150,7 +147,7 @@ const FeeEntry: FC<Props> = ({
             setShowModal(false)
           }}
         >
-          Save
+          {t('Save')}
         </Button>
       </Form>
     </div>

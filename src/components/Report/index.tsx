@@ -17,6 +17,7 @@ import { CheckCircleIcon } from '@heroicons/react/solid'
 import Logger from '@lib/logger'
 import { useRouter } from 'next/router'
 import React, { FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { APP_NAME, ZERO_ADDRESS } from 'src/constants'
 import Custom404 from 'src/pages/404'
 import { useAppPersistStore } from 'src/store/app'
@@ -42,6 +43,7 @@ const Report: FC = () => {
   const {
     query: { id }
   } = useRouter()
+  const { t } = useTranslation('common')
   const [type, setType] = useState<string>('')
   const [subReason, setSubReason] = useState<string>('')
   const { currentUser } = useAppPersistStore()
@@ -96,15 +98,15 @@ const Report: FC = () => {
       <SEO title={`Report • ${APP_NAME}`} />
       <GridItemFour>
         <SettingsHelper
-          heading="Report publication"
-          description="Help us understand the problem. What is going on with this publication?"
+          heading={t('Report header')}
+          description={t('Report description')}
         />
       </GridItemFour>
       <GridItemEight>
         <Card>
           {submitData?.reportPublication === null ? (
             <EmptyState
-              message={<span>Publication reported successfully!</span>}
+              message={<span>{t('Publication reported')}</span>}
               icon={<CheckCircleIcon className="w-14 h-14 text-green-500" />}
               hideCard
             />
@@ -143,8 +145,8 @@ const Report: FC = () => {
                   {subReason && (
                     <>
                       <TextArea
-                        label="Description"
-                        placeholder="Tell us something about the community!"
+                        label={t('Report description1')}
+                        placeholder={t('Report placeholder')}
                         {...form.register('additionalComments')}
                       />
                       <div className="ml-auto">
@@ -159,7 +161,7 @@ const Report: FC = () => {
                             )
                           }
                         >
-                          Report
+                          {t('Report')}
                         </Button>
                       </div>
                     </>

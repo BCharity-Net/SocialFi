@@ -18,6 +18,7 @@ import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
 import React, { FC, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
   CONNECT_WALLET,
   DEFAULT_COLLECT_TOKEN,
@@ -89,6 +90,7 @@ export const CREATE_SET_FOLLOW_MODULE_TYPED_DATA_MUTATION = gql`
 const SuperFollow: FC = () => {
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
+  const { t } = useTranslation('common')
   const [selectedCurrency, setSelectedCurrency] = useState<string>(
     DEFAULT_COLLECT_TOKEN
   )
@@ -212,7 +214,7 @@ const SuperFollow: FC = () => {
       <Card>
         <div className="p-5 py-10 space-y-2 text-center">
           <Spinner size="md" className="mx-auto" />
-          <div>Loading super follow settings</div>
+          <div>{t('Loading super follow settings')}</div>
         </div>
       </Card>
     )
@@ -228,14 +230,10 @@ const SuperFollow: FC = () => {
           setSuperFollow(amount, recipient)
         }}
       >
-        <div className="text-lg font-bold">Set super follow</div>
-        <p>
-          Setting super follow makes users spend crypto to follow you, and
-          it&rsquo;s a good way to earn it, you can change the amount and
-          currency or disable/enable it anytime.
-        </p>
+        <div className="text-lg font-bold">{t('Set super follow title')}</div>
+        <p>{t('Super follow description')}</p>
         <div className="pt-2">
-          <div className="label">Select Currency</div>
+          <div className="label">{t('Select currency')}</div>
           <select
             className="w-full bg-white rounded-xl border border-gray-300 outline-none dark:bg-gray-800 disabled:bg-gray-500 disabled:bg-opacity-20 disabled:opacity-60 dark:border-gray-700/80 focus:border-brand-500 focus:ring-brand-400"
             onChange={(e) => {
@@ -255,7 +253,7 @@ const SuperFollow: FC = () => {
           </select>
         </div>
         <Input
-          label="Follow amount"
+          label={t('Follow amount')}
           type="number"
           step="0.0001"
           min="0"
@@ -273,7 +271,7 @@ const SuperFollow: FC = () => {
           {...form.register('amount')}
         />
         <Input
-          label="Funds recipient"
+          label={t('Funds recipient')}
           type="text"
           placeholder="0x3A5bd...5e3"
           {...form.register('recipient')}
@@ -296,11 +294,11 @@ const SuperFollow: FC = () => {
                 }
                 icon={<XIcon className="w-4 h-4" />}
               >
-                Disable Super follow
+                {t('Disable super follow')}
               </Button>
             )}
             <Button
-              type="submit"
+              type={t('Submit')}
               disabled={
                 typedDataLoading ||
                 signLoading ||
@@ -310,8 +308,8 @@ const SuperFollow: FC = () => {
               icon={<StarIcon className="w-4 h-4" />}
             >
               {followType === 'FeeFollowModuleSettings'
-                ? 'Update Super follow'
-                : 'Set Super follow'}
+                ? t('Update super follow')
+                : t('Set super follow')}
             </Button>
           </div>
           {writeData?.hash ?? broadcastData?.broadcast?.txHash ? (

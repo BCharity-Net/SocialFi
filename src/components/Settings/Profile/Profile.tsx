@@ -28,6 +28,7 @@ import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
 import uploadToIPFS from '@lib/uploadToIPFS'
 import React, { ChangeEvent, FC, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
   APP_NAME,
   CONNECT_WALLET,
@@ -72,29 +73,12 @@ const CREATE_SET_PROFILE_METADATA_TYPED_DATA_MUTATION = gql`
   }
 `
 
-const editProfileSchema = object({
-  name: string()
-    .min(2, { message: 'Name should have atleast 2 characters' })
-    .max(100, { message: 'Name should not exceed 100 characters' }),
-  location: string()
-    .max(100, { message: 'Location should not exceed 100 characters' })
-    .nullable(),
-  website: optional(
-    string().max(100, { message: 'Website should not exceed 100 characters' })
-  ),
-  twitter: string()
-    .max(100, { message: 'Twitter should not exceed 100 characters' })
-    .nullable(),
-  bio: string()
-    .max(260, { message: 'Bio should not exceed 260 characters' })
-    .nullable()
-})
-
 interface Props {
   profile: Profile & { coverPicture: MediaSet }
 }
 
 const Profile: FC<Props> = ({ profile }) => {
+  const { t } = useTranslation('common')
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
   const [beta, setBeta] = useState<boolean>(isBeta(profile))
@@ -202,6 +186,23 @@ const Profile: FC<Props> = ({ profile }) => {
     }
   }
 
+  const editProfileSchema = object({
+    // translate
+    name: string()
+      .min(2, { message: t('At least 2 characters') })
+      .max(100, { message: t('Exceeds 100 characters') }),
+    location: string()
+      .max(100, { message: t('Location exceeds') })
+      .nullable(),
+    website: optional(string().max(100, { message: t('Website exceeds') })),
+    twitter: string()
+      .max(100, { message: t('Twitter exceeds') })
+      .nullable(),
+    bio: string()
+      .max(260, { message: t('Bio exceeds') })
+      .nullable()
+  })
+
   const form = useZodForm({
     schema: editProfileSchema,
     defaultValues: {
@@ -293,30 +294,30 @@ const Profile: FC<Props> = ({ profile }) => {
           {error && (
             <ErrorMessage
               className="mb-3"
-              title="Transaction failed!"
+              title={t('Transaction Failed!')}
               error={error}
             />
           )}
           <Input
-            label="Profile Id"
+            label={t('Profile Id')}
             type="text"
             value={currentUser?.id}
             disabled
           />
           <Input
-            label="Name"
+            label={t('Name')}
             type="text"
             placeholder="Gavin"
             {...form.register('name')}
           />
           <Input
-            label="Location"
+            label={t('Location')}
             type="text"
             placeholder="Miami"
             {...form.register('location')}
           />
           <Input
-            label="Website"
+            label={t('Website')}
             type="text"
             placeholder="https://hooli.com"
             {...form.register('website')}
@@ -329,12 +330,12 @@ const Profile: FC<Props> = ({ profile }) => {
             {...form.register('twitter')}
           />
           <TextArea
-            label="Bio"
-            placeholder="Tell us something about you!"
+            label={t('Bio')}
+            placeholder={t('Bio placeholder')}
             {...form.register('bio')}
           />
           <div className="space-y-1.5">
-            <div className="label">Cover</div>
+            <div className="label">{t('Cover')}</div>
             <div className="space-y-3">
               {cover && (
                 <div>
@@ -356,7 +357,7 @@ const Profile: FC<Props> = ({ profile }) => {
             </div>
           </div>
           <div className="space-y-2">
-            <div className="label">Beta</div>
+            <div className="label">{t('Enroll beta')}</div>
             <div className="flex items-center space-x-2">
               <Toggle on={beta} setOn={setBeta} />
               <div>Enroll to {APP_NAME} Beta</div>
@@ -365,14 +366,11 @@ const Profile: FC<Props> = ({ profile }) => {
           <div className="pt-4 space-y-2">
             <div className="flex items-center space-x-2 label">
               <img className="w-5 h-5" src="/pride.svg" alt="Pride Logo" />
-              <span>Celebrate pride every day</span>
+              <span>{t('Celebrate pride')}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Toggle on={pride} setOn={setPride} />
-              <div>
-                Turn this on to show your pride and turn the {APP_NAME} logo
-                rainbow every day.
-              </div>
+              <div>{t('Pride switch')}</div>
             </div>
           </div>
           <div className="flex flex-col space-y-2">
@@ -398,6 +396,8 @@ const Profile: FC<Props> = ({ profile }) => {
                 )
               }
             >
+              {' '}
+              {t('Save')}
               Save
             </Button>
             {writeData?.hash ?? broadcastData?.broadcast?.txHash ? (

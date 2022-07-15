@@ -12,6 +12,7 @@ import { CollectionIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import React, { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
+import { useTranslation } from 'react-i18next'
 import { useAppPersistStore } from 'src/store/app'
 
 import ReferenceAlert from '../Shared/ReferenceAlert'
@@ -51,6 +52,7 @@ const Feed: FC<Props> = ({
   onlyFollowers = false,
   isFollowing = true
 }) => {
+  const { t } = useTranslation('common')
   const pubId = post?.__typename === 'Mirror' ? post?.mirrorOf?.id : post?.id
   const { currentUser } = useAppPersistStore()
   const [publications, setPublications] = useState<BCharityPost[]>([])
@@ -110,7 +112,7 @@ const Feed: FC<Props> = ({
       {loading && <PostsShimmer />}
       {data?.publications?.items?.length === 0 && (
         <EmptyState
-          message={<span>Be the first one to comment!</span>}
+          message={<span>{t('First comment')}</span>}
           icon={<CollectionIcon className="w-8 h-8 text-brand" />}
         />
       )}

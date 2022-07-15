@@ -16,6 +16,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import dynamic from 'next/dynamic'
 import React, { FC, ReactNode, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAppPersistStore } from 'src/store/app'
 
 import Join from './Join'
@@ -36,6 +37,7 @@ const Details: FC<Props> = ({ group }) => {
   const [showSettingsModal, setShowSettingsModal] = useState<boolean>(false)
   const [joined, setJoined] = useState<boolean>(group?.hasCollectedByMe)
 
+  const { t } = useTranslation('common')
   const MetaDetails = ({
     children,
     icon
@@ -110,8 +112,8 @@ const Details: FC<Props> = ({ group }) => {
               <button type="button" onClick={() => setShowMembersModal(false)}>
                 {nFormatter(group?.stats?.totalAmountOfCollects)}{' '}
                 {group?.stats?.totalAmountOfCollects === 1
-                  ? 'member'
-                  : 'members'}
+                  ? t('member')
+                  : t('member')}
               </button>
               <Modal
                 title="Members"

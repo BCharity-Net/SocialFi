@@ -7,6 +7,7 @@ import { ChartBarIcon, FireIcon, SparklesIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import { NextPage } from 'next'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { APP_NAME } from 'src/constants'
 import Custom500 from 'src/pages/500'
 
@@ -44,6 +45,7 @@ const GROUP_QUERY = gql`
 `
 
 const Groups: NextPage = () => {
+  const { t } = useTranslation('common')
   const { data, loading, error } = useQuery(GROUP_QUERY, {
     variables: {
       topCommented: {
@@ -82,14 +84,14 @@ const Groups: NextPage = () => {
       <GridItemFour>
         <div className="flex items-center mb-2 space-x-1.5 font-bold text-gray-500">
           <FireIcon className="w-5 h-5 text-yellow-500" />
-          <div>Most Active</div>
+          <div>{t('Most Active')}</div>
         </div>
         <List groups={data?.topCommented.items} testId="most-active-groups" />
       </GridItemFour>
       <GridItemFour>
         <div className="flex items-center mb-2 space-x-1.5 font-bold text-gray-500">
           <ChartBarIcon className="w-5 h-5 text-green-500" />
-          <div>Fastest Growing</div>
+          <div>{t('Fastest Growing')}</div>
         </div>
         <List
           groups={data?.topCollected.items}
@@ -99,7 +101,7 @@ const Groups: NextPage = () => {
       <GridItemFour>
         <div className="flex items-center mb-2 space-x-1.5 font-bold text-gray-500">
           <SparklesIcon className="w-5 h-5 text-green-500" />
-          <div>Latest</div>
+          <div>{t('Latest')}</div>
         </div>
         <List groups={data?.latest.items} testId="latest-groups" />
       </GridItemFour>

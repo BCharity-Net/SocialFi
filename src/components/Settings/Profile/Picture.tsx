@@ -20,6 +20,7 @@ import splitSignature from '@lib/splitSignature'
 import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
 import React, { ChangeEvent, FC, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
   CONNECT_WALLET,
   ERROR_MESSAGE,
@@ -67,6 +68,7 @@ interface Props {
 }
 
 const Picture: FC<Props> = ({ profile }) => {
+  const { t } = useTranslation('common')
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
   const [avatar, setAvatar] = useState<string>()
@@ -236,7 +238,7 @@ const Picture: FC<Props> = ({ profile }) => {
             )
           }
         >
-          Save
+          {t('Save')}
         </Button>
         {writeData?.hash ?? broadcastData?.broadcast?.txHash ? (
           <IndexStatus

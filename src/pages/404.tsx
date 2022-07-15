@@ -2,9 +2,11 @@ import { Button } from '@components/UI/Button'
 import SEO from '@components/utils/SEO'
 import { HomeIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
+import { useTranslation } from 'react-i18next'
 import { STATIC_ASSETS } from 'src/constants'
 
 export default function Custom404() {
+  const { t } = useTranslation('common')
   return (
     <div className="flex-col page-center">
       <SEO title="404 • BCharity" />
@@ -15,8 +17,8 @@ export default function Custom404() {
         height={240}
       />
       <div className="py-10 text-center">
-        <h1 className="mb-4 text-3xl font-bold">Oops, Lost‽</h1>
-        <div className="mb-4">This page could not be found.</div>
+        <h1 className="mb-4 text-3xl font-bold">{t('Lost')}</h1>
+        <div className="mb-4">{t('Lost Description')}</div>
         <Link href="/">
           <a href="/">
             <Button
@@ -24,7 +26,7 @@ export default function Custom404() {
               size="lg"
               icon={<HomeIcon className="w-4 h-4" />}
             >
-              <div>Go to home</div>
+              <div>{t('Go Home')}</div>
             </Button>
           </a>
         </Link>

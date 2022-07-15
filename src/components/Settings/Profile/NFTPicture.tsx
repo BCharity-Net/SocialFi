@@ -19,6 +19,7 @@ import splitSignature from '@lib/splitSignature'
 import gql from 'graphql-tag'
 import React, { FC, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
   CONNECT_WALLET,
   ERROR_MESSAGE,
@@ -97,6 +98,7 @@ const NFTPicture: FC<Props> = ({ profile }) => {
     }
   })
 
+  const { t } = useTranslation('common')
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
   const [chainId, setChainId] = useState<number>(
@@ -234,7 +236,7 @@ const NFTPicture: FC<Props> = ({ profile }) => {
         />
       )}
       <div>
-        <div className="label">Chain</div>
+        <div className="label">{t('Chain')}</div>
         <div>
           <select
             className="w-full bg-white rounded-xl border border-gray-300 outline-none dark:bg-gray-800 disabled:bg-gray-500 disabled:bg-opacity-20 disabled:opacity-60 dark:border-gray-700/80 focus:border-brand-500 focus:ring-brand-400"
@@ -253,13 +255,13 @@ const NFTPicture: FC<Props> = ({ profile }) => {
         </div>
       </div>
       <Input
-        label="Contract Address"
+        label={t('Contract address')}
         type="text"
         placeholder="0x277f5959e22f94d5bd4c2cc0a77c4c71f31da3ac"
         {...form.register('contractAddress')}
       />
       <Input
-        label="Token Id"
+        label={t('Token Id')}
         type="text"
         placeholder="1"
         {...form.register('tokenId')}
@@ -288,7 +290,7 @@ const NFTPicture: FC<Props> = ({ profile }) => {
             )
           }
         >
-          Save
+          {t('Save')}
         </Button>
         {writeData?.hash ?? broadcastData?.broadcast?.txHash ? (
           <IndexStatus

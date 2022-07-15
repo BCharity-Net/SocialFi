@@ -7,6 +7,7 @@ import { NextPage } from 'next'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import FeedType from './FeedType'
 
@@ -18,6 +19,7 @@ const Explore: NextPage = () => {
   const {
     query: { type }
   } = useRouter()
+  const { t } = useTranslation('common')
   const [feedType, setFeedType] = useState<string>(
     type &&
       ['top_commented', 'top_collected', 'latest'].includes(type as string)
@@ -27,10 +29,7 @@ const Explore: NextPage = () => {
 
   return (
     <GridLayout>
-      <SEO
-        title="Explore • BCharity"
-        description="Explore top commented, collected and latest publications in the BCharity group."
-      />
+      <SEO title={t('Explore web')} description={t('Web description')} />
       <GridItemEight className="space-y-5">
         <FeedType setFeedType={setFeedType} feedType={feedType} />
         <Feed feedType={feedType} />
