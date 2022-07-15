@@ -207,7 +207,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
               }
               return (
                 <a
-                  href={`${POLYGONSCAN_URL}/address/${addressData[index]}`}
+                  href={`${POLYGONSCAN_URL}/token/${addressData[index]}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-brand-500"
