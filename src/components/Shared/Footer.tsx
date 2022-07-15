@@ -1,10 +1,12 @@
 import Link from 'next/link'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 // import { APP_NAME } from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
 
 const Footer: FC = () => {
   const { staffMode } = useAppPersistStore()
+  const { t } = useTranslation('common')
 
   return (
     <footer
@@ -18,7 +20,7 @@ const Footer: FC = () => {
         target="_blank"
         rel="noreferrer noopener"
       >
-        About
+        {t('About')}
       </a>
       <a
         href="https://discord.gg/4vKS59q5kV"
@@ -42,17 +44,17 @@ const Footer: FC = () => {
         Telegram
       </a>
       <a href="" target="_blank" rel="noreferrer noopener">
-        Donate
+        {t('Donate')}
       </a>
       <a href="" target="_blank" rel="noreferrer noopener">
-        Status
+        {t('Status')}
       </a>
       <a
         href="https://snapshot.org/#/igive.eth"
         target="_blank"
         rel="noreferrer noopener"
       >
-        Vote
+        {t('Vote')}
       </a>
       <a
         href="https://github.com/BCharity-Net/SocialFi"
@@ -62,17 +64,17 @@ const Footer: FC = () => {
         GitHub
       </a>
       <Link href="/thanks">
-        <a href="/thanks">Thanks</a>
+        <a href="/thanks">{t('Thanks')}</a>
       </Link>
       <Link href="/privacy">
-        <a href="/privacy">Privacy</a>
+        <a href="/privacy">{t('Privacy')}</a>
       </Link>
       <Link href="/terms">
-        <a href="/terms">Terms</a>
+        <a href="/terms">{t('Terms')}</a>
       </Link>
       <span className="font-bold text-gray-600 dark:text-gray-600">
         <a href="https://ecssen.ca/" target="_blank" rel="noreferrer noopener">
-          © BCharity powered by ECSSEN (Registered Charity)
+          {t('Copyright')}
         </a>
       </span>
       {/* <a

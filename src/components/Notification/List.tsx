@@ -11,6 +11,7 @@ import { MailIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
+import { useTranslation } from 'react-i18next'
 import { useAppPersistStore } from 'src/store/app'
 
 import NotificationShimmer from './Shimmer'
@@ -148,6 +149,7 @@ const NOTIFICATIONS_QUERY = gql`
 `
 
 const List: FC = () => {
+  const { t } = useTranslation('common')
   const { currentUser } = useAppPersistStore()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
@@ -207,7 +209,7 @@ const List: FC = () => {
       <EmptyState
         message={
           <div>
-            <span>Inbox zero!</span>
+            <span>{t('No inbox')}</span>
           </div>
         }
         icon={<MailIcon className="w-8 h-8 text-brand" />}

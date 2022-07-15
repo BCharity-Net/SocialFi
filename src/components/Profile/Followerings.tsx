@@ -3,6 +3,7 @@ import { Profile } from '@generated/types'
 import { UsersIcon } from '@heroicons/react/outline'
 import humanize from '@lib/humanize'
 import React, { FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Followers from './Followers'
 import Following from './Following'
@@ -15,6 +16,7 @@ interface Props {
 const Followerings: FC<Props> = ({ followersCount, profile }) => {
   const [showFollowingModal, setShowFollowingModal] = useState<boolean>(false)
   const [showFollowersModal, setShowFollowersModal] = useState<boolean>(false)
+  const { t } = useTranslation('common')
 
   return (
     <div className="flex gap-8">
@@ -27,7 +29,7 @@ const Followerings: FC<Props> = ({ followersCount, profile }) => {
         <div className="text-xl">
           {humanize(profile?.stats?.totalFollowing)}
         </div>
-        <div className="text-gray-500">Following</div>
+        <div className="text-gray-500">{t('Following')}</div>
       </button>
       <button
         type="button"
@@ -36,10 +38,10 @@ const Followerings: FC<Props> = ({ followersCount, profile }) => {
         data-test="profile-followers"
       >
         <div className="text-xl">{humanize(followersCount)}</div>
-        <div className="text-gray-500">Followers</div>
+        <div className="text-gray-500">{t('Followers')}</div>
       </button>
       <Modal
-        title="Following"
+        title={t('Following')}
         icon={<UsersIcon className="w-5 h-5 text-brand" />}
         show={showFollowingModal}
         onClose={() => setShowFollowingModal(false)}
@@ -47,7 +49,7 @@ const Followerings: FC<Props> = ({ followersCount, profile }) => {
         <Following profile={profile} />
       </Modal>
       <Modal
-        title="Followers"
+        title={t('Followers')}
         icon={<UsersIcon className="w-5 h-5 text-brand" />}
         show={showFollowersModal}
         onClose={() => setShowFollowersModal(false)}

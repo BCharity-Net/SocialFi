@@ -11,6 +11,7 @@ import clsx from 'clsx'
 import Cookies from 'js-cookie'
 import React, { Dispatch, FC, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { COOKIE_CONFIG } from 'src/apollo'
 import { CHAIN_ID, ERROR_MESSAGE } from 'src/constants'
 import { useAppPersistStore, useAppStore } from 'src/store/app'
@@ -51,6 +52,7 @@ const WalletSelector: FC<Props> = ({ setHasConnected, setHasProfile }) => {
   const { chain } = useNetwork()
   const { connectors, error, connectAsync } = useConnect()
   const { address, connector: activeConnector } = useAccount()
+  const { t } = useTranslation('common')
   const { signMessageAsync, isLoading: signLoading } = useSignMessage({
     onError(error) {
       toast.error(error?.message)
@@ -171,7 +173,7 @@ const WalletSelector: FC<Props> = ({ setHasConnected, setHasProfile }) => {
           }
           onClick={handleSign}
         >
-          Sign-In with Lens
+          {t('Lens signin')}
         </Button>
       ) : (
         <SwitchNetwork />

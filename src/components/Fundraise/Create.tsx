@@ -26,6 +26,7 @@ import uploadToIPFS from '@lib/uploadToIPFS'
 import { NextPage } from 'next'
 import React, { ChangeEvent, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
   APP_NAME,
   CONNECT_WALLET,
@@ -192,6 +193,7 @@ const Create: NextPage = () => {
     }
   )
 
+  const { t } = useTranslation('common')
   const createFundraise = async (
     title: string,
     amount: string,
@@ -263,8 +265,8 @@ const Create: NextPage = () => {
       <SEO title={`Create Fundraise • ${APP_NAME}`} />
       <GridItemFour>
         <SettingsHelper
-          heading="Create fundraise"
-          description="Create new decentralized fundraise"
+          heading={t('Create fundraise')}
+          description={t('Create fundraise description')}
         />
       </GridItemFour>
       <GridItemEight>
@@ -274,8 +276,8 @@ const Create: NextPage = () => {
               txHash={
                 data?.hash ? data?.hash : broadcastData?.broadcast?.txHash
               }
-              indexing="Fundraise creation in progress, please wait!"
-              indexed="Fundraise created successfully"
+              indexing={t('Fundraise creation')}
+              indexed={t('Fundraise created successfully')}
               type="fundraise"
               urlPrefix="posts"
             />
@@ -302,13 +304,13 @@ const Create: NextPage = () => {
               }}
             >
               <Input
-                label="Title"
+                label={t('Fundraise title')}
                 type="text"
                 placeholder={`${APP_NAME} DAO`}
                 {...form.register('title')}
               />
               <div>
-                <div className="label">Select Currency</div>
+                <div className="label">{t('Select currency')}</div>
                 <select
                   className="w-full bg-white rounded-xl border border-gray-300 outline-none dark:bg-gray-800 disabled:bg-gray-500 disabled:bg-opacity-20 disabled:opacity-60 dark:border-gray-700/80 focus:border-brand-500 focus:ring-brand-400"
                   onChange={(e) => {
@@ -330,7 +332,7 @@ const Create: NextPage = () => {
                 </select>
               </div>
               <Input
-                label="Contribution amount"
+                label={t('Contribution')}
                 type="number"
                 step="0.0001"
                 min="0"
@@ -348,7 +350,7 @@ const Create: NextPage = () => {
                 {...form.register('amount')}
               />
               <Input
-                label="Funding Goal"
+                label={t('Funding goal')}
                 type="number"
                 step="0.0001"
                 min="0"
@@ -366,19 +368,14 @@ const Create: NextPage = () => {
                 {...form.register('goal')}
               />
               <Input
-                label="Funds recipient"
+                label={t('Recipient')}
                 type="text"
                 placeholder="0x3A5bd...5e3"
                 {...form.register('recipient')}
               />
               <Input
-                label="Referral Fee"
-                helper={
-                  <span>
-                    When someone mirrors the fundraise they will get some reward
-                    in percentage for referring it.
-                  </span>
-                }
+                label={t('Referral')}
+                helper={<span>{t('Referral info')}</span>}
                 type="number"
                 placeholder="5%"
                 min="0"
@@ -386,12 +383,12 @@ const Create: NextPage = () => {
                 {...form.register('referralFee')}
               />
               <TextArea
-                label="Description"
-                placeholder="Tell us something about the fundraise!"
+                label={t('Fundraise description')}
+                placeholder={t('Fundraise description placeholder')}
                 {...form.register('description')}
               />
               <div className="space-y-1.5">
-                <div className="label">Cover Image</div>
+                <div className="label">{t('Cover image')}</div>
                 <div className="space-y-3">
                   {cover && (
                     <img
@@ -433,7 +430,7 @@ const Create: NextPage = () => {
                   )
                 }
               >
-                Create
+                {t('Create')}
               </Button>
             </Form>
           )}

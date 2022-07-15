@@ -11,6 +11,7 @@ import { PencilAltIcon } from '@heroicons/react/outline'
 import { CheckCircleIcon } from '@heroicons/react/solid'
 import { useRouter } from 'next/router'
 import React, { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import { APP_NAME, CONTACT_EMAIL } from 'src/constants'
 import { object, string } from 'zod'
 
@@ -28,6 +29,7 @@ const newContactSchema = object({
 })
 
 const Contact: FC = () => {
+  const { t } = useTranslation('common')
   const { push } = useRouter()
   const form = useZodForm({
     schema: newContactSchema
@@ -38,8 +40,8 @@ const Contact: FC = () => {
       <SEO title={`Contact • ${APP_NAME}`} />
       <GridItemFour>
         <SettingsHelper
-          heading={`Contact ${APP_NAME}`}
-          description="Contact us to help you get the issue resolved."
+          heading={t('Contact Title')}
+          description={t('Contact Description')}
         />
       </GridItemFour>
       <GridItemEight>
@@ -62,13 +64,13 @@ const Contact: FC = () => {
               }}
             >
               <Input
-                label="Subject"
-                placeholder="What happened?"
+                label={t('Subject')}
+                placeholder={t('What happened')}
                 {...form.register('subject')}
               />
               <TextArea
-                label="Message"
-                placeholder="How can we help?"
+                label={t('Contact message')}
+                placeholder={t('Message')}
                 {...form.register('message')}
               />
               <div className="ml-auto">
@@ -76,7 +78,7 @@ const Contact: FC = () => {
                   type="submit"
                   icon={<PencilAltIcon className="w-4 h-4" />}
                 >
-                  Submit
+                  {t('Submit')}
                 </Button>
               </div>
             </Form>

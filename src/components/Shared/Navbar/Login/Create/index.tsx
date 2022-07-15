@@ -8,7 +8,7 @@ import { Spinner } from '@components/UI/Spinner'
 import { PlusIcon } from '@heroicons/react/outline'
 import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
 import React, { ChangeEvent, FC, useState } from 'react'
-import { APP_NAME } from 'src/constants'
+import { useTranslation } from 'react-i18next'
 import { useAccount } from 'wagmi'
 import { object, string } from 'zod'
 
@@ -41,6 +41,7 @@ interface Props {
 }
 
 const Create: FC<Props> = ({ isModal = false }) => {
+  const { t } = useTranslation('common')
   const [avatar, setAvatar] = useState<string>()
   const [uploading, setUploading] = useState<boolean>(false)
   const { address } = useAccount()
@@ -107,7 +108,7 @@ const Create: FC<Props> = ({ isModal = false }) => {
             src="/logo.svg"
             alt="Logo"
           />
-          <div className="text-xl font-bold">Signup to {APP_NAME}</div>
+          <div className="text-xl font-bold">{t('Signup Bcharity')}</div>
         </div>
       )}
       <Input
@@ -117,7 +118,7 @@ const Create: FC<Props> = ({ isModal = false }) => {
         {...form.register('handle')}
       />
       <div className="space-y-1.5">
-        <div className="label">Avatar</div>
+        <div className="label">{t('Avatar')}</div>
         <div className="space-y-3">
           {avatar && (
             <div>
@@ -150,7 +151,7 @@ const Create: FC<Props> = ({ isModal = false }) => {
           loading ? <Spinner size="xs" /> : <PlusIcon className="w-4 h-4" />
         }
       >
-        Signup
+        {t('Signup')}
       </Button>
     </Form>
   )

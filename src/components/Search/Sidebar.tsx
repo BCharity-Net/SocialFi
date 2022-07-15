@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { FC, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface MenuProps {
   children: ReactNode
@@ -25,6 +26,7 @@ const Menu: FC<MenuProps> = ({ children, current, url }) => (
 )
 
 const Sidebar: FC = () => {
+  const { t } = useTranslation('common')
   const { query } = useRouter()
 
   return (
@@ -34,14 +36,14 @@ const Sidebar: FC = () => {
         url={`/search?q=${query.q}&type=pubs`}
       >
         <PencilAltIcon className="w-4 h-4" />
-        <div>Publications</div>
+        <div>{t('Publications')}</div>
       </Menu>
       <Menu
         current={query.type == 'profiles'}
         url={`/search?q=${query.q}&type=profiles`}
       >
         <UsersIcon className="w-4 h-4" />
-        <div>Profiles</div>
+        <div>{t('Profiles')}</div>
       </Menu>
     </div>
   )

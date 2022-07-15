@@ -18,6 +18,7 @@ import imagekitURL from '@lib/imagekitURL'
 import Logger from '@lib/logger'
 import clsx from 'clsx'
 import React, { FC, ReactNode, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { STATIC_ASSETS } from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
 
@@ -55,6 +56,7 @@ interface Props {
 }
 
 const Fundraise: FC<Props> = ({ fund }) => {
+  const { t } = useTranslation('common')
   const { currentUser } = useAppPersistStore()
   const [showFundersModal, setShowFundersModal] = useState<boolean>(false)
   const [revenue, setRevenue] = useState<number>(0)
@@ -148,7 +150,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
                       title={
                         <div className="flex items-center space-x-1">
                           <UsersIcon className="w-3 h-3" />
-                          <div>Collects</div>
+                          <div>{t('Collects')}</div>
                         </div>
                       }
                       value={fund?.stats?.totalAmountOfCollects}
@@ -168,7 +170,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
                 title={
                   <div className="flex items-center space-x-1">
                     <CurrencyDollarIcon className="w-3 h-3" />
-                    <div>Price</div>
+                    <div>{t('Price')}</div>
                   </div>
                 }
                 value={`${collectModule?.amount?.value} ${collectModule?.amount?.asset?.symbol}`}
@@ -225,7 +227,9 @@ const Fundraise: FC<Props> = ({ fund }) => {
         )}
         <GridLayout className="!p-0 mt-5">
           <GridItemSix className="!mb-4 space-y-1 sm:mb-0">
-            <div className="text-sm font-bold text-gray-500">Funds Raised</div>
+            <div className="text-sm font-bold text-gray-500">
+              {t('Funds raised')}
+            </div>
             {revenueLoading ? (
               <div className="w-16 h-5 !mt-2 rounded-md shimmer" />
             ) : (
@@ -250,7 +254,9 @@ const Fundraise: FC<Props> = ({ fund }) => {
           </GridItemSix>
           {goalAmount && (
             <GridItemSix className="space-y-1">
-              <div className="text-sm font-bold text-gray-500">Funds Goal</div>
+              <div className="text-sm font-bold text-gray-500">
+                {t('Funds goal')}
+              </div>
               <span className="flex items-center space-x-1.5">
                 <Tooltip content={collectModule?.amount?.asset?.symbol}>
                   <img

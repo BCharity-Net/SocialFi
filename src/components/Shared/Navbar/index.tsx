@@ -8,6 +8,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAppPersistStore } from 'src/store/app'
 
 import MenuItems from './MenuItems'
@@ -24,6 +25,7 @@ const PING_QUERY = gql`
 `
 
 const Navbar: FC = () => {
+  const { t } = useTranslation('common')
   const { isAuthenticated, currentUser, staffMode } = useAppPersistStore()
   const { data: pingData } = useQuery(PING_QUERY, {
     pollInterval: 3000,
@@ -63,13 +65,17 @@ const Navbar: FC = () => {
 
     return (
       <>
-        <NavItem url="/" name="Home" current={pathname == '/'} />
+        <NavItem url="/" name={t('Home')} current={pathname == '/'} />
         <NavItem
           url="/explore"
-          name="Explore"
+          name={t('Explore')}
           current={pathname == '/explore'}
         />
-        <NavItem url="/groups" name="Groups" current={pathname == '/groups'} />
+        <NavItem
+          url="/groups"
+          name={t('Groups')}
+          current={pathname == '/groups'}
+        />
         <MoreNavItems />
       </>
     )

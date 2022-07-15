@@ -9,6 +9,7 @@ import { CollectionIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import React, { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
+import { useTranslation } from 'react-i18next'
 import { CHAIN_ID, IS_MAINNET } from 'src/constants'
 import { chain } from 'wagmi'
 
@@ -39,6 +40,7 @@ interface Props {
 }
 
 const NFTFeed: FC<Props> = ({ profile }) => {
+  const { t } = useTranslation('common')
   const [nfts, setNfts] = useState<Nft[]>([])
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
   const { data, loading, error, fetchMore } = useQuery(PROFILE_NFT_FEED_QUERY, {
@@ -89,7 +91,7 @@ const NFTFeed: FC<Props> = ({ profile }) => {
           message={
             <div>
               <span className="mr-1 font-bold">@{profile?.handle}</span>
-              <span>seems like have no nfts!</span>
+              <span>{t('No NFT')}</span>
             </div>
           }
           icon={<CollectionIcon className="w-8 h-8 text-brand" />}
