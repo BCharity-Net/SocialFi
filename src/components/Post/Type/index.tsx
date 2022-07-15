@@ -9,21 +9,22 @@ import Mirrored from './Mirrored'
 
 interface Props {
   post: BCharityPost
-  hideType?: boolean
+  showType?: boolean
   showThread?: boolean
 }
 
-const PostType: FC<Props> = ({ post, hideType, showThread }) => {
+const PostType: FC<Props> = ({ post, showType, showThread }) => {
   const { pathname } = useRouter()
   const type = post?.__typename
   const postType = post?.metadata?.attributes[0]?.value
   const isCollected = !!post?.collectedBy
 
+  if (!showType) return null
+
   return (
     <>
       {type === 'Mirror' && <Mirrored post={post} />}
       {type === 'Comment' &&
-        !hideType &&
         !showThread &&
         !isCollected &&
         postType !== 'group post' && <Commented post={post} />}

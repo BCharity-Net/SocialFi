@@ -27,7 +27,6 @@ import uploadToIPFS from '@lib/uploadToIPFS'
 import dynamic from 'next/dynamic'
 import { Dispatch, FC, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useTranslation } from 'react-i18next'
 import {
   APP_NAME,
   CONNECT_WALLET,
@@ -37,7 +36,6 @@ import {
   RELAY_ON
 } from 'src/constants'
 import { useAppPersistStore, useAppStore } from 'src/store/app'
-import { usePublicationPersistStore } from 'src/store/publication'
 import { v4 as uuid } from 'uuid'
 import { useContractWrite, useSignTypedData } from 'wagmi'
 
@@ -107,8 +105,7 @@ interface Props {
 const NewPost: FC<Props> = ({ setShowModal, hideCard = false }) => {
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
-  const { persistedPublication, setPersistedPublication } =
-    usePublicationPersistStore()
+  const [postContent, setPostContent] = useState<string>('')
   const [preview, setPreview] = useState<boolean>(false)
   const [postContentError, setPostContentError] = useState<string>('')
   const [selectedModule, setSelectedModule] =
@@ -125,7 +122,7 @@ const NewPost: FC<Props> = ({ setShowModal, hideCard = false }) => {
 
   const onCompleted = () => {
     setPreview(false)
-    setPersistedPublication('')
+    setPostContent('')
     setAttachments([])
     setSelectedModule(defaultModuleData)
     setFeeData(defaultFeeData)
@@ -147,7 +144,6 @@ const NewPost: FC<Props> = ({ setShowModal, hideCard = false }) => {
     }
   })
 
-  const { t } = useTranslation('common')
   const [broadcast, { data: broadcastData, loading: broadcastLoading }] =
     useMutation(BROADCAST_MUTATION, {
       onCompleted,
@@ -217,7 +213,7 @@ const NewPost: FC<Props> = ({ setShowModal, hideCard = false }) => {
 
   const createPost = async () => {
     if (!isAuthenticated) return toast.error(CONNECT_WALLET)
-    if (persistedPublication.length === 0 && attachments.length === 0) {
+    if (postContent.length === 0 && attachments.length === 0) {
       return setPostContentError('Post should not be empty!')
     }
 
@@ -227,9 +223,9 @@ const NewPost: FC<Props> = ({ setShowModal, hideCard = false }) => {
     const { path } = await uploadToIPFS({
       version: '1.0.0',
       metadata_id: uuid(),
-      description: trimify(persistedPublication),
-      content: trimify(persistedPublication),
-      external_url: `https://bcharity.vercel.app/u/${currentUser?.handle}`,
+      description: trimify(postContent),
+      content: trimify(postContent),
+      external_url: `https://lenster.xyz/u/${currentUser?.handle}`,
       image: attachments.length > 0 ? attachments[0]?.item : null,
       imageMimeType: attachments.length > 0 ? attachments[0]?.type : null,
       name: `Post by @${currentUser?.handle}`,
@@ -293,13 +289,15 @@ const NewPost: FC<Props> = ({ setShowModal, hideCard = false }) => {
           )}
           {preview ? (
             <div className="pb-3 mb-2 border-b linkify dark:border-b-gray-700/80">
-              <Markup>{persistedPublication}</Markup>
+              <Markup>{postContent}</Markup>
             </div>
           ) : (
             <MentionTextArea
+              publication={postContent}
+              setPublication={setPostContent}
               error={postContentError}
               setError={setPostContentError}
-              placeholder={t('Whats happening')}
+              placeholder="What's happening?"
             />
           )}
           <div className="block items-center sm:flex">
@@ -319,7 +317,7 @@ const NewPost: FC<Props> = ({ setShowModal, hideCard = false }) => {
                 onlyFollowers={onlyFollowers}
                 setOnlyFollowers={setOnlyFollowers}
               />
-              {persistedPublication && (
+              {postContent && (
                 <Preview preview={preview} setPreview={setPreview} />
               )}
             </div>
