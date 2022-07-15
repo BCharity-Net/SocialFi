@@ -5,6 +5,7 @@ import { TrashIcon } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import React, { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export const HIDE_POST_MUTATION = gql`
   mutation HidePublication($request: HidePublicationRequest!) {
@@ -17,6 +18,7 @@ interface Props {
 }
 
 const Delete: FC<Props> = ({ post }) => {
+  const { t } = useTranslation('common')
   const { pathname, push } = useRouter()
   const [hidePost] = useMutation(HIDE_POST_MUTATION, {
     onCompleted() {
@@ -34,14 +36,14 @@ const Delete: FC<Props> = ({ post }) => {
         )
       }
       onClick={() => {
-        if (confirm('Are you sure you want to delete?')) {
+        if (confirm(t('Delete confirm'))) {
           hidePost({ variables: { request: { publicationId: post?.id } } })
         }
       }}
     >
       <div className="flex items-center space-x-2">
         <TrashIcon className="w-4 h-4" />
-        <div>Delete</div>
+        <div>{t('Delete')}</div>
       </div>
     </Menu.Item>
   )

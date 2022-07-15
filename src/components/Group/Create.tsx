@@ -23,6 +23,7 @@ import uploadToIPFS from '@lib/uploadToIPFS'
 import { NextPage } from 'next'
 import React, { ChangeEvent, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
   APP_NAME,
   CONNECT_WALLET,
@@ -156,6 +157,7 @@ const Create: NextPage = () => {
     }
   )
 
+  const { t } = useTranslation('common')
   const createGroup = async (name: string, description: string | null) => {
     if (!isAuthenticated) return toast.error(CONNECT_WALLET)
 
@@ -208,8 +210,8 @@ const Create: NextPage = () => {
       <SEO title={`Create Group • ${APP_NAME}`} />
       <GridItemFour>
         <SettingsHelper
-          heading="Create group"
-          description="Create new decentralized group"
+          heading={t('Create group')}
+          description={t('Create group description')}
         />
       </GridItemFour>
       <GridItemEight>
@@ -219,8 +221,8 @@ const Create: NextPage = () => {
               txHash={
                 data?.hash ? data?.hash : broadcastData?.broadcast?.txHash
               }
-              indexing="Group creation in progress, please wait!"
-              indexed="Group created successfully"
+              indexing={t('Group creation load')}
+              indexed={t('Group created successfully')}
               type="group"
               urlPrefix="groups"
             />
@@ -233,18 +235,18 @@ const Create: NextPage = () => {
               }}
             >
               <Input
-                label="Name"
+                label={t('Group name')}
                 type="text"
                 placeholder="minecraft"
                 {...form.register('name')}
               />
               <TextArea
-                label="Description"
-                placeholder="Tell us something about the group!"
+                label={t('Group description')}
+                placeholder={t('Group description placeholder')}
                 {...form.register('description')}
               />
               <div className="space-y-1.5">
-                <div className="label">Avatar</div>
+                <div className="label">{t('Avatar')}</div>
                 <div className="space-y-3">
                   {avatar && (
                     <img
@@ -287,7 +289,7 @@ const Create: NextPage = () => {
                   )
                 }
               >
-                Create
+                {t('Create')}
               </Button>
             </Form>
           )}

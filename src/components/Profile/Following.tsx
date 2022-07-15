@@ -10,6 +10,7 @@ import { UsersIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
+import { useTranslation } from 'react-i18next'
 
 const FOLLOWING_QUERY = gql`
   query Following($request: FollowingRequest!) {
@@ -35,6 +36,7 @@ interface Props {
 }
 
 const Following: FC<Props> = ({ profile }) => {
+  const { t } = useTranslation('common')
   const [following, setFollowing] = useState<Following[]>([])
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
   const { data, loading, error, fetchMore } = useQuery(FOLLOWING_QUERY, {
@@ -75,7 +77,7 @@ const Following: FC<Props> = ({ profile }) => {
         message={
           <div>
             <span className="mr-1 font-bold">@{profile?.handle}</span>
-            <span>doesn’t follow anyone.</span>
+            <span>{t('doesnt follow')}</span>
           </div>
         }
         icon={<UsersIcon className="w-8 h-8 text-brand" />}

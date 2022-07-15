@@ -23,11 +23,13 @@ import Cookies from 'js-cookie'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { FC, Fragment, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { GIT_COMMIT_SHA } from 'src/constants'
 import { useAppPersistStore, useAppStore } from 'src/store/app'
 import { useDisconnect } from 'wagmi'
 
 import Slug from '../Slug'
+import TranslateButton from '../TranslateButton'
 import Login from './Login'
 
 export const NextLink = ({ href, children, ...rest }: Record<string, any>) => (
@@ -59,6 +61,7 @@ const MenuItems: FC<Props> = ({ pingData }) => {
   const toggleStaffMode = () => {
     setStaffMode(!staffMode)
   }
+  const { t } = useTranslation('common')
 
   return isAuthenticated && currentUser ? (
     <Menu as="div">
@@ -91,7 +94,7 @@ const MenuItems: FC<Props> = ({ pingData }) => {
                   clsx({ 'dropdown-active': active }, 'menu-item')
                 }
               >
-                <div>Logged in as</div>
+                <div>{t('Logged in as')}</div>
                 <div className="truncate">
                   <Slug
                     className="font-bold"
@@ -110,7 +113,7 @@ const MenuItems: FC<Props> = ({ pingData }) => {
               >
                 <div className="flex items-center space-x-1.5">
                   <UserIcon className="w-4 h-4" />
-                  <div>Your Profile</div>
+                  <div>{t('Your Profile')}</div>
                 </div>
               </Menu.Item>
               <Menu.Item
@@ -122,11 +125,12 @@ const MenuItems: FC<Props> = ({ pingData }) => {
               >
                 <div className="flex items-center space-x-1.5">
                   <CogIcon className="w-4 h-4" />
-                  <div>Settings</div>
+                  <div>{t('Settings')}</div>
                 </div>
               </Menu.Item>
               <Menu.Item
-                as="a"
+                as={NextLink}
+                href="/"
                 onClick={() => {
                   setCurrentUser(null)
                   Cookies.remove('accessToken')
@@ -140,7 +144,7 @@ const MenuItems: FC<Props> = ({ pingData }) => {
               >
                 <div className="flex items-center space-x-1.5">
                   <LogoutIcon className="w-4 h-4" />
-                  <div>Logout</div>
+                  <div>{t('Logout')}</div>
                 </div>
               </Menu.Item>
               {profiles?.length > 1 && (
@@ -149,7 +153,7 @@ const MenuItems: FC<Props> = ({ pingData }) => {
                   <div className="overflow-auto m-2 max-h-36 no-scrollbar">
                     <div className="flex items-center px-4 pt-1 pb-2 space-x-1.5 text-sm font-bold text-gray-500">
                       <SwitchHorizontalIcon className="w-4 h-4" />
-                      <div>Switch to</div>
+                      <div>{t('Switch')}</div>
                     </div>
                     {profiles.map((profile: Profile, index: number) => (
                       <div
@@ -194,12 +198,12 @@ const MenuItems: FC<Props> = ({ pingData }) => {
                   {theme === 'light' ? (
                     <>
                       <MoonIcon className="w-4 h-4" />
-                      <div>Dark mode</div>
+                      <div>{t('Dark mode')}</div>
                     </>
                   ) : (
                     <>
                       <SunIcon className="w-4 h-4" />
-                      <div>Light mode</div>
+                      <div>{t('Light mode')}</div>
                     </>
                   )}
                 </div>
@@ -273,6 +277,7 @@ const MenuItems: FC<Props> = ({ pingData }) => {
       >
         <Login />
       </Modal>
+      <TranslateButton />
       <Button
         icon={
           <img
@@ -287,7 +292,7 @@ const MenuItems: FC<Props> = ({ pingData }) => {
           setShowLoginModal(!showLoginModal)
         }}
       >
-        Login
+        {t('Login')}
       </Button>
     </>
   )

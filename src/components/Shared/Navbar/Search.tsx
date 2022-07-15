@@ -9,6 +9,7 @@ import Logger from '@lib/logger'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { ChangeEvent, FC, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import UserProfile from '../UserProfile'
 
@@ -33,6 +34,7 @@ const Search: FC<Props> = ({ hideDrodown = false }) => {
   const { push, pathname, query } = useRouter()
   const [searchText, setSearchText] = useState<string>('')
   const dropdownRef = useRef(null)
+  const { t } = useTranslation('common')
 
   useOnClickOutside(dropdownRef, () => setSearchText(''))
 
@@ -88,7 +90,7 @@ const Search: FC<Props> = ({ hideDrodown = false }) => {
             {searchUsersLoading ? (
               <div className="py-2 px-4 space-y-2 text-sm font-bold text-center">
                 <Spinner size="sm" className="mx-auto" />
-                <div>Searching users</div>
+                <div>{t('Searching users')}</div>
               </div>
             ) : (
               <>
@@ -108,7 +110,7 @@ const Search: FC<Props> = ({ hideDrodown = false }) => {
                   </div>
                 ))}
                 {searchUsersData?.search?.items?.length === 0 && (
-                  <div className="py-2 px-4">No matching users</div>
+                  <div className="py-2 px-4">{t('No matching users')}</div>
                 )}
               </>
             )}

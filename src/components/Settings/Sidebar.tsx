@@ -10,6 +10,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { FC, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAppPersistStore } from 'src/store/app'
 
 interface MenuProps {
@@ -33,6 +34,7 @@ const Menu: FC<MenuProps> = ({ children, current, url }) => (
 )
 
 const Sidebar: FC = () => {
+  const { t } = useTranslation('common')
   const { pathname } = useRouter()
   const { currentUser } = useAppPersistStore()
 
@@ -43,22 +45,22 @@ const Sidebar: FC = () => {
       </div>
       <Menu current={pathname == '/settings'} url="/settings">
         <UserIcon className="w-4 h-4" />
-        <div>Profile</div>
+        <div>{t('Profile')}</div>
       </Menu>
       <Menu current={pathname == '/settings/account'} url="/settings/account">
         <ChipIcon className="w-4 h-4" />
-        <div>Account</div>
+        <div>{t('Account')}</div>
       </Menu>
       <Menu
         current={pathname == '/settings/allowance'}
         url="/settings/allowance"
       >
         <ShareIcon className="w-4 h-4" />
-        <div>Allowance</div>
+        <div>{t('Allowance')}</div>
       </Menu>
       <Menu current={pathname == '/settings/delete'} url="/settings/delete">
         <ExclamationIcon className="w-4 h-4 text-red-500" />
-        <div className="text-red-500">Danger Zone</div>
+        <div className="text-red-500">{t('Danger Zone')}</div>
       </Menu>
     </div>
   )

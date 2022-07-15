@@ -3,12 +3,14 @@ import { Mirror } from '@generated/types'
 import { SwitchHorizontalIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import React, { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   post: Mirror
 }
 
 const Mirrored: FC<Props> = ({ post }) => {
+  const { t } = useTranslation('common')
   const postType = post?.metadata?.attributes[0]?.value
 
   return (
@@ -26,7 +28,7 @@ const Mirrored: FC<Props> = ({ post }) => {
         </Link>
         <Link href={`/posts/${post?.mirrorOf?.id}`}>
           <a href={`/posts/${post?.mirrorOf?.id}`}>
-            <span>mirrored the </span>
+            <span>{t('Mirrored')} </span>
             <b>
               {post?.mirrorOf.__typename === 'Post'
                 ? postType === 'fundraise'

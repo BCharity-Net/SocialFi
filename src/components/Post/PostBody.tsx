@@ -11,6 +11,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const Fundraise = dynamic(() => import('./Fundraise'), {
   loading: () => <FundraiseShimmer />
@@ -21,6 +22,7 @@ interface Props {
 }
 
 const PostBody: FC<Props> = ({ post }) => {
+  const { t } = useTranslation('common')
   const { pathname } = useRouter()
   const postType = post?.metadata?.attributes[0]?.value
   const [showMore, setShowMore] = useState<boolean>(
@@ -38,9 +40,9 @@ const PostBody: FC<Props> = ({ post }) => {
               <UsersIcon className="w-4 h-4 text-brand" />
             )}
             {post?.collectedBy ? (
-              <span>Joined</span>
+              <span>{t('Joined')}</span>
             ) : (
-              <span>Launched a new group</span>
+              <span>{t('Launched group')}</span>
             )}
           </span>
           <Link href={`/groups/${post?.id}`}>
@@ -84,7 +86,7 @@ const PostBody: FC<Props> = ({ post }) => {
               className="mt-2 text-sm font-bold"
               onClick={() => setShowMore(!showMore)}
             >
-              Show more
+              {t('Show more')}
             </button>
           )}
         </>

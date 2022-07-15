@@ -11,6 +11,7 @@ import { UsersIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
+import { useTranslation } from 'react-i18next'
 
 const FOLLOWERS_QUERY = gql`
   query Followers($request: FollowersRequest!) {
@@ -39,6 +40,7 @@ interface Props {
 }
 
 const Followers: FC<Props> = ({ profile }) => {
+  const { t } = useTranslation('common')
   const [followers, setFollowers] = useState<Follower[]>([])
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
   const { data, loading, error, fetchMore } = useQuery(FOLLOWERS_QUERY, {
@@ -79,7 +81,7 @@ const Followers: FC<Props> = ({ profile }) => {
         message={
           <div>
             <span className="mr-1 font-bold">@{profile?.handle}</span>
-            <span>doesn’t have any followers yet.</span>
+            <span>{t('No followers')}</span>
           </div>
         }
         icon={<UsersIcon className="w-8 h-8 text-brand" />}

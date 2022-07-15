@@ -1,6 +1,8 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 
 const Hero: React.FC = () => {
+  const { t } = useTranslation('common')
   return (
     <div className="py-12 mb-4 bg-white border-b bg-hero">
       <div className="container px-5 mx-auto max-w-screen-xl">
@@ -10,21 +12,19 @@ const Hero: React.FC = () => {
               className="text-2xl font-extrabold text-black sm:text-4xl"
               data-test="app-name"
             >
-              Welcome to BCharity Baas👋
+              {t('Welcome')}
             </div>
             <div
               className="leading-7 text-gray-700"
               data-test="app-description"
             >
-              Next generation group-driven composable, decentralized, and
-              permissionless public good sector Web3 built on blockchains.
+              {t('Welcome Description')}
             </div>
             <div className="text-2xl font-extrabold text-black sm:text-2xl">
-              VHR Web3 - Volunteer Soulbound Token
+              {t('VHR Title')}
             </div>
             <div className="leading-7 text-gray-700">
-              Firstever native utility token to track global donation
-              transparently spent in volunteerism. --- Forever Love On-Chain!
+              {t('VHR Description')}
             </div>
           </div>
           <div className="hidden flex-1 flex-shrink-0 w-full sm:block"></div>

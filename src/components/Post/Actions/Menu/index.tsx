@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { FC, Fragment } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAppPersistStore } from 'src/store/app'
 
 import Delete from './Delete'
@@ -18,6 +19,7 @@ interface Props {
 }
 
 const PostMenu: FC<Props> = ({ post }) => {
+  const { t } = useTranslation('common')
   const { currentUser } = useAppPersistStore()
 
   return (
@@ -60,7 +62,7 @@ const PostMenu: FC<Props> = ({ post }) => {
                 >
                   <div className="flex items-center space-x-2">
                     <ShieldExclamationIcon className="w-4 h-4" />
-                    <div>Report Post</div>
+                    <div>{t('Report post')}</div>
                   </div>
                 </Menu.Item>
               )}

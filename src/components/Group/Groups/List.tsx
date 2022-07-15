@@ -4,6 +4,7 @@ import { EmptyState } from '@components/UI/EmptyState'
 import { Group } from '@generated/bcharitytypes'
 import { UsersIcon } from '@heroicons/react/outline'
 import React, { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   groups: Group[]
@@ -11,12 +12,13 @@ interface Props {
 }
 
 const List: FC<Props> = ({ groups, testId }) => {
+  const { t } = useTranslation('common')
   return (
     <Card testId={testId}>
       <CardBody className="space-y-6">
         {groups?.length === 0 && (
           <EmptyState
-            message={<div>No groups found!</div>}
+            message={<div>{t('No groups found')}</div>}
             icon={<UsersIcon className="w-8 h-8 text-brand" />}
             hideCard
           />

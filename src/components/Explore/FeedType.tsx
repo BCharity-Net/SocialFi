@@ -7,6 +7,7 @@ import {
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import React, { Dispatch, FC, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   setFeedType: Dispatch<string>
@@ -15,6 +16,7 @@ interface Props {
 
 const FeedType: FC<Props> = ({ setFeedType, feedType }) => {
   const { push } = useRouter()
+  const { t } = useTranslation('common')
 
   interface FeedLinkProps {
     name: string
@@ -48,25 +50,25 @@ const FeedType: FC<Props> = ({ setFeedType, feedType }) => {
   return (
     <div className="flex gap-3 px-5 mt-3 sm:px-0 sm:mt-0">
       <FeedLink
-        name="Top Commented"
+        name={t('Top Commented')}
         icon={<ChatAlt2Icon className="w-4 h-4" />}
         type="TOP_COMMENTED"
         testId="type-top-commented"
       />
       <FeedLink
-        name="Top Collected"
+        name={t('Top Collected')}
         icon={<CollectionIcon className="w-4 h-4" />}
         type="TOP_COLLECTED"
         testId="type-top-collected"
       />
       <FeedLink
-        name="Top Mirrored"
+        name={t('Top Mirrored')}
         icon={<SwitchHorizontalIcon className="w-4 h-4" />}
         type="TOP_MIRRORED"
         testId="type-top-mirrored"
       />
       <FeedLink
-        name="Latest"
+        name={t('Latest')}
         icon={<ClockIcon className="w-4 h-4" />}
         type="LATEST"
         testId="type-latest"

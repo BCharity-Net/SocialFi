@@ -14,6 +14,7 @@ import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
 import React, { Dispatch, FC, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
   CONNECT_WALLET,
   ERROR_MESSAGE,
@@ -72,6 +73,7 @@ interface Props {
 }
 
 const Fund: FC<Props> = ({ fund, collectModule, setRevenue, revenue }) => {
+  const { t } = useTranslation('common')
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
   const [allowed, setAllowed] = useState<boolean>(true)
@@ -256,7 +258,7 @@ const Fund: FC<Props> = ({ fund, collectModule, setRevenue, revenue }) => {
     </div>
   ) : (
     <AllowanceButton
-      title="Allow"
+      title={t('Allow')}
       module={allowanceData?.approvedModuleAllowanceAmount[0]}
       allowed={allowed}
       setAllowed={setAllowed}

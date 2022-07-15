@@ -1,5 +1,6 @@
 import { Card, CardBody } from '@components/UI/Card'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import { STATIC_ASSETS } from 'src/constants'
 import { useStreak } from 'use-streak'
 
@@ -17,6 +18,7 @@ const Day = ({ day }: { day: number }) => (
 
 const Streak = () => {
   const today = new Date()
+  const { t } = useTranslation('common')
   const streak =
     // eslint-disable-next-line
     typeof window !== 'undefined' ? useStreak(localStorage, today) : undefined
@@ -27,9 +29,9 @@ const Streak = () => {
     <Card className="mb-4">
       <CardBody className="flex justify-between items-center space-y-2">
         <div>
-          <div>You&rsquo;re on a</div>
+          <div>{t("You're on a")}</div>
           <div className="text-xl">
-            {streak && streak.currentCount} day streak 🌿
+            {streak && streak.currentCount} {t('Day streak')} 🌿
           </div>
         </div>
         <div>{streak && <Day day={streak.currentCount} />}</div>

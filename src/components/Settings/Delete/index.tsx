@@ -14,6 +14,7 @@ import splitSignature from '@lib/splitSignature'
 import Cookies from 'js-cookie'
 import React, { FC } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
   APP_NAME,
   CONNECT_WALLET,
@@ -132,6 +133,7 @@ const DeleteSettings: FC = () => {
       }
     })
   }
+  const { t } = useTranslation('common')
 
   if (!currentUser) return <Custom404 />
 
@@ -146,26 +148,14 @@ const DeleteSettings: FC = () => {
           <CardBody className="space-y-5">
             <UserProfile profile={currentUser} />
             <div className="text-lg font-bold text-red-500">
-              This will deactivate your account
+              {t('Deactivate account')}
             </div>
-            <p>
-              Deleting your account is permanent. All your data will be wiped
-              out immediately and you won&rsquo;t be able to get it back.
-            </p>
-            <div className="text-lg font-bold">What else you should know</div>
+            <p>{t('Delete info')}</p>
+            <div className="text-lg font-bold">{t('What else')}</div>
             <div className="text-sm text-gray-500 divide-y dark:divide-gray-700">
-              <p className="pb-3">
-                You cannot restore your {APP_NAME} account if it was
-                accidentally or wrongfully deleted.
-              </p>
-              <p className="py-3">
-                Some account information may still be available in search
-                engines, such as Google or Bing.
-              </p>
-              <p className="py-3">
-                Your @handle will be released immediately after deleting the
-                account.
-              </p>
+              <p className="pb-3">{t('Delete info1')}</p>
+              <p className="py-3">{t('Delete info2')}</p>
+              <p className="py-3">{t('Delete info3')}</p>
             </div>
             <Button
               variant="danger"
@@ -179,8 +169,8 @@ const DeleteSettings: FC = () => {
               onClick={handleDelete}
             >
               {typedDataLoading || signLoading || writeLoading
-                ? 'Deleting...'
-                : 'Delete your account'}
+                ? t('Delete load')
+                : t('Delete your account')}
             </Button>
           </CardBody>
         </Card>

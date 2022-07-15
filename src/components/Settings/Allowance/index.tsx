@@ -8,6 +8,7 @@ import { Erc20 } from '@generated/types'
 import Logger from '@lib/logger'
 import { NextPage } from 'next'
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { APP_NAME, DEFAULT_COLLECT_TOKEN } from 'src/constants'
 import Custom404 from 'src/pages/404'
 import Custom500 from 'src/pages/500'
@@ -52,6 +53,7 @@ const getAllowancePayload = (currency: string) => {
 }
 
 const AllowanceSettings: NextPage = () => {
+  const { t } = useTranslation('common')
   const { currentUser } = useAppPersistStore()
   const [currencyLoading, setCurrencyLoading] = useState<boolean>(false)
   const { data, loading, error, refetch } = useQuery(ALLOWANCE_SETTINGS_QUERY, {
@@ -65,7 +67,7 @@ const AllowanceSettings: NextPage = () => {
   })
 
   if (error) return <Custom500 />
-  if (loading) return <PageLoading message="Loading settings" />
+  if (loading) return <PageLoading message={t('Loading settings')} />
   if (!currentUser) return <Custom404 />
 
   return (
@@ -78,13 +80,12 @@ const AllowanceSettings: NextPage = () => {
         <Card>
           <div className="mx-5 mt-5">
             <div className="space-y-5">
-              <div className="text-lg font-bold">Allow / Revoke modules</div>
-              <p>
-                In order to use collect feature you need to allow the module you
-                use, you can allow and revoke the module anytime.
-              </p>
+              <div className="text-lg font-bold">
+                {t('Allow/revoke modules')}
+              </div>
+              <p>{t('Allowance description')}</p>
             </div>
-            <div className="mt-6 label">Select Currency</div>
+            <div className="mt-6 label">{t('Select currency')}</div>
             <select
               className="w-full bg-white rounded-xl border border-gray-300 outline-none dark:bg-gray-800 disabled:bg-gray-500 disabled:bg-opacity-20 disabled:opacity-60 dark:border-gray-700/80 focus:border-brand-500 focus:ring-brand-400"
               onChange={(e) => {
@@ -104,7 +105,7 @@ const AllowanceSettings: NextPage = () => {
           {currencyLoading ? (
             <div className="py-10 space-y-3 text-center">
               <Spinner className="mx-auto" />
-              <div>Loading allowance data!</div>
+              <div>{t('Allowance data')}</div>
             </div>
           ) : (
             <Allowance allowance={data} />
