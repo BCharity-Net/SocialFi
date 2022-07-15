@@ -10,8 +10,9 @@ import { MirrorFields } from '@gql/MirrorFields'
 import { PostFields } from '@gql/PostFields'
 import { CollectionIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
-import React, { FC, useState } from 'react'
-import { Column, useTable } from 'react-table'
+import React, { FC, useMemo, useState } from 'react'
+import { useTable } from 'react-table'
+import { POLYGONSCAN_URL } from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
 
 import NFTDetails from './NFTDetails'
@@ -65,35 +66,11 @@ interface Data {
   startDate: string
   endDate: string
   totalHours: number
-  verified: string
-}
-
-const columns: Column<any>[] = [
-  {
-    Header: 'Organization',
-    accessor: 'orgName'
-  },
-  {
-    Header: 'Description',
-    accessor: 'description'
-  },
-  {
-    Header: 'Start Date',
-    accessor: 'startDate'
-  },
-  {
-    Header: 'End Date',
-    accessor: 'endDate'
-  },
-  {
-    Header: 'Total Hours',
-    accessor: 'totalHours'
-  },
-  {
-    Header: 'Status',
-    accessor: 'verified'
+  verified: {
+    index: number
+    value: string
   }
-]
+}
 
 const HourFeed: FC<Props> = ({ profile }) => {
   const { currentUser } = useAppPersistStore()
@@ -116,21 +93,25 @@ const HourFeed: FC<Props> = ({ profile }) => {
 
   const handleTableData = async (data: any) => {
     return Promise.all(
-      data.map(async (i: any) => {
+      data.map(async (i: any, index: number) => {
         let verified = false
-        await fetchCollectAddress(i.id).then((data) => {
-          data.forEach((item: any) => {
-            if (verified) return
-            verified = item.address === i.metadata.attributes[1].value
+        if (i.collectNftAddress)
+          await fetchCollectAddress(i.id).then((data) => {
+            data.forEach((item: any) => {
+              if (verified) return
+              verified = item.address === i.metadata.attributes[1].value
+            })
           })
-        })
         return {
           orgName: i.metadata.name,
           description: i.metadata.description,
           startDate: i.metadata.attributes[2].value,
           endDate: i.metadata.attributes[3].value,
           totalHours: i.metadata.attributes[4].value,
-          verified: verified ? 'Verified' : 'Unverified'
+          verified: {
+            index: index,
+            value: verified ? 'Verified' : 'Unverified'
+          }
         }
       })
     )
@@ -147,7 +128,10 @@ const HourFeed: FC<Props> = ({ profile }) => {
             startDate: metadata.attributes[2].value,
             endDate: metadata.attributes[3].value,
             totalHours: metadata.attributes[4].value,
-            verified: 'Verified'
+            verified: {
+              index: index,
+              value: 'Verified'
+            }
           }
           setTableData(tableData)
         })
@@ -187,7 +171,105 @@ const HourFeed: FC<Props> = ({ profile }) => {
     }
   })
 
-  const table = useTable({ columns, data: tableData })
+  const columns = useMemo(
+    () => [
+      {
+        Header: 'VHR Submissions',
+        columns: [
+          {
+            Header: 'Organization',
+            accessor: 'orgName'
+          },
+          {
+            Header: 'Description',
+            accessor: 'description'
+          },
+          {
+            Header: 'Start Date',
+            accessor: 'startDate'
+          },
+          {
+            Header: 'End Date',
+            accessor: 'endDate'
+          },
+          {
+            Header: 'Total Hours',
+            accessor: 'totalHours'
+          },
+          {
+            Header: 'Status',
+            accessor: 'verified',
+            Cell: (props: { value: { index: number; value: string } }) => {
+              const status = props.value.value
+              const index = props.value.index
+              if (status !== 'Verified') {
+                return <span>{status}</span>
+              }
+              return (
+                <a
+                  href={`${POLYGONSCAN_URL}/address/${addressData[index]}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {status}
+                </a>
+              )
+            }
+          }
+        ]
+      }
+    ],
+    [addressData]
+  )
+
+  const Table = () => {
+    const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
+      useTable({ columns, data: tableData })
+
+    return (
+      <table
+        className="w-full text-md text-center mb-2 mt-2"
+        {...getTableProps()}
+      >
+        <thead>
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
+                <th className="p-4" {...column.getHeaderProps()}>
+                  {column.render('Header')}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map((row, index) => {
+            prepareRow(row)
+            return (
+              <>
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <td className="p-4" {...cell.getCellProps()}>
+                        {cell.render('Cell')}
+                      </td>
+                    )
+                  })}
+                </tr>
+                <NFTDetails
+                  address={addressData[index]}
+                  callback={(data: any) => {
+                    handleNFTData(data, index)
+                  }}
+                />
+              </>
+            )
+          })}
+        </tbody>
+      </table>
+    )
+  }
+
   return (
     <>
       {loading && <PostsShimmer />}
@@ -205,46 +287,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
       <ErrorMessage title="Failed to load hours" error={error} />
       {!error && !loading && data?.publications?.items?.length !== 0 && (
         <Card>
-          <table
-            className="w-full text-md text-center mb-2 mt-2"
-            {...table.getTableProps()}
-          >
-            <thead>
-              {table.headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column) => (
-                    <th className="p-4" {...column.getHeaderProps()}>
-                      {column.render('Header')}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody {...table.getTableBodyProps()}>
-              {table.rows.map((row, index) => {
-                table.prepareRow(row)
-                return (
-                  <>
-                    <tr {...row.getRowProps()}>
-                      {row.cells.map((cell) => {
-                        return (
-                          <td className="p-4" {...cell.getCellProps()}>
-                            {cell.render('Cell')}
-                          </td>
-                        )
-                      })}
-                    </tr>
-                    <NFTDetails
-                      address={addressData[index]}
-                      callback={(data: any) => {
-                        handleNFTData(data, index)
-                      }}
-                    />
-                  </>
-                )
-              })}
-            </tbody>
-          </table>
+          <Table />
         </Card>
       )}
     </>
