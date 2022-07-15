@@ -13,7 +13,8 @@ interface Props extends Omit<ComponentProps<'input'>, 'prefix'> {
   className?: string
   helper?: ReactNode
   error?: boolean
-  click?: Function
+  change?: Function
+
 }
 
 export const Input = forwardRef<HTMLInputElement, Props>(function Input(
@@ -27,19 +28,20 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
       {label && (
         <div className="flex items-center mb-1 space-x-1.5">
           <div className="font-medium text-gray-800 dark:text-gray-200">
-            {label}
+            <label style={{width: '500px', float: 'right', marginRight: '-400px'}}>{label}</label>
           </div>
-          {type === 'endDate' && (
-            <Button
-              size="sm"
+          {type === 'startDate' && (
+          <>
+            <input type="checkbox" style={{position: 'relative'}}
               onClick={() => {
-                if (!props.click) return
-                props.click()
+                if (!props.change) return
+                props.change()
               }}
-            >
-              Set same as start date
-            </Button>
+            />
+              <label style={{position: 'relative'}}>Multiple Days </label>
+              </>
           )}
+          
           <HelpTooltip content={helper} />
         </div>
       )}
@@ -58,7 +60,7 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
             'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700/80 focus:border-brand-500 focus:ring-brand-400 disabled:opacity-60 disabled:bg-gray-500 disabled:bg-opacity-20 outline-none w-full',
             className
           )}
-          type={type === 'endDate' ? 'date' : type}
+          type={type === 'startDate' ? 'date' : type}
           ref={ref}
           // onChange={(e) => {
           //   console.log(e)

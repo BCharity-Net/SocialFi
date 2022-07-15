@@ -23,6 +23,7 @@ import splitSignature from '@lib/splitSignature'
 import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
 import uploadToIPFS from '@lib/uploadToIPFS'
 import { size } from 'cypress/types/lodash'
+import { BooleanValueNode } from 'graphql'
 import { NextPage } from 'next'
 import React, { ChangeEvent, useState } from 'react'
 import { Controller } from 'react-hook-form'
@@ -65,6 +66,16 @@ const newHourSchema = object({
   endDate: string()
     .max(10, { message: 'Invalid date' })
     .min(10, { message: 'Invalid date' }),
+    // .refine((dateInput) => {
+    //   var endYear = parseInt(dateInput.substring(0, 4))
+    //   var endMonth = parseInt(dateInput.substring(5, 7))
+    //   var endDay = parseInt(dateInput.substring(8, 10))
+    //   var s = form.getValues('startDate')
+
+    //   dateInput.charAt(0) === '1', console.log(dateInput.substring(8, 10))
+    // }, {
+    //   message: "End date must be after start date"
+    // }),
 
   totalMinutes: string()
     .min(1, {
@@ -82,6 +93,7 @@ const newHourSchema = object({
 
 const Hours: NextPage = () => {
   const [cover, setCover] = useState<string>()
+  const [singleDay, setSingleDay] = useState<boolean>(true)
   const [coverType, setCoverType] = useState<string>()
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [uploading, setUploading] = useState<boolean>(false)
@@ -367,19 +379,21 @@ const Hours: NextPage = () => {
                 {...form.register('startDate')}
 
               />
-              <Input
+              {!singleDay && <Input
                 label="End Date"
-                type="endDate"
+                type="date"
                 placeholder={'Enter your end date'}
-                {...form.register('endDate')}
-                click={() => {
+                change={(e: React.ChangeEvent<HTMLInputElement>) => {
                   const startDate = form.getValues('startDate')
-                  if (!startDate) return
+                  const endDate = form.getValues('endDate')
                   form.setValue('endDate', startDate)
+                  console.log('2')
                 }}
+                {...form.register('endDate')}
               />
+              }
               <Input
-                label="Total Minutes"
+                label="Total Hours"
                 type="number"
                 step="1"
                 min="1"
