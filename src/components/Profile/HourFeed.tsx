@@ -8,7 +8,7 @@ import { Profile } from '@generated/types'
 import { CommentFields } from '@gql/CommentFields'
 import { MirrorFields } from '@gql/MirrorFields'
 import { PostFields } from '@gql/PostFields'
-import { CollectionIcon } from '@heroicons/react/outline'
+import { CollectionIcon, ExternalLinkIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import React, { FC, useMemo, useState } from 'react'
 import { useTable } from 'react-table'
@@ -210,8 +210,10 @@ const HourFeed: FC<Props> = ({ profile }) => {
                   href={`${POLYGONSCAN_URL}/address/${addressData[index]}`}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="text-brand-500"
                 >
-                  {status}
+                  {status}{' '}
+                  {<ExternalLinkIcon className="w-4 h-4 inline-flex" />}
                 </a>
               )
             }
