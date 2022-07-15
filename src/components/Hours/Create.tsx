@@ -22,6 +22,8 @@ import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
 import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
 import uploadToIPFS from '@lib/uploadToIPFS'
+import { size } from 'cypress/types/lodash'
+import { BooleanValueNode } from 'graphql'
 import { NextPage } from 'next'
 import React, { ChangeEvent, useState } from 'react'
 import { Controller } from 'react-hook-form'
@@ -64,6 +66,16 @@ const newHourSchema = object({
   endDate: string()
     .max(10, { message: 'Invalid date' })
     .min(10, { message: 'Invalid date' }),
+    // .refine((dateInput) => {
+    //   var endYear = parseInt(dateInput.substring(0, 4))
+    //   var endMonth = parseInt(dateInput.substring(5, 7))
+    //   var endDay = parseInt(dateInput.substring(8, 10))
+    //   var s = form.getValues('startDate')
+
+    //   dateInput.charAt(0) === '1', console.log(dateInput.substring(8, 10))
+    // }, {
+    //   message: "End date must be after start date"
+    // }),
 
   totalHours: string()
     .regex(/^(0*[1-9][0-9]*(\.[0-9]+)?|0+\.[0-9]*[1-9][0-9]*)$/, {
@@ -77,8 +89,11 @@ const newHourSchema = object({
     .nullable()
 })
 
+
+
 const Hours: NextPage = () => {
   const [cover, setCover] = useState<string>()
+  const [singleDay, setSingleDay] = useState<boolean>(true)
   const [coverType, setCoverType] = useState<string>()
   const [isUploading, setIsUploading] = useState<boolean>(false)
   const [uploading, setUploading] = useState<boolean>(false)
@@ -241,7 +256,7 @@ const Hours: NextPage = () => {
         {
           traitType: 'string',
           key: 'endDate',
-          value: endDate
+          value: (singleDay ? startDate : endDate)
         },
         {
           traitType: 'number',
@@ -346,22 +361,37 @@ const Hours: NextPage = () => {
                 {...form.register('orgWalletAddress')}
               />
               <Input
-                label="Start Date"
-                type="date"
+                label={singleDay ? "Date" : "Start Date"}
+                type="startDate"
                 placeholder={'Enter your start date'}
-                {...form.register('startDate')}
-              />
-              <Input
-                label="End Date"
-                type="endDate"
-                placeholder={'Enter your end date'}
-                {...form.register('endDate')}
-                click={() => {
+                change={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  if(singleDay === true){
+                    setSingleDay(false)
+                  } else {
+                    setSingleDay(true)
+                  }
                   const startDate = form.getValues('startDate')
-                  if (!startDate) return
-                  form.setValue('endDate', startDate)
+                  const endDate = form.getValues('endDate')
+                  if(endDate === '') form.setValue('endDate', startDate)
+                  console.log('1')
                 }}
+
+                {...form.register('startDate')}
+
               />
+              {!singleDay && <Input
+                label="End Date"
+                type="date"
+                placeholder={'Enter your end date'}
+                change={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  const startDate = form.getValues('startDate')
+                  const endDate = form.getValues('endDate')
+                  form.setValue('endDate', startDate)
+                  console.log('2')
+                }}
+                {...form.register('endDate')}
+              />
+              }
               <Input
                 label="Total Hours"
                 type="number"

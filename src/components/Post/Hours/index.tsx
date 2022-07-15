@@ -48,7 +48,8 @@ const Hours: FC<Props> = ({ post }) => {
         <div className="text-xl font-bold">
           {' '}
           VHR Submission for {post.metadata.name},{' '}
-          {`${post.metadata.attributes[2].value} to ${post.metadata.attributes[3].value}`}
+          {`${post.metadata.attributes[2].value} `} 
+          {!(post.metadata.attributes[2].value === post.metadata.attributes[3].value) && `to ${post.metadata.attributes[3].value}`}
         </div>
 
         <br></br>
