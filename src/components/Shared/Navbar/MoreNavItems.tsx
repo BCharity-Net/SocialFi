@@ -82,7 +82,7 @@ const MoreNavItems: FC = () => {
                   >
                     <div className="flex items-center space-x-1.5">
                       <CashIcon className="w-4 h-4" />
-                      <div>Verify Hours</div>
+                      <div>{t('Verify Hours')}</div>
                     </div>
                   </Menu.Item>
                   {!IS_MAINNET && (
