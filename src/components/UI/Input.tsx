@@ -1,8 +1,8 @@
 import clsx from 'clsx'
 import dynamic from 'next/dynamic'
 import { ComponentProps, forwardRef, ReactNode, useId } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { Button } from './Button'
 import { FieldError } from './Form'
 
 const HelpTooltip = dynamic(() => import('./HelpTooltip'))
@@ -14,7 +14,6 @@ interface Props extends Omit<ComponentProps<'input'>, 'prefix'> {
   helper?: ReactNode
   error?: boolean
   change?: Function
-
 }
 
 export const Input = forwardRef<HTMLInputElement, Props>(function Input(
@@ -22,26 +21,35 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
   ref
 ) {
   const id = useId()
+  const { t } = useTranslation('common')
 
   return (
     <label className="w-full" htmlFor={id}>
       {label && (
         <div className="flex items-center mb-1 space-x-1.5">
           <div className="font-medium text-gray-800 dark:text-gray-200">
-            <label style={{width: '500px', float: 'right', marginRight: '-400px'}}>{label}</label>
+            <label
+              style={{ width: '500px', float: 'right', marginRight: '-400px' }}
+            >
+              {label}
+            </label>
           </div>
           {type === 'startDate' && (
-          <>
-            <input type="checkbox" style={{position: 'relative'}}
-              onClick={() => {
-                if (!props.change) return
-                props.change()
-              }}
-            />
-              <label style={{position: 'relative'}}>Multiple Days </label>
-              </>
+            <>
+              <input
+                type="checkbox"
+                style={{ position: 'relative' }}
+                onClick={() => {
+                  if (!props.change) return
+                  props.change()
+                }}
+              />
+              <label style={{ position: 'relative' }}>
+                {t('Multiple Days')}
+              </label>
+            </>
           )}
-          
+
           <HelpTooltip content={helper} />
         </div>
       )}

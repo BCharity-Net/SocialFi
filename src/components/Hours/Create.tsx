@@ -22,12 +22,11 @@ import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
 import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
 import uploadToIPFS from '@lib/uploadToIPFS'
-import { size } from 'cypress/types/lodash'
-import { BooleanValueNode } from 'graphql'
 import { NextPage } from 'next'
 import React, { ChangeEvent, useState } from 'react'
 import { Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
   APP_NAME,
   CONNECT_WALLET,
@@ -65,17 +64,25 @@ const newHourSchema = object({
 
   endDate: string()
     .max(10, { message: 'Invalid date' })
-    .min(10, { message: 'Invalid date' }),
-    // .refine((dateInput) => {
-    //   var endYear = parseInt(dateInput.substring(0, 4))
-    //   var endMonth = parseInt(dateInput.substring(5, 7))
-    //   var endDay = parseInt(dateInput.substring(8, 10))
-    //   var s = form.getValues('startDate')
+    .min(10, { message: 'Invalid date' })
+    .optional()
+    .refine(
+      (val) => {
+        if (val === '') return false
+        return true
+      },
+      { message: 'You should enter an end date' }
+    ),
+  // .refine((dateInput) => {
+  //   var endYear = parseInt(dateInput.substring(0, 4))
+  //   var endMonth = parseInt(dateInput.substring(5, 7))
+  //   var endDay = parseInt(dateInput.substring(8, 10))
+  //   var s = form.getValues('startDate')
 
-    //   dateInput.charAt(0) === '1', console.log(dateInput.substring(8, 10))
-    // }, {
-    //   message: "End date must be after start date"
-    // }),
+  //   dateInput.charAt(0) === '1', console.log(dateInput.substring(8, 10))
+  // }, {
+  //   message: "End date must be after start date"
+  // }),
 
   totalHours: string()
     .regex(/^(0*[1-9][0-9]*(\.[0-9]+)?|0+\.[0-9]*[1-9][0-9]*)$/, {
@@ -89,9 +96,8 @@ const newHourSchema = object({
     .nullable()
 })
 
-
-
 const Hours: NextPage = () => {
+  const { t } = useTranslation('common')
   const [cover, setCover] = useState<string>()
   const [singleDay, setSingleDay] = useState<boolean>(true)
   const [coverType, setCoverType] = useState<string>()
@@ -220,7 +226,7 @@ const Hours: NextPage = () => {
     orgName: string,
     orgWalletAddress: string,
     startDate: string,
-    endDate: string,
+    endDate: string | undefined,
     totalHours: string,
     description: string | null
   ) => {
@@ -256,7 +262,7 @@ const Hours: NextPage = () => {
         {
           traitType: 'string',
           key: 'endDate',
-          value: (singleDay ? startDate : endDate)
+          value: singleDay ? startDate : endDate
         },
         {
           traitType: 'number',
@@ -294,8 +300,8 @@ const Hours: NextPage = () => {
       <SEO title={`Verify Hours • ${APP_NAME}`} />
       <GridItemFour>
         <SettingsHelper
-          heading="Verify Hours"
-          description="Submit hours to the LensHub network to earn rewards."
+          heading={t('Verify Hours')}
+          description={t('Hours Description')}
         />
       </GridItemFour>
       <GridItemEight>
@@ -340,7 +346,7 @@ const Hours: NextPage = () => {
                   fieldState: { error }
                 }) => (
                   <OrganizationNameInput
-                    label="Organization Name"
+                    label={t('Organization Name')}
                     error={error?.message}
                     placeholder={'BCharity'}
                     value={value}
@@ -355,45 +361,44 @@ const Hours: NextPage = () => {
                 )}
               />
               <Input
-                label="Organization Wallet Address"
+                label={t('Organization Wallet Address')}
                 type="text"
                 placeholder={'0x3A5bd...5e3'}
                 {...form.register('orgWalletAddress')}
               />
               <Input
-                label={singleDay ? "Date" : "Start Date"}
+                label={singleDay ? `${t('Date')}` : `${t('Start Date')}`}
                 type="startDate"
                 placeholder={'Enter your start date'}
-                change={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  if(singleDay === true){
+                change={() => {
+                  if (singleDay === true) {
                     setSingleDay(false)
                   } else {
                     setSingleDay(true)
                   }
                   const startDate = form.getValues('startDate')
                   const endDate = form.getValues('endDate')
-                  if(endDate === '') form.setValue('endDate', startDate)
+                  if (endDate === '') form.setValue('endDate', startDate)
                   console.log('1')
                 }}
-
                 {...form.register('startDate')}
-
               />
-              {!singleDay && <Input
-                label="End Date"
-                type="date"
-                placeholder={'Enter your end date'}
-                change={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  const startDate = form.getValues('startDate')
-                  const endDate = form.getValues('endDate')
-                  form.setValue('endDate', startDate)
-                  console.log('2')
-                }}
-                {...form.register('endDate')}
-              />
-              }
+              {!singleDay && (
+                <Input
+                  label={t('End Date')}
+                  type="date"
+                  placeholder={'Enter your end date'}
+                  change={() => {
+                    const startDate = form.getValues('startDate')
+                    // const endDate = form.getValues('endDate')
+                    form.setValue('endDate', startDate)
+                    console.log('2')
+                  }}
+                  {...form.register('endDate')}
+                />
+              )}
               <Input
-                label="Total Hours"
+                label={t('Total Hours')}
                 type="number"
                 step="0.1"
                 min="0.1"
@@ -401,12 +406,12 @@ const Hours: NextPage = () => {
                 {...form.register('totalHours')}
               />
               <TextArea
-                label="Activity Description"
-                placeholder="Tell us about your volunteer experience!"
+                label={t('Activity Description')}
+                placeholder={t('Activity TextArea')}
                 {...form.register('description')}
               />
               <div className="space-y-1.5">
-                <div className="label">Event Images (Optional)</div>
+                <div className="label">{t('Activity Images (Optional)')}</div>
                 <div className="space-y-3">
                   {cover && (
                     <img
@@ -448,7 +453,7 @@ const Hours: NextPage = () => {
                   )
                 }
               >
-                Hours
+                {t('Hours')}
               </Button>
             </Form>
           )}

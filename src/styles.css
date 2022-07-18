@@ -94,7 +94,6 @@ table {
 .mention-input__suggestions__list {
   @apply divide-y dark:divide-gray-700/80;
 }
-
 .mention-input-single {
   @apply pt-4
 }
