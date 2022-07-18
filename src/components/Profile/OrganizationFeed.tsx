@@ -5,9 +5,6 @@ import { Card } from '@components/UI/Card'
 import { EmptyState } from '@components/UI/EmptyState'
 import { ErrorMessage } from '@components/UI/ErrorMessage'
 import { Profile } from '@generated/types'
-import { CommentFields } from '@gql/CommentFields'
-import { MirrorFields } from '@gql/MirrorFields'
-import { PostFields } from '@gql/PostFields'
 import { CollectionIcon, ExternalLinkIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import React, { FC, useMemo, useState } from 'react'
@@ -27,22 +24,32 @@ const WHO_COLLECTED_QUERY = gql`
   }
 `
 
-const PROFILE_FEED_QUERY = gql`
-  query ProfileFeed(
-    $request: PublicationsQueryRequest!
-    $reactionRequest: ReactionFieldResolverRequest
-    $profileId: ProfileId
-  ) {
-    publications(request: $request) {
+const NOTIFICATIONS_QUERY = gql`
+  query Notifications($request: NotificationRequest!) {
+    notifications(request: $request) {
       items {
-        ... on Post {
-          ...PostFields
-        }
-        ... on Comment {
-          ...CommentFields
-        }
-        ... on Mirror {
-          ...MirrorFields
+        ... on NewMentionNotification {
+          mentionPublication {
+            ... on Post {
+              id
+              collectNftAddress
+              metadata {
+                name
+                description
+                content
+                media {
+                  original {
+                    url
+                    mimeType
+                  }
+                }
+                attributes {
+                  value
+                }
+              }
+              hidden
+            }
+          }
         }
       }
       pageInfo {
@@ -51,9 +58,6 @@ const PROFILE_FEED_QUERY = gql`
       }
     }
   }
-  ${PostFields}
-  ${CommentFields}
-  ${MirrorFields}
 `
 
 interface Props {
@@ -61,7 +65,7 @@ interface Props {
 }
 
 interface Data {
-  orgName: string
+  from: string
   description: string
   startDate: string
   endDate: string
@@ -72,7 +76,7 @@ interface Data {
   }
 }
 
-const HourFeed: FC<Props> = ({ profile }) => {
+const OrganizationFeed: FC<Props> = ({ profile }) => {
   const { currentUser } = useAppPersistStore()
   const [tableData, setTableData] = useState<Data[]>([])
   const [addressData, setAddressData] = useState<string[]>([])
@@ -93,7 +97,8 @@ const HourFeed: FC<Props> = ({ profile }) => {
 
   const handleTableData = async (data: any) => {
     return Promise.all(
-      data.map(async (i: any, index: number) => {
+      data.map(async (j: any, index: number) => {
+        const i = j.mentionPublication
         let verified = false
         if (i.collectNftAddress)
           await fetchCollectAddress(i.id).then((data) => {
@@ -103,7 +108,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
             })
           })
         return {
-          orgName: i.metadata.name,
+          from: i.metadata.name,
           description: i.metadata.description,
           startDate: i.metadata.attributes[2].value,
           endDate: i.metadata.attributes[3].value,
@@ -123,7 +128,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
       .then((result) => {
         result.json().then((metadata) => {
           tableData[index] = {
-            orgName: metadata.name,
+            from: metadata.name,
             description: metadata.description,
             startDate: metadata.attributes[2].value,
             endDate: metadata.attributes[3].value,
@@ -138,10 +143,9 @@ const HourFeed: FC<Props> = ({ profile }) => {
       })
 
   const tableLimit = 10
-  const { data, loading, error, fetchMore } = useQuery(PROFILE_FEED_QUERY, {
+  const { data, loading, error, fetchMore } = useQuery(NOTIFICATIONS_QUERY, {
     variables: {
       request: {
-        publicationTypes: 'POST',
         profileId: profile?.id,
         limit: tableLimit
       },
@@ -151,10 +155,14 @@ const HourFeed: FC<Props> = ({ profile }) => {
     skip: !profile?.id,
     fetchPolicy: 'no-cache',
     onCompleted(data) {
-      const hours = data?.publications?.items.filter((i: any) => {
-        return i.metadata.attributes[0].value == 'hours'
+      const notifs = data?.notifications?.items.filter((i: any) => {
+        return (
+          i.__typename === 'NewMentionNotification' &&
+          i.mentionPublication.metadata.attributes[0].value === 'hours' &&
+          !i.mentionPublication.hidden
+        )
       })
-      handleTableData(hours).then((result: Data[]) => {
+      handleTableData(notifs).then((result: Data[]) => {
         setTableData([...tableData, ...result])
         if (tableData.length != tableLimit) {
           fetchMore({
@@ -164,8 +172,8 @@ const HourFeed: FC<Props> = ({ profile }) => {
           })
         }
       })
-      const addresses: string[] = hours.map((i: any) => {
-        return i.collectNftAddress
+      const addresses: string[] = notifs.map((i: any) => {
+        return i.mentionPublication.collectNftAddress
       })
       setAddressData([...addressData, ...addresses])
     }
@@ -177,8 +185,8 @@ const HourFeed: FC<Props> = ({ profile }) => {
         Header: 'VHR Submissions',
         columns: [
           {
-            Header: 'Organization',
-            accessor: 'orgName',
+            Header: 'From',
+            accessor: 'from',
             Cell: (props: { value: string }) => {
               const user = props.value
               return (
@@ -287,7 +295,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
   return (
     <>
       {loading && <PostsShimmer />}
-      {data?.publications?.items?.length === 0 && (
+      {data?.notifications?.items?.length === 0 && (
         <EmptyState
           message={
             <div>
@@ -299,7 +307,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
         />
       )}
       <ErrorMessage title="Failed to load hours" error={error} />
-      {!error && !loading && data?.publications?.items?.length !== 0 && (
+      {!error && !loading && data?.notifications?.items?.length !== 0 && (
         <Card>
           <Table />
         </Card>
@@ -308,4 +316,4 @@ const HourFeed: FC<Props> = ({ profile }) => {
   )
 }
 
-export default HourFeed
+export default OrganizationFeed
