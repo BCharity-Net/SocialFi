@@ -46,6 +46,7 @@
     "js-cookie": "^3.0.1",
     "jwt-decode": "^3.1.2",
     "next": "^12.2.2",
+    "next-axiom": "^0.10.0",
     "next-themes": "^0.2.0",
     "next-transpile-modules": "^9.0.0",
     "omit-deep": "^0.3.0",
@@ -64,7 +65,7 @@
     "uuid": "^8.3.2",
     "wagmi": "^0.5.9",
     "zod": "^3.17.3",
-    "zustand": "^4.0.0-rc.1"
+    "zustand": "^4.0.0-rc.2"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.8.1",
@@ -82,7 +83,7 @@
     "@typescript-eslint/eslint-plugin": "^5.30.6",
     "autoprefixer": "^10.4.7",
     "cypress": "^10.3.0",
-    "eslint": "^8.19.0",
+    "eslint": "^8.20.0",
     "eslint-config-next": "^12.2.2",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-simple-import-sort": "^7.0.0",

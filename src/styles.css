@@ -94,6 +94,21 @@ table {
 .mention-input__suggestions__list {
   @apply divide-y dark:divide-gray-700/80;
 }
+.mention-input-single {
+  @apply pt-4
+}
+
+.mention-input-single textarea {
+  @apply px-4 w-full !bg-white rounded-xl border border-gray-300 shadow-sm dark:!bg-gray-800 disabled:bg-gray-500 disabled:bg-opacity-20 disabled:opacity-60 dark:border-gray-700/80 focus:border-brand-500 focus:ring-brand-400;
+}
+
+.mention-input-single__suggestions {
+  @apply !bg-white dark:!bg-gray-900 !mt-8 !border dark:border-gray-700/80 rounded-xl shadow-sm w-52;
+}
+
+.mention-input-single__suggestions__list {
+  @apply divide-y dark:divide-gray-700/80;
+}
 
 .mention-input-single {
   @apply pt-4

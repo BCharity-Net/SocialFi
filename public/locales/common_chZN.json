@@ -6,8 +6,8 @@
   "VHR Description": "有史以来第一个原生实用代币，透明地追踪用于志愿服务的全球捐款。",
 
   "Beta Title": "Beta警告",
-  "Beta Description": "BCharity仍处于测试阶段, 东西可能会坏掉, 请小心处理我们。",
-  "Get Testnet": "获取testnet令牌",
+  "Beta Description": "BCharity仍处于测试阶段, 应用可能会中断, 请谨慎使用。",
+  "Get Testnet": "获取测试通证",
 
   "Recommended Users": "推荐用户",
 
@@ -267,7 +267,7 @@
 
   "No followers": "还没有任何追随者",
 
-  "Mirrored": "反映了",
+  "Mirrored": "转发了",
 
   "No inbox": "收件箱为零!",
 
@@ -321,5 +321,19 @@
   "Twitter exceeds": "Twitter不超过100个字符",
   "Bio exceeds": "Bio不超过260个字符",
 
-  "Select file": "选择文件"
+  "Select file": "选择文件",
+
+  "Verify Hours": "核对志愿者小时",
+  "Hours": "小时",
+  "Hours Description": "填报核对志愿者服务小时数",
+  "Organization Name": "服务机构名称",
+  "Organization Wallet Address": "服务机构钱包地址",
+  "Date": "日期",
+  "Start Date": "开始日期",
+  "End Date": "结束日期",
+  "Multiple Days": "多日",
+  "Total Hours": "小时数",
+  "Activity Description": "服务内容",
+  "Activity TextArea": "讲述您的志愿服务内容!",
+  "Activity Images (Optional)": "活动图片（可选）"
 }
