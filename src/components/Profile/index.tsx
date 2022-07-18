@@ -16,6 +16,7 @@ import { useAppPersistStore } from 'src/store/app'
 import Cover from './Cover'
 import Details from './Details'
 import FeedType from './FeedType'
+import HourFeed from './HourFeed'
 import ProfilePageShimmer from './Shimmer'
 
 const Feed = dynamic(() => import('./Feed'), {
@@ -114,6 +115,7 @@ const ViewProfile: NextPage = () => {
         <GridItemEight className="space-y-5">
           <FeedType
             stats={profile?.stats}
+            address={profile?.ownedBy}
             setFeedType={setFeedType}
             feedType={feedType}
           />
@@ -123,6 +125,7 @@ const ViewProfile: NextPage = () => {
             <Feed profile={profile} type={feedType} />
           )}
           {feedType === 'NFT' && <NFTFeed profile={profile} />}
+          {feedType === 'vhr' && <HourFeed profile={profile} />}
         </GridItemEight>
       </GridLayout>
     </>

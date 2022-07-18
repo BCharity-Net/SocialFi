@@ -321,5 +321,19 @@
   "Twitter exceeds": "Twitter不超过100个字符",
   "Bio exceeds": "Bio不超过260个字符",
 
-  "Select file": "选择文件"
+  "Select file": "选择文件",
+
+  "Verify Hours": "核对志愿者小时",
+  "Hours": "小时",
+  "Hours Description": "填报核对志愿者服务小时数",
+  "Organization Name": "服务机构名称",
+  "Organization Wallet Address": "服务机构钱包地址",
+  "Date": "日期",
+  "Start Date": "开始日期",
+  "End Date": "结束日期",
+  "Multiple Days": "多日",
+  "Total Hours": "小时数",
+  "Activity Description": "服务内容",
+  "Activity TextArea": "讲述您的志愿服务内容!",
+  "Activity Images (Optional)": "活动图片（可选）"
 }

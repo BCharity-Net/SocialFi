@@ -96,7 +96,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
 
   useEffect(() => {
     setRevenue(
-      parseFloat(revenueData?.publicationRevenue?.earnings?.value ?? 0)
+      parseFloat(revenueData?.publicationRevenue?.revenue?.total?.value ?? 0)
     )
   }, [revenueData])
 
@@ -219,7 +219,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
                         : percentageReached
                     }%`
                   }}
-                  data-test="crowdfund-progress-bar"
+                  data-test="fundraise-progress-bar"
                 />
               </div>
             </Tooltip>

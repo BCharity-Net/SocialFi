@@ -1,6 +1,7 @@
 import { ProfileStats } from '@generated/types'
 import {
   ChatAlt2Icon,
+  ClockIcon,
   PencilAltIcon,
   PhotographIcon,
   SwitchHorizontalIcon
@@ -8,14 +9,23 @@ import {
 import nFormatter from '@lib/nFormatter'
 import clsx from 'clsx'
 import React, { Dispatch, FC, ReactNode } from 'react'
+import { VHR_TOKEN } from 'src/constants'
+import { useBalance } from 'wagmi'
 
 interface Props {
   stats: ProfileStats
+  address: string
   setFeedType: Dispatch<string>
   feedType: string
 }
 
-const FeedType: FC<Props> = ({ stats, setFeedType, feedType }) => {
+const FeedType: FC<Props> = ({ stats, address, setFeedType, feedType }) => {
+  const { data: vhrBalance } = useBalance({
+    addressOrName: address,
+    token: VHR_TOKEN,
+    watch: true
+  })
+
   interface FeedLinkProps {
     name: string
     icon: ReactNode
@@ -83,6 +93,13 @@ const FeedType: FC<Props> = ({ stats, setFeedType, feedType }) => {
         name="NFTs"
         icon={<PhotographIcon className="w-4 h-4" />}
         type="NFT"
+        testId="type-nfts"
+      />
+      <FeedLink
+        name="VHR"
+        icon={<ClockIcon className="w-4 h-4" />}
+        type="vhr"
+        count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
         testId="type-nfts"
       />
     </div>

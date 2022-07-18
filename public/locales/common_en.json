@@ -326,5 +326,20 @@
   "Twitter exceeds": "Twitter should not exceed 100 characters",
   "Bio exceeds": "Bio should not exceed 260 characters",
 
-  "Select file": "Select file"
+  "Select file": "Select file",
+
+  "Verify Hours": "Verify Hours",
+  "Hours Description": "Submit hours to the LensHub network to earn rewards.",
+  "Hours": "Hours",
+  "Organization Name": "Organization Name",
+  "Organization Wallet Address": "Organization Wallet Address",
+  "Date": "Date",
+  "Start Date": "Start Date",
+  "End Date": "End Date",
+  "Multiple Days": "Multiple Days",
+  "Total Hours": "Total Hours",
+  "Activity Description": "Activity Description",
+  "Activity TextArea": "Tell us about your volunteer experience!",
+  "Activity Images (Optional)": "Activity Images (Optional)"
+
 }

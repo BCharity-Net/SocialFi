@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import dynamic from 'next/dynamic'
 import { ComponentProps, forwardRef, ReactNode, useId } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { FieldError } from './Form'
 
@@ -12,6 +13,7 @@ interface Props extends Omit<ComponentProps<'input'>, 'prefix'> {
   className?: string
   helper?: ReactNode
   error?: boolean
+  change?: Function
 }
 
 export const Input = forwardRef<HTMLInputElement, Props>(function Input(
@@ -19,14 +21,35 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
   ref
 ) {
   const id = useId()
+  const { t } = useTranslation('common')
 
   return (
     <label className="w-full" htmlFor={id}>
       {label && (
         <div className="flex items-center mb-1 space-x-1.5">
           <div className="font-medium text-gray-800 dark:text-gray-200">
-            {label}
+            <label
+              style={{ width: '500px', float: 'right', marginRight: '-400px' }}
+            >
+              {label}
+            </label>
           </div>
+          {type === 'startDate' && (
+            <>
+              <input
+                type="checkbox"
+                style={{ position: 'relative' }}
+                onClick={() => {
+                  if (!props.change) return
+                  props.change()
+                }}
+              />
+              <label style={{ position: 'relative' }}>
+                {t('Multiple Days')}
+              </label>
+            </>
+          )}
+
           <HelpTooltip content={helper} />
         </div>
       )}
@@ -45,8 +68,13 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
             'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700/80 focus:border-brand-500 focus:ring-brand-400 disabled:opacity-60 disabled:bg-gray-500 disabled:bg-opacity-20 outline-none w-full',
             className
           )}
-          type={type}
+          type={type === 'startDate' ? 'date' : type}
           ref={ref}
+          // onChange={(e) => {
+          //   console.log(e)
+          //   if(!props.inputChange) return;
+          //   props.inputChange()
+          // }}
           {...props}
         />
       </div>
