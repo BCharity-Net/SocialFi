@@ -51,7 +51,7 @@ const Hours: FC<Props> = ({ post }) => {
 
         <div className="text-xl font-bold">
           {' '}
-          VHR Verifcation Submitted by {post.profile.name} ({post.profile.handle}):
+          VHR Verification Submitted by {post.profile.name} ({post.profile.handle}):
         </div>
         <br></br>
         <div>
