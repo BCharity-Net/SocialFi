@@ -123,9 +123,11 @@
   "Your Profile": "您的资料",
   "Settings": "设置",
   "Logout": "退出",
-  "Dark mode": "黑暗模式",
+  "Dark mode": "黑夜模式",
   "Light mode": "灯光模式",
   "Switch": "切换到",
+  "Disable staff mode": "禁用员工模式",
+  "Enable staff mode": "启用员工模式",
 
   "Create group": "创建群组",
   "Create fundraise": "创建筹款活动",
@@ -256,7 +258,7 @@
 
   "Tell something cool": "讲一些很酷的事情!",
   "Comment": "评论",
-  "Post": "帖子",
+  "Post": "发帖",
   "Send": "发送",
   "Sign action": "签名",
   "Uploading": "上传至IPFS",
@@ -377,7 +379,7 @@
   "Beta": "发展",
 
   "Indexing": "编制索引",
-  "Index successful": "指数成功",
+  "Index successful": "索引成功",
 
   "Goto": "转到",
 
@@ -425,7 +427,7 @@
   "Notification failed": "加载通知失败",
 
   "Generating post": "生成帖子",
-  "Sign1": "Sign",
+  "Sign1": "签名",
 
   "Unfollow": "取消关注",
 

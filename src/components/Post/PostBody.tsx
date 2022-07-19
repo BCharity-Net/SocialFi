@@ -17,6 +17,8 @@ const Fundraise = dynamic(() => import('./Fundraise'), {
   loading: () => <FundraiseShimmer />
 })
 
+const Hours = dynamic(() => import('./Hours'), {})
+
 interface Props {
   post: BCharityPost
 }
@@ -68,6 +70,8 @@ const PostBody: FC<Props> = ({ post }) => {
         </div>
       ) : postType === 'fundraise' ? (
         <Fundraise fund={post} />
+      ) : postType === 'hours' ? (
+        <Hours post={post} />
       ) : (
         <>
           <div
@@ -97,6 +101,7 @@ const PostBody: FC<Props> = ({ post }) => {
         post?.metadata?.content &&
         postType !== 'fundraise' &&
         postType !== 'group' &&
+        postType !== 'hours' &&
         getURLs(post?.metadata?.content)?.length > 0 && (
           <IFramely url={getURLs(post?.metadata?.content)[0]} />
         )
