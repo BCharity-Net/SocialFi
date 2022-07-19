@@ -38,6 +38,7 @@ import splitSignature from '@lib/splitSignature'
 import dayjs from 'dayjs'
 import React, { Dispatch, FC, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
   CONNECT_WALLET,
   ERROR_MESSAGE,
@@ -120,6 +121,7 @@ interface Props {
 }
 
 const CollectModule: FC<Props> = ({ count, setCount, post }) => {
+  const { t } = useTranslation('common')
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
   const [revenue, setRevenue] = useState<number>(0)
@@ -396,7 +398,7 @@ const CollectModule: FC<Props> = ({ count, setCount, post }) => {
                 type="button"
                 onClick={() => setShowCollectorsModal(!showCollectorsModal)}
               >
-                {humanize(count)} collectors
+                {humanize(count)} {t('Collectors')}
               </button>
               <Modal
                 title="Collectors"
@@ -425,7 +427,7 @@ const CollectModule: FC<Props> = ({ count, setCount, post }) => {
               <div className="flex items-center space-x-2">
                 <CashIcon className="w-4 h-4 text-gray-500" />
                 <div className="font-bold">
-                  {collectModule.referralFee}% referral fee
+                  {collectModule.referralFee} {t('Referral fee')}
                 </div>
               </div>
             ) : null}
@@ -434,7 +436,7 @@ const CollectModule: FC<Props> = ({ count, setCount, post }) => {
             <div className="flex items-center space-x-2">
               <CashIcon className="w-4 h-4 text-gray-500" />
               <div className="flex items-center space-x-1.5">
-                <span>Revenue:</span>
+                <span>{t('Revenue')}</span>
                 <span className="flex items-center space-x-1">
                   <img
                     src={getTokenImage(collectModule?.amount?.asset?.symbol)}
@@ -458,7 +460,7 @@ const CollectModule: FC<Props> = ({ count, setCount, post }) => {
             <div className="flex items-center space-x-2">
               <ClockIcon className="w-4 h-4 text-gray-500" />
               <div className="space-x-1.5">
-                <span>Sale Ends:</span>
+                <span>{t('Sale ends')}</span>
                 <span className="font-bold text-gray-600">
                   {dayjs(collectModule.endTimestamp).format('MMMM DD, YYYY')} at{' '}
                   {dayjs(collectModule.endTimestamp).format('hh:mm a')}
@@ -470,7 +472,7 @@ const CollectModule: FC<Props> = ({ count, setCount, post }) => {
             <div className="flex items-center space-x-2">
               <UserIcon className="w-4 h-4 text-gray-500" />
               <div className="space-x-1.5">
-                <span>Recipient:</span>
+                <span>{t('Recipient 1')}</span>
                 <a
                   href={`${POLYGONSCAN_URL}/address/${collectModule.recipient}`}
                   target="_blank"
@@ -486,7 +488,7 @@ const CollectModule: FC<Props> = ({ count, setCount, post }) => {
             <div className="flex items-center space-x-2">
               <PuzzleIcon className="w-4 h-4 text-gray-500" />
               <div className="space-x-1.5">
-                <span>Token:</span>
+                <span>{t('Token')}</span>
                 <a
                   href={`${POLYGONSCAN_URL}/token/${data?.publication?.collectNftAddress}`}
                   target="_blank"
@@ -536,7 +538,7 @@ const CollectModule: FC<Props> = ({ count, setCount, post }) => {
                   )
                 }
               >
-                Collect now
+                {t('Collect now')}
               </Button>
             ) : (
               <WarningMessage

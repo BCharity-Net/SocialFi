@@ -250,12 +250,12 @@ const MenuItems: FC<Props> = ({ pingData }) => {
                   >
                     {staffMode ? (
                       <div className="flex items-center space-x-1.5">
-                        <div>Disable staff mode</div>
+                        <div>{t('Disable staff mode')}</div>
                         <ShieldExclamationIcon className="w-4 h-4 text-green-600" />
                       </div>
                     ) : (
                       <div className="flex items-center space-x-1.5">
-                        <div>Enable staff mode</div>
+                        <div>{t('Enable staff mode')}</div>
                         <ShieldCheckIcon className="w-4 h-4 text-red-500" />
                       </div>
                     )}

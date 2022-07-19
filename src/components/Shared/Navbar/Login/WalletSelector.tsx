@@ -209,7 +209,7 @@ const WalletSelector: FC<Props> = ({ setHasConnected, setHasProfile }) => {
             <span className="flex justify-between items-center w-full">
               {mounted
                 ? connector.id === 'injected'
-                  ? 'Browser Wallet'
+                  ? t('Browser Wallet')
                   : connector.name
                 : connector.name}
               {mounted ? !connector.ready && ' (unsupported)' : ''}

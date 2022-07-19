@@ -13,12 +13,14 @@ import isBeta from '@lib/isBeta'
 import React, { FC, ReactNode } from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   profile: Profile
 }
 
 const ProfileMod: FC<Props> = ({ profile }) => {
+  const { t } = useTranslation('common')
   const MetaDetails = ({
     children,
     value,
@@ -31,7 +33,7 @@ const ProfileMod: FC<Props> = ({ profile }) => {
     <CopyToClipboard
       text={value}
       onCopy={() => {
-        toast.success('Copied to clipboard!')
+        toast.success(t('Copied to clipboard!'))
       }}
     >
       <div className="flex gap-2 items-center font-bold cursor-pointer">
@@ -44,7 +46,7 @@ const ProfileMod: FC<Props> = ({ profile }) => {
   return (
     <Card className="mt-5 border-yellow-400 !bg-yellow-300 !bg-opacity-20">
       <CardBody>
-        <div className="text-lg font-bold">Details</div>
+        <div className="text-lg font-bold">{t('Details')}</div>
         <div className="mt-3 space-y-1.5">
           {getAttribute(profile?.attributes, 'app') === 'BCharity' && (
             <MetaDetails
@@ -59,7 +61,7 @@ const ProfileMod: FC<Props> = ({ profile }) => {
               }
               value={profile?.handle}
             >
-              BCharity account
+              {t('BCharity account')}
             </MetaDetails>
           )}
           <MetaDetails

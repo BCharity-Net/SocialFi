@@ -21,6 +21,7 @@ import isVerified from '@lib/isVerified'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import React, { FC, ReactElement, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { STATIC_ASSETS } from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
 
@@ -32,6 +33,7 @@ interface Props {
 }
 
 const Details: FC<Props> = ({ profile }) => {
+  const { t } = useTranslation('common')
   const [followersCount, setFollowersCount] = useState<number>(0)
   const [following, setFollowing] = useState<boolean>(profile?.isFollowedByMe)
   const { currentUser, staffMode } = useAppPersistStore()
@@ -104,7 +106,7 @@ const Details: FC<Props> = ({ profile }) => {
             currentUser?.id !== profile?.id &&
             profile?.isFollowing && (
               <div className="py-0.5 px-2 text-xs bg-gray-200 rounded-full dark:bg-gray-700">
-                Follows you
+                {t('Follows you')}
               </div>
             )}
         </div>

@@ -6,6 +6,7 @@ import { CashIcon } from '@heroicons/react/outline'
 import { FEE_DATA_TYPE, getModule } from '@lib/getModule'
 import { motion } from 'framer-motion'
 import { Dispatch, FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Modules from './Modules'
 
@@ -22,6 +23,7 @@ const SelectCollectModule: FC<Props> = ({
   setSelectedModule,
   selectedModule
 }) => {
+  const { t } = useTranslation('common')
   const [showModal, setShowModal] = useState<boolean>(false)
 
   return (
@@ -36,7 +38,7 @@ const SelectCollectModule: FC<Props> = ({
           onClick={() => {
             setShowModal(!showModal)
           }}
-          aria-label="Choose Collect Module"
+          aria-label={t('Choose collect module')}
         >
           <div className="text-brand">
             <GetModuleIcon module={selectedModule.moduleName} size={5} />
@@ -44,7 +46,7 @@ const SelectCollectModule: FC<Props> = ({
         </motion.button>
       </Tooltip>
       <Modal
-        title="Select collect module"
+        title={t('Choose collect module')}
         icon={<CashIcon className="w-5 h-5 text-brand" />}
         show={showModal}
         onClose={() => setShowModal(false)}
