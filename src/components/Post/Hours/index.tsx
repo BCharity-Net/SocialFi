@@ -1,29 +1,25 @@
+import Collectors from '@components/Shared/Collectors'
 import Markup from '@components/Shared/Markup'
+import { Button } from '@components/UI/Button'
 import { Card } from '@components/UI/Card'
+import { Modal } from '@components/UI/Modal'
 import { BCharityPost } from '@generated/bcharitytypes'
+import { ClockIcon } from '@heroicons/react/outline'
 import imagekitURL from '@lib/imagekitURL'
-import React, { FC, ReactNode } from 'react'
+import React, { FC, useState } from 'react'
 import { STATIC_ASSETS } from 'src/constants'
+import { useAppPersistStore } from 'src/store/app'
 
-const Badge: FC<BadgeProps> = ({ title, value }) => (
-  <div className="flex bg-gray-200 rounded-full border border-gray-300 dark:bg-gray-800 dark:border-gray-700 text-[12px] w-fit">
-    <div className="px-3 bg-gray-300 rounded-full dark:bg-gray-700 py-[0.3px]">
-      {title}
-    </div>
-    <div className="pr-3 pl-2 font-bold py-[0.3px]">{value}</div>
-  </div>
-)
-
-interface BadgeProps {
-  title: ReactNode
-  value: ReactNode
-}
+import Verify from './Verify'
 
 interface Props {
   post: BCharityPost
 }
 
 const Hours: FC<Props> = ({ post }) => {
+  // const { t } = useTranslation('common')
+  const { currentUser } = useAppPersistStore()
+  const [showVerifyModal, setShowVerifyModal] = useState<boolean>(false)
   const cover = post?.metadata?.cover?.original?.url
 
   return (
@@ -50,39 +46,30 @@ const Hours: FC<Props> = ({ post }) => {
             VHR Verifcation Submitted by {post.profile.name} (
             {post.profile.handle}):
           </div>
-          {currentUser ? (
-            <div className="pt-3 sm:pt-0">
-              <Verify post={post} />
-            </div>
-          ) : null}
+          {currentUser &&
+            (post?.stats?.totalAmountOfCollects < 1 ? (
+              <div className="pt-3 sm:pt-0">
+                <Verify post={post} />
+              </div>
+            ) : (
+              <div className="p-3">
+                <Button
+                  className="sm:mt-0 sm:ml-auto"
+                  onClick={() => setShowVerifyModal(!showVerifyModal)}
+                >
+                  Verified
+                </Button>
+                <Modal
+                  title="Verified"
+                  icon={<ClockIcon className="w-5 h-5 text-brand" />}
+                  show={showVerifyModal}
+                  onClose={() => setShowVerifyModal(false)}
+                >
+                  <Collectors pubId={post?.pubId ?? post?.id} />
+                </Modal>
+              </div>
+            ))}
         </div>
-        {post?.stats?.totalAmountOfCollects > 0 && (
-          <div className="p-3">
-            <button
-              type="button"
-              className="text-sm"
-              onClick={() => setShowVerifyModal(!showVerifyModal)}
-            >
-              <Badge
-                title={
-                  <div className="flex items-center space-x-1">
-                    <UsersIcon className="w-3 h-3" />
-                    <div>{t('Collects')}</div>
-                  </div>
-                }
-                value={post?.stats?.totalAmountOfCollects}
-              />
-            </button>
-            <Modal
-              title="Verify"
-              icon={<ClockIcon className="w-5 h-5 text-brand" />}
-              show={showVerifyModal}
-              onClose={() => setShowVerifyModal(false)}
-            >
-              <Collectors pubId={post?.pubId ?? post?.id} />
-            </Modal>
-          </div>
-        )}
         <div>
           <table className="border border-violet-500 w-10 whitespace-nowrap">
             <tr className="text-center font-bold bg-violet-200">
