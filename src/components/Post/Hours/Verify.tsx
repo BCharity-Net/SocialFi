@@ -100,7 +100,7 @@ const Verify: FC<Props> = ({ post }) => {
     }
   })
 
-  const { data, write: writeVhrTransfer } = useContractWrite({
+  const { write: writeVhrTransfer } = useContractWrite({
     addressOrName: '0x28EE241ab245699968F2980D3D1b1d23120ab8BE',
     contractInterface: VHR_ABI,
     functionName: 'transfer',
