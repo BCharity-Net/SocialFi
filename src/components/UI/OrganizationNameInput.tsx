@@ -74,8 +74,11 @@ export const OrganizationNameInput: FC<Props> = ({
     searchUsers({
       variables: { request: { type: 'PROFILE', query, limit: 5 } }
     })
-      .then(({ data }) =>
-        data?.search?.items?.map(
+      .then(({ data }) => {
+        const users = data?.search?.items.filter((i: any) => {
+          return isVerified(i.id)
+        })
+        return users.map(
           (user: Profile & { picture: MediaSet & NftImage }) => ({
             uid: user.id,
             id: user.handle,
@@ -87,7 +90,7 @@ export const OrganizationNameInput: FC<Props> = ({
               `https://avatar.tobi.sh/${user?.id}_${user?.handle}.png`
           })
         )
-      )
+      })
       .then(callback)
   }
 

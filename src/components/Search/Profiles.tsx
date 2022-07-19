@@ -11,6 +11,7 @@ import { UsersIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import React, { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
+import { useTranslation } from 'react-i18next'
 
 const SEARCH_PROFILES_QUERY = gql`
   query SearchProfiles($request: SearchQueryRequest!) {
@@ -34,6 +35,7 @@ interface Props {
 }
 
 const Profiles: FC<Props> = ({ query }) => {
+  const { t } = useTranslation('common')
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
   const { data, loading, error, fetchMore } = useQuery(SEARCH_PROFILES_QUERY, {
@@ -77,7 +79,7 @@ const Profiles: FC<Props> = ({ query }) => {
         <EmptyState
           message={
             <div>
-              No profiles for <b>&ldquo;{query}&rdquo;</b>
+              {t('No profiles for')} <b>&ldquo;{query}&rdquo;</b>
             </div>
           }
           icon={<UsersIcon className="w-8 h-8 text-brand" />}

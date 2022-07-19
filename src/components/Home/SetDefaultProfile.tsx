@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 
 const SetDefaultProfile: FC = () => {
   const { profiles } = useContext(AppContext)
-  const hasDefaultProfile = !!profiles.find((o) => o.isDefault) ?? true
+  const hasDefaultProfile = !!profiles.find((o) => o.isDefault)
   const count = profiles.length
 
   const { t } = useTranslation('common')

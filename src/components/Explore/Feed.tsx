@@ -14,6 +14,7 @@ import { CollectionIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import React, { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
+import { useTranslation } from 'react-i18next'
 import { useAppPersistStore } from 'src/store/app'
 
 const EXPLORE_FEED_QUERY = gql`
@@ -50,6 +51,7 @@ interface Props {
 }
 
 const Feed: FC<Props> = ({ feedType = 'TOP_COMMENTED' }) => {
+  const { t } = useTranslation('common')
   const { currentUser } = useAppPersistStore()
   const [publications, setPublications] = useState<BCharityPost[]>([])
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
@@ -101,7 +103,7 @@ const Feed: FC<Props> = ({ feedType = 'TOP_COMMENTED' }) => {
       {loading && <PostsShimmer />}
       {data?.explorePublications?.items?.length === 0 && (
         <EmptyState
-          message={<div>No posts yet!</div>}
+          message={<div>{t('No posts 1')}</div>}
           icon={<CollectionIcon className="w-8 h-8 text-brand" />}
         />
       )}

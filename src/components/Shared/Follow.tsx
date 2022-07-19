@@ -186,7 +186,7 @@ const Follow: FC<Props> = ({
         typedDataLoading || signLoading || writeLoading || broadcastLoading
       }
       variant="success"
-      aria-label="Follow"
+      aria-label={t('Follow')}
       icon={
         typedDataLoading || signLoading || writeLoading || broadcastLoading ? (
           <Spinner variant="success" size="xs" />

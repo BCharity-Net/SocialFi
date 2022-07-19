@@ -69,7 +69,7 @@ const Following: FC<Props> = ({ profile }) => {
     }
   })
 
-  if (loading) return <Loader message="Loading following" />
+  if (loading) return <Loader message={t('Loading following')} />
 
   if (data?.following?.items?.length === 0)
     return (

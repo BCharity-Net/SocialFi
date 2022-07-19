@@ -1,8 +1,10 @@
+// import { Profile } from '@generated/types'
 import { gql, useQuery } from '@apollo/client'
 import { GridItemEight, GridItemFour, GridLayout } from '@components/GridLayout'
 import NFTShimmer from '@components/Shared/Shimmer/NFTShimmer'
 import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
 import SEO from '@components/utils/SEO'
+import isVerified from '@lib/isVerified'
 import Logger from '@lib/logger'
 import { NextPage } from 'next'
 import dynamic from 'next/dynamic'
@@ -17,6 +19,7 @@ import Cover from './Cover'
 import Details from './Details'
 import FeedType from './FeedType'
 import HourFeed from './HourFeed'
+import OrganizationFeed from './OrganizationFeed'
 import ProfilePageShimmer from './Shimmer'
 
 const Feed = dynamic(() => import('./Feed'), {
@@ -116,6 +119,7 @@ const ViewProfile: NextPage = () => {
           <FeedType
             stats={profile?.stats}
             address={profile?.ownedBy}
+            id={profile?.id}
             setFeedType={setFeedType}
             feedType={feedType}
           />
@@ -125,7 +129,9 @@ const ViewProfile: NextPage = () => {
             <Feed profile={profile} type={feedType} />
           )}
           {feedType === 'NFT' && <NFTFeed profile={profile} />}
-          {feedType === 'vhr' && <HourFeed profile={profile} />}
+          {isVerified(profile?.id)
+            ? feedType === 'org' && <OrganizationFeed profile={profile} />
+            : feedType === 'vhr' && <HourFeed profile={profile} />}
         </GridItemEight>
       </GridLayout>
     </>

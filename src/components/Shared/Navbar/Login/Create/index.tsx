@@ -27,15 +27,6 @@ const CREATE_PROFILE_MUTATION = gql`
   }
 `
 
-const newUserSchema = object({
-  handle: string()
-    .min(2, { message: 'Handle should be atleast 2 characters' })
-    .max(31, { message: 'Handle should be less than 32 characters' })
-    .regex(/^[a-z0-9]+$/, {
-      message: 'Handle should only contain alphanumeric characters'
-    })
-})
-
 interface Props {
   isModal?: boolean
 }
@@ -48,6 +39,15 @@ const Create: FC<Props> = ({ isModal = false }) => {
   const [createProfile, { data, loading }] = useMutation(
     CREATE_PROFILE_MUTATION
   )
+
+  const newUserSchema = object({
+    handle: string()
+      .min(2, { message: 'Handle should be atleast 2 characters' })
+      .max(31, { message: 'Handle should be less than 32 characters' })
+      .regex(/^[a-z0-9]+$/, {
+        message: 'Handle should only contain alphanumeric characters'
+      })
+  })
 
   const form = useZodForm({
     schema: newUserSchema
@@ -112,7 +112,7 @@ const Create: FC<Props> = ({ isModal = false }) => {
         </div>
       )}
       <Input
-        label="Handle"
+        label={t('Handle')}
         type="text"
         placeholder="gavin"
         {...form.register('handle')}

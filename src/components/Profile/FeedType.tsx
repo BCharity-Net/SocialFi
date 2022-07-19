@@ -6,20 +6,24 @@ import {
   PhotographIcon,
   SwitchHorizontalIcon
 } from '@heroicons/react/outline'
+import isVerified from '@lib/isVerified'
 import nFormatter from '@lib/nFormatter'
 import clsx from 'clsx'
 import React, { Dispatch, FC, ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { VHR_TOKEN } from 'src/constants'
 import { useBalance } from 'wagmi'
 
 interface Props {
   stats: ProfileStats
   address: string
+  id: string
   setFeedType: Dispatch<string>
   feedType: string
 }
 
-const FeedType: FC<Props> = ({ stats, address, setFeedType, feedType }) => {
+const FeedType: FC<Props> = ({ stats, address, id, setFeedType, feedType }) => {
+  const { t } = useTranslation('common')
   const { data: vhrBalance } = useBalance({
     addressOrName: address,
     token: VHR_TOKEN,
@@ -69,21 +73,21 @@ const FeedType: FC<Props> = ({ stats, address, setFeedType, feedType }) => {
   return (
     <div className="flex overflow-x-auto gap-3 px-5 pb-2 mt-3 sm:px-0 sm:mt-0 md:pb-0">
       <FeedLink
-        name="Posts"
+        name={t('Posts')}
         icon={<PencilAltIcon className="w-4 h-4" />}
         type="POST"
         count={stats?.totalPosts}
         testId="type-posts"
       />
       <FeedLink
-        name="Comments"
+        name={t('Comments')}
         icon={<ChatAlt2Icon className="w-4 h-4" />}
         type="COMMENT"
         count={stats?.totalComments}
         testId="type-comments"
       />
       <FeedLink
-        name="Mirrors"
+        name={t('Mirrors')}
         icon={<SwitchHorizontalIcon className="w-4 h-4" />}
         type="MIRROR"
         count={stats?.totalMirrors}
@@ -95,13 +99,23 @@ const FeedType: FC<Props> = ({ stats, address, setFeedType, feedType }) => {
         type="NFT"
         testId="type-nfts"
       />
-      <FeedLink
-        name="VHR"
-        icon={<ClockIcon className="w-4 h-4" />}
-        type="vhr"
-        count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
-        testId="type-nfts"
-      />
+      {!isVerified(id) && (
+        <FeedLink
+          name="VHR"
+          icon={<ClockIcon className="w-4 h-4" />}
+          type="vhr"
+          count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
+          testId="type-vhr"
+        />
+      )}
+      {isVerified(id) && (
+        <FeedLink
+          name="OrgVHR"
+          icon={<ClockIcon className="w-4 h-4" />}
+          type="org"
+          testId="type-org"
+        />
+      )}
     </div>
   )
 }
