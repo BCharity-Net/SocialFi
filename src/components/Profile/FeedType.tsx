@@ -6,6 +6,7 @@ import {
   PhotographIcon,
   SwitchHorizontalIcon
 } from '@heroicons/react/outline'
+import isVerified from '@lib/isVerified'
 import nFormatter from '@lib/nFormatter'
 import clsx from 'clsx'
 import React, { Dispatch, FC, ReactNode } from 'react'
@@ -15,11 +16,12 @@ import { useBalance } from 'wagmi'
 interface Props {
   stats: ProfileStats
   address: string
+  id: string
   setFeedType: Dispatch<string>
   feedType: string
 }
 
-const FeedType: FC<Props> = ({ stats, address, setFeedType, feedType }) => {
+const FeedType: FC<Props> = ({ stats, address, id, setFeedType, feedType }) => {
   const { data: vhrBalance } = useBalance({
     addressOrName: address,
     token: VHR_TOKEN,
@@ -100,8 +102,16 @@ const FeedType: FC<Props> = ({ stats, address, setFeedType, feedType }) => {
         icon={<ClockIcon className="w-4 h-4" />}
         type="vhr"
         count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
-        testId="type-nfts"
+        testId="type-vhr"
       />
+      {isVerified(id) && (
+        <FeedLink
+          name="Organizer"
+          icon={<ClockIcon className="w-4 h-4" />}
+          type="org"
+          testId="type-org"
+        />
+      )}
     </div>
   )
 }

@@ -17,6 +17,7 @@ import Cover from './Cover'
 import Details from './Details'
 import FeedType from './FeedType'
 import HourFeed from './HourFeed'
+import OrganizationFeed from './OrganizationFeed'
 import ProfilePageShimmer from './Shimmer'
 
 const Feed = dynamic(() => import('./Feed'), {
@@ -116,6 +117,7 @@ const ViewProfile: NextPage = () => {
           <FeedType
             stats={profile?.stats}
             address={profile?.ownedBy}
+            id={profile?.id}
             setFeedType={setFeedType}
             feedType={feedType}
           />
@@ -126,6 +128,7 @@ const ViewProfile: NextPage = () => {
           )}
           {feedType === 'NFT' && <NFTFeed profile={profile} />}
           {feedType === 'vhr' && <HourFeed profile={profile} />}
+          {feedType === 'org' && <OrganizationFeed profile={profile} />}
         </GridItemEight>
       </GridLayout>
     </>
