@@ -1,4 +1,5 @@
 import { LensHubProxy } from '@abis/LensHubProxy'
+import { VHR_ABI } from '@abis/VHR_ABI'
 import { gql, useMutation, useQuery } from '@apollo/client'
 import { Button } from '@components/UI/Button'
 import { Spinner } from '@components/UI/Spinner'
@@ -97,6 +98,13 @@ const Verify: FC<Props> = ({ post }) => {
     onError(error) {
       toast.error(error?.message)
     }
+  })
+
+  const { data, write: writeVhrTransfer } = useContractWrite({
+    addressOrName: '0x28EE241ab245699968F2980D3D1b1d23120ab8BE',
+    contractInterface: VHR_ABI,
+    functionName: 'transfer',
+    args: [post.profile.ownedBy, post.metadata.attributes[4].value]
   })
 
   useQuery(COLLECT_QUERY, {
@@ -210,7 +218,10 @@ const Verify: FC<Props> = ({ post }) => {
         <>
           <Button
             className="sm:mt-0 sm:ml-auto"
-            onClick={createCollect}
+            onClick={() => {
+              writeVhrTransfer()
+              createCollect()
+            }}
             disabled={
               typedDataLoading ||
               signLoading ||
