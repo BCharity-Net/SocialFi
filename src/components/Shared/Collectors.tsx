@@ -10,6 +10,7 @@ import { CollectionIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
+import { useTranslation } from 'react-i18next'
 
 import Loader from './Loader'
 
@@ -37,6 +38,7 @@ interface Props {
 }
 
 const Collectors: FC<Props> = ({ pubId }) => {
+  const { t } = useTranslation('common')
   const [collectors, setCollectors] = useState<Wallet[]>([])
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
   const { data, loading, error, fetchMore } = useQuery(COLLECTORS_QUERY, {
@@ -75,7 +77,7 @@ const Collectors: FC<Props> = ({ pubId }) => {
     return (
       <div className="p-5">
         <EmptyState
-          message={<span>No collectors.</span>}
+          message={<span>{t('No collectors')}</span>}
           icon={<CollectionIcon className="w-8 h-8 text-brand" />}
           hideCard
         />

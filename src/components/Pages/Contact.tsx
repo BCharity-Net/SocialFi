@@ -48,7 +48,7 @@ const Contact: FC = () => {
         <Card testId="contact-form">
           {false ? (
             <EmptyState
-              message={<span>Publication reported successfully!</span>}
+              message={<span>{t('Pub reported')}</span>}
               icon={<CheckCircleIcon className="w-14 h-14 text-green-500" />}
               hideCard
             />

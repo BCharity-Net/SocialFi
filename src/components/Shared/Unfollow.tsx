@@ -137,7 +137,7 @@ const Unfollow: FC<Props> = ({
       onClick={createUnfollow}
       disabled={typedDataLoading || signLoading || writeLoading}
       variant="danger"
-      aria-label="Unfollow"
+      aria-label={t('Unfollow')}
       icon={
         typedDataLoading || signLoading || writeLoading ? (
           <Spinner variant="danger" size="xs" />
@@ -146,7 +146,7 @@ const Unfollow: FC<Props> = ({
         )
       }
     >
-      {showText && 'Unfollow'}
+      {showText && t('Unfollow')}
     </Button>
   )
 }

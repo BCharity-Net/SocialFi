@@ -46,6 +46,7 @@ const Title = () => {
 }
 
 const RecommendedProfiles: FC = () => {
+  const { t } = useTranslation('common')
   const { data, loading, error } = useQuery(RECOMMENDED_PROFILES_QUERY, {
     onCompleted(data) {
       Logger.log(
@@ -78,7 +79,7 @@ const RecommendedProfiles: FC = () => {
         <EmptyState
           message={
             <div>
-              <span>No recommendations!</span>
+              <span>{t('No recommended')}</span>
             </div>
           }
           icon={<UsersIcon className="w-8 h-8 text-brand" />}

@@ -13,6 +13,7 @@ import { CollectionIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import React, { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
+import { useTranslation } from 'react-i18next'
 import { useAppPersistStore } from 'src/store/app'
 
 const SEARCH_PUBLICATIONS_QUERY = gql`
@@ -47,6 +48,7 @@ interface Props {
 }
 
 const Publications: FC<Props> = ({ query }) => {
+  const { t } = useTranslation('common')
   const { currentUser } = useAppPersistStore()
   const [publications, setPublications] = useState<BCharityPost[]>([])
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
@@ -99,7 +101,7 @@ const Publications: FC<Props> = ({ query }) => {
         <EmptyState
           message={
             <div>
-              No publications for <b>&ldquo;{query}&rdquo;</b>
+              {t('No publications for')} <b>&ldquo;{query}&rdquo;</b>
             </div>
           }
           icon={<CollectionIcon className="w-8 h-8 text-brand" />}

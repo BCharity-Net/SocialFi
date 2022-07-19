@@ -5,6 +5,7 @@ import { PhotographIcon } from '@heroicons/react/outline'
 import { motion } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Loader from '../Loader'
 
@@ -18,6 +19,7 @@ interface Props {
 }
 
 const Giphy: FC<Props> = ({ setGifAttachment }) => {
+  const { t } = useTranslation('common')
   const [showModal, setShowModal] = useState<boolean>(false)
 
   return (
@@ -29,7 +31,7 @@ const Giphy: FC<Props> = ({ setGifAttachment }) => {
           onClick={() => {
             setShowModal(!showModal)
           }}
-          aria-label="Choose GIFs"
+          aria-label={t('Choose gifs')}
         >
           <div className="w-full fill-brand-500 dark:fill-brand-400">
             <svg viewBox="0 0 24 24" className="w-5 h-5">
@@ -42,7 +44,7 @@ const Giphy: FC<Props> = ({ setGifAttachment }) => {
         </motion.button>
       </Tooltip>
       <Modal
-        title="Select GIF"
+        title={t('Select gif')}
         icon={<PhotographIcon className="w-5 h-5 text-brand" />}
         show={showModal}
         onClose={() => setShowModal(false)}

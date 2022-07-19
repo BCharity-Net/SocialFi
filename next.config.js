@@ -1,3 +1,4 @@
+/** @type {import('next').NextConfig} */
 const { withSentryConfig } = require('@sentry/nextjs')
 const withTM = require('next-transpile-modules')(['plyr-react'])
 const { withAxiom } = require('next-axiom')
@@ -13,6 +14,10 @@ module.exports = withAxiom(
         maximumFileSizeToCacheInBytes: 8000000,
         async rewrites() {
           return [
+            {
+              source: '/sitemap.xml',
+              destination: 'https://sitemap.bcharity.net/sitemap.xml'
+            },
             {
               source: '/sitemaps/:match*',
               destination: 'https://sitemap.bcharity.net/sitemaps/:match*'

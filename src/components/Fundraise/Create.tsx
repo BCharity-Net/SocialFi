@@ -53,24 +53,8 @@ const MODULES_CURRENCY_QUERY = gql`
   }
 `
 
-const newFundraiseSchema = object({
-  title: string()
-    .min(2, { message: 'Title should be atleast 2 characters' })
-    .max(255, { message: 'Title should not exceed 255 characters' }),
-  amount: string().min(1, { message: 'Invalid amount' }),
-  goal: string(),
-  recipient: string()
-    .max(42, { message: 'Ethereum address should be within 42 characters' })
-    .regex(/^0x[a-fA-F0-9]{40}$/, { message: 'Invalid Ethereum address' }),
-  referralFee: string()
-    .min(1, { message: 'Invalid Referral fee' })
-    .max(20, { message: 'Invalid Referral fee' }),
-  description: string()
-    .max(1000, { message: 'Description should not exceed 1000 characters' })
-    .nullable()
-})
-
 const Create: NextPage = () => {
+  const { t } = useTranslation('common')
   const [cover, setCover] = useState<string>()
   const [coverType, setCoverType] = useState<string>()
   const [isUploading, setIsUploading] = useState<boolean>(false)
@@ -91,6 +75,23 @@ const Create: NextPage = () => {
     onCompleted() {
       Logger.log('[Query]', `Fetched enabled module currencies`)
     }
+  })
+
+  const newFundraiseSchema = object({
+    title: string()
+      .min(2, { message: 'Title should be atleast 2 characters' })
+      .max(255, { message: 'Title should not exceed 255 characters' }),
+    amount: string().min(1, { message: 'Invalid amount' }),
+    goal: string(),
+    recipient: string()
+      .max(42, { message: 'Ethereum address should be within 42 characters' })
+      .regex(/^0x[a-fA-F0-9]{40}$/, { message: 'Invalid Ethereum address' }),
+    referralFee: string()
+      .min(1, { message: 'Invalid Referral fee' })
+      .max(20, { message: 'Invalid Referral fee' }),
+    description: string()
+      .max(1000, { message: 'Description should not exceed 1000 characters' })
+      .nullable()
   })
 
   const {
@@ -193,7 +194,6 @@ const Create: NextPage = () => {
     }
   )
 
-  const { t } = useTranslation('common')
   const createFundraise = async (
     title: string,
     amount: string,

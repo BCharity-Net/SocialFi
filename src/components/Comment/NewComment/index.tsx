@@ -31,6 +31,7 @@ import uploadToIPFS from '@lib/uploadToIPFS'
 import dynamic from 'next/dynamic'
 import { Dispatch, FC, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
   APP_NAME,
   CONNECT_WALLET,
@@ -114,6 +115,7 @@ const NewComment: FC<Props> = ({
   post,
   type
 }) => {
+  const { t } = useTranslation('common')
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
   const [commentContent, setCommentContent] = useState<string>('')
@@ -314,7 +316,7 @@ const NewComment: FC<Props> = ({
               setPublication={setCommentContent}
               error={commentContentError}
               setError={setCommentContentError}
-              placeholder="Tell something cool!"
+              placeholder={t('Tell something cool')}
             />
           )}
           <div className="block items-center sm:flex">
@@ -373,16 +375,18 @@ const NewComment: FC<Props> = ({
                 onClick={createComment}
               >
                 {isUploading
-                  ? 'Uploading to IPFS'
+                  ? t('Uploading')
                   : typedDataLoading
-                  ? `Generating ${type === 'comment' ? 'Comment' : 'Post'}`
+                  ? `${t('Generating')} ${
+                      type === 'comment' ? t('Comment') : t('Post')
+                    }`
                   : signLoading
-                  ? 'Sign'
+                  ? t('Sign1')
                   : writeLoading || broadcastLoading
-                  ? 'Send'
+                  ? t('Send')
                   : type === 'comment'
-                  ? 'Comment'
-                  : 'Post'}
+                  ? t('Comment')
+                  : t('Post')}
               </Button>
             </div>
           </div>
