@@ -3,6 +3,7 @@ import { Spinner } from '@components/UI/Spinner'
 import { CheckCircleIcon } from '@heroicons/react/solid'
 import { useRouter } from 'next/router'
 import React, { Dispatch, FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { POLYGONSCAN_URL } from 'src/constants'
 
 export const TX_STATUS_QUERY = gql`
@@ -25,6 +26,7 @@ interface Props {
 }
 
 const PubIndexStatus: FC<Props> = ({ setShowModal, type, txHash }) => {
+  const { t } = useTranslation('common')
   const { push } = useRouter()
   const [pollInterval, setPollInterval] = useState<number>(500)
   const { data, loading } = useQuery(TX_STATUS_QUERY, {
@@ -53,12 +55,14 @@ const PubIndexStatus: FC<Props> = ({ setShowModal, type, txHash }) => {
       {loading || !data?.publication ? (
         <div className="flex items-center space-x-1.5">
           <Spinner size="xs" />
-          <div className="hidden sm:block">{type} Indexing</div>
+          <div className="hidden sm:block">
+            {type} {t('Indexing')}
+          </div>
         </div>
       ) : (
         <div className="flex items-center space-x-1">
           <CheckCircleIcon className="w-5 h-5 text-green-500" />
-          <div className="hidden sm:block">Index Successful</div>
+          <div className="hidden sm:block">{t('Index successful')}</div>
         </div>
       )}
     </a>

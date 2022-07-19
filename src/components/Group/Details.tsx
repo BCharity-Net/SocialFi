@@ -79,7 +79,7 @@ const Details: FC<Props> = ({ group }) => {
         <div className="flex items-center space-x-2">
           {joined ? (
             <div className="py-0.5 px-2 text-sm text-white rounded-lg shadow-sm bg-brand-500 w-fit">
-              Member
+              {t('member')}
             </div>
           ) : (
             <Join group={group} setJoined={setJoined} />
@@ -93,7 +93,7 @@ const Details: FC<Props> = ({ group }) => {
                 onClick={() => setShowSettingsModal(false)}
               />
               <Modal
-                title="Settings"
+                title={t('Settings')}
                 icon={<CogIcon className="w-5 h-5 text-brand" />}
                 show={showSettingsModal}
                 onClose={() => setShowSettingsModal(false)}
@@ -116,7 +116,7 @@ const Details: FC<Props> = ({ group }) => {
                   : t('member')}
               </button>
               <Modal
-                title="Members"
+                title={t('Members')}
                 icon={<UsersIcon className="w-5 h-5 text-brand" />}
                 show={showMembersModal}
                 onClose={() => setShowMembersModal(false)}

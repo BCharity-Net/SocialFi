@@ -4,11 +4,13 @@ import { Card } from '@components/UI/Card'
 import { Modal } from '@components/UI/Modal'
 import { PencilAltIcon } from '@heroicons/react/outline'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import { usePublicationStore } from 'src/store/publication'
 
 import NewPost from '..'
 
 const NewPostModal: FC = () => {
+  const { t } = useTranslation('common')
   const { showNewPostModal, setShowNewPostModal, parentPub, setParentPub } =
     usePublicationStore()
 
@@ -25,7 +27,7 @@ const NewPostModal: FC = () => {
         <PencilAltIcon className="w-5 h-5 sm:w-6 sm:h-6" />
       </button>
       <Modal
-        title="New Post"
+        title={t('New post')}
         icon={<PencilAltIcon className="w-5 h-5 text-brand" />}
         size="md"
         show={showNewPostModal}

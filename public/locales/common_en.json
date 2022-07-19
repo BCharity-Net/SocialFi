@@ -10,10 +10,19 @@
   "Get Testnet": "Get testnet tokens",
 
   "Recommended Users": "Recommended users",
+  "No recommended": "No recommendations!",
+  
+  "Setup profile": "Setup your profile",
+  "Set profile name": "Set profile name",
+  "Set profile bio": "Set profile bio",
+  "Set your avatar": "Set your avatar",
+  "Update profile": "Update profile here",
 
   "Change Language": "Change Language",
 
-   "About": "About",
+  "About": "About",   
+  "Twitter": "Twitter",
+  "Telegram": "Telegram",
   "Donate": "Donate",
   "Status": "Status",
   "Vote": "Vote",
@@ -106,6 +115,7 @@
   "Mirrors": "Mirrors",
   "NFTs": "NFTs",
   "No posts": "seems like not posted yet",
+  "No posts 1": "No posts yet!",
 
   "Whats happening": "What's happening?",
   "Who to follow": "Who to follow",
@@ -155,6 +165,8 @@
   "You have owned": "You have owned ",
   "Don't have default": "but you don't have a default account.",
   "Set default": "Set default profile here",
+
+  "Notification": "Notification",
 
   "You're on a": "You're on a",
   "Day streak": "day streak",
@@ -261,6 +273,7 @@
   "Web description": "Explore top commented, collected and latest publications in the BCharity group.",
 
   "Days ago": "days ago",
+  "Commented on": "commented on your ",  
 
   "Back": "Back",
   "Mirror description": "When someone mirrors the publication they will get some reward in percentage for referring it.",
@@ -318,15 +331,118 @@
   "Fundraise creation": "Fundraise creation in progress, please wait!",
   "Fundraise created successfully": "Fundraise created successfully!",
 
-  "Alphanumeric error": "Handle should only contain alphanumeric characters",
+  "Alphanumeric error": "Username should only contain alphanumeric characters",
   "At least 2 characters": "Name should have at least 2 characters",
+  "Less than 32": "Name should be less than 32 characters",
+  "Less than 260": "Description should not exceed 260 characters",
   "Exceeds 100 characters": "Name should not exceed 100 characters",
+  "Title less than 255": "Title should not exceed 255 characters",
+  "Invalid amount": "Invalid amount",
+  "Within than 42": "Ethereum address should be within 42 characters",
+  "Invalid address": "Invalid Ethereum address",
+  "Invalid referral": "Invalid Referral fee",
+  "Less than 1000": "Description should not exceed 1000 characters",
   "Location exceeds": "Location should not exceed 100 characters",
   "Website exceeds": "Website should not exceed 100 characters",
   "Twitter exceeds": "Twitter should not exceed 100 characters",
   "Bio exceeds": "Bio should not exceed 260 characters",
 
   "Select file": "Select file",
+
+  "Posted on": "Posted on ",
+  "Follows you": "Follows you",
+  "Loading following": "Loading following",
+
+  "Type": "Type",
+  "Select type": "Select type",
+  "Illegal": "Illegal",
+  "Fraud": "Fraud",
+  "Sensitive": "Sensitive",
+  "Reason": "Reason",
+  "Select sub reason": "Select sub reason",
+  "Animal abuse": "Animal Abuse",
+  "Human abuse": "Human Abuse",
+  "Scam": "Scam",
+  "Impersonation": "Impersonation",
+  "NSFW": "NSFW",
+  "Offensive": "Offensive",
+
+  "Copied to clipboard!": "Copied to clipboard!",
+  "Details": "Details",
+  "BCharity account": "BCharity account",
+
+  "No publications for": "No publications for ",
+  "No profiles for": "No profiles for ",
+
+  "Care 1": "Please make sure that if you allow this module you will automatically be detected with the amount if you ",
+  "Collect": "collect",
+  "And": "and",
+  "Beta": "Beta",
+
+  "Indexing": " Indexing",
+  "Index successful": "Index Successful",
+
+  "Goto": "Go to",
+
+  "No collectors": "No collectors.",
+
+  "Get perks": " and get some awesome perks!",
+  "Recipient 1": "Recipient:",
+  "Perks": "Perks you get",
+  "You can comment on": "You can comment on @",
+  "s publications": "s publications",
+  "You can collect": "You can collect @",
+  "Super follow badge": "You will get super follow badge in @",
+  "s profile": "s profile",
+  "High voting power": "You will have high voting power if you followed multiple times",
+  "More coming": "More coming soon™",
+
+  "Allow follow module": "Allow follow module",
+
+  "Choose attachment": "Choose Attachment",
+
+  "Will get": "will get",
+  "Referral 1": "referral fee",
+
+  "Search for gifs": "Search for GIFs",
+  "No gifs found": "No GIFs found.",
+  "Choose gifs": "Choose GIFs",
+  "Select gif": "Select GIF",
+  "Loading gifs": "Loading GIFs",
+
+  "Open main menu": "Open main menu",
+
+  "Choose collect module": "Choose Collect Module",
+  "Loading modules": "Loading your modules",
+  "Failed to load modules": "Failed to load modules",
+
+  "Only": "Only ",
+  "Super followers": " super followers",
+  "Can": " can ",
+  "Followers can comment": " followers can comment",
+
+  "New post": "New Post",
+
+  "Pub reported": "Publication reported successfully!",
+
+  "Notification failed": "Failed to load notifications",
+
+  "Generating post": "Generating Post",
+  "Sign1": "Sign",
+
+  "Unfollow": "Unfollow",
+
+  "Members": "Members",
+
+  "Collect now": "Collect Now",
+  "Collectors": "collectors",
+  "Token": "Token:",
+  "Referral fee": "% referral fee",
+  "Revenue": "Revenue:",
+  "Sale ends": "Sale Ends:",
+
+  "Switch network": "Switch Network",
+  "Change wallet": "Please change your network wallet!",
 
   "Verify Hours": "Verify Hours",
   "Hours Description": "Submit hours to the LensHub network to earn rewards.",
@@ -336,7 +452,7 @@
   "Date": "Date",
   "Start Date": "Start Date",
   "End Date": "End Date",
-  "Multiple Days": "Multiple Days",
+  "Multiple Dates": "Multiple Dates",
   "Total Hours": "Total Hours",
   "Activity Description": "Activity Description",
   "Activity TextArea": "Tell us about your volunteer experience!",

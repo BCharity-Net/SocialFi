@@ -5,6 +5,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import Link from 'next/link'
 import React, { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { NotificationProfileAvatar, NotificationProfileName } from '../Profile'
 
@@ -15,6 +16,7 @@ interface Props {
 }
 
 const CommentNotification: FC<Props> = ({ notification }) => {
+  const { t } = useTranslation('common')
   return (
     <div className="flex justify-between items-start">
       <div className="space-y-2 w-4/5">
@@ -25,7 +27,7 @@ const CommentNotification: FC<Props> = ({ notification }) => {
         <div className="ml-9">
           <NotificationProfileName profile={notification?.profile} />{' '}
           <span className="text-gray-600 dark:text-gray-400">
-            commented on your{' '}
+            {t('Commented on')}
           </span>
           <Link href={`/posts/${notification?.comment?.commentOn?.id}`}>
             <a

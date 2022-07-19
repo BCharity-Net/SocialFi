@@ -4,6 +4,7 @@ import { UserAddIcon } from '@heroicons/react/solid'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import React, { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAppPersistStore } from 'src/store/app'
 
 import { NotificationProfileAvatar, NotificationProfileName } from '../Profile'
@@ -19,6 +20,7 @@ interface Props {
 }
 
 const FollowerNotification: FC<Props> = ({ notification }) => {
+  const { t } = useTranslation('common')
   const { currentUser } = useAppPersistStore()
   const isSuperFollow =
     currentUser?.followModule?.__typename === 'FeeFollowModuleSettings'
@@ -49,7 +51,7 @@ const FollowerNotification: FC<Props> = ({ notification }) => {
             <NotificationWalletProfileName wallet={notification?.wallet} />
           )}{' '}
           <span className="text-gray-600 dark:text-gray-400">
-            {isSuperFollow ? 'super' : ''} followed you
+            {` ${isSuperFollow ? 'super' : ''} ${t('Followed you')}`}
           </span>
         </div>
       </div>

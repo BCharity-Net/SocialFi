@@ -14,6 +14,10 @@ module.exports = withAxiom(
         async rewrites() {
           return [
             {
+              source: '/sitemap.xml',
+              destination: 'https://sitemap.bcharity.net/sitemap.xml'
+            },
+            {
               source: '/sitemaps/:match*',
               destination: 'https://sitemap.bcharity.net/sitemaps/:match*'
             }
