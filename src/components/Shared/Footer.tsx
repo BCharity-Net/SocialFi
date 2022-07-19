@@ -34,14 +34,14 @@ const Footer: FC = () => {
         target="_blank"
         rel="noreferrer noopener"
       >
-        Twitter
+        {t('Twitter')}
       </a>
       <a
         href="https://t.me/BCharitynet"
         target="_blank"
         rel="noreferrer noopener"
       >
-        Telegram
+        {t('Telegram')}
       </a>
       <a href="" target="_blank" rel="noreferrer noopener">
         {t('Donate')}

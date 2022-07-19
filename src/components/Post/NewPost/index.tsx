@@ -27,6 +27,7 @@ import uploadToIPFS from '@lib/uploadToIPFS'
 import dynamic from 'next/dynamic'
 import { Dispatch, FC, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
   APP_NAME,
   CONNECT_WALLET,
@@ -103,6 +104,7 @@ interface Props {
 }
 
 const NewPost: FC<Props> = ({ setShowModal, hideCard = false }) => {
+  const { t } = useTranslation('common')
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
   const [postContent, setPostContent] = useState<string>('')
@@ -283,7 +285,7 @@ const NewPost: FC<Props> = ({ setShowModal, hideCard = false }) => {
           {error && (
             <ErrorMessage
               className="mb-3"
-              title="Transaction failed!"
+              title={t('Transaction Failed')}
               error={error}
             />
           )}
@@ -354,14 +356,14 @@ const NewPost: FC<Props> = ({ setShowModal, hideCard = false }) => {
                 onClick={createPost}
               >
                 {isUploading
-                  ? 'Uploading to IPFS'
+                  ? t('Uploading')
                   : typedDataLoading
-                  ? 'Generating Post'
+                  ? t('Generating post')
                   : signLoading
-                  ? 'Sign'
+                  ? t('Sign1')
                   : writeLoading || broadcastLoading
-                  ? 'Send'
-                  : 'Post'}
+                  ? t('Send')
+                  : t('Post')}
               </Button>
             </div>
           </div>

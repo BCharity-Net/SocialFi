@@ -8,6 +8,7 @@ import { ExclamationIcon, MinusIcon, PlusIcon } from '@heroicons/react/outline'
 import { getModule } from '@lib/getModule'
 import React, { Dispatch, FC, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { useSendTransaction, useWaitForTransaction } from 'wagmi'
 
 const GENERATE_ALLOWANCE_QUERY = gql`
@@ -35,6 +36,7 @@ const AllowanceButton: FC<Props> = ({
   allowed,
   setAllowed
 }) => {
+  const { t } = useTranslation('common')
   const [showWarningModal, setShowWarninModal] = useState<boolean>(false)
   const [generateAllowanceQuery, { loading: queryLoading }] = useLazyQuery(
     GENERATE_ALLOWANCE_QUERY
@@ -94,7 +96,7 @@ const AllowanceButton: FC<Props> = ({
       }
       onClick={() => handleAllowance(module.currency, '0', module.module)}
     >
-      Revoke
+      {t('Revoke')}
     </Button>
   ) : (
     <>
@@ -113,12 +115,12 @@ const AllowanceButton: FC<Props> = ({
       >
         <div className="p-5 space-y-3">
           <WarningMessage
-            title="Handle with care!"
+            title={t('Handle with care')}
             message={
               <div className="leading-6">
-                Please make sure that if you allow this module you will
-                automatically be detected with the amount if you <b>collect</b>,
-                <b> fund</b> and <b>super follow</b>.
+                {t('Care 1')}
+                <b>{t('Collect')}</b>,<b> {t('fund')}</b> {t('And')}{' '}
+                <b>{t('Super follow')}</b>.
               </div>
             }
           />

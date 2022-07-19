@@ -360,7 +360,10 @@ const Profile: FC<Props> = ({ profile }) => {
             <div className="label">{t('Enroll beta')}</div>
             <div className="flex items-center space-x-2">
               <Toggle on={beta} setOn={setBeta} />
-              <div>Enroll to {APP_NAME} Beta</div>
+              <div>
+                {t('Enroll beta')}
+                {APP_NAME} {t('Beta')}
+              </div>
             </div>
           </div>
           <div className="pt-4 space-y-2">
@@ -398,7 +401,6 @@ const Profile: FC<Props> = ({ profile }) => {
             >
               {' '}
               {t('Save')}
-              Save
             </Button>
             {writeData?.hash ?? broadcastData?.broadcast?.txHash ? (
               <IndexStatus

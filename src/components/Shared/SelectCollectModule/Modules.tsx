@@ -9,6 +9,7 @@ import { FEE_DATA_TYPE, getModule } from '@lib/getModule'
 import Logger from '@lib/logger'
 import clsx from 'clsx'
 import { Dispatch, FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import FeeEntry from './FeeEntry'
 
@@ -44,6 +45,7 @@ const Modules: FC<Props> = ({
   setShowModal,
   setFeeData
 }) => {
+  const { t } = useTranslation('common')
   const { error, data, loading } = useQuery(MODULES_QUERY, {
     onCompleted() {
       Logger.log('[Query]', `Fetched enabled modules`)
@@ -65,13 +67,13 @@ const Modules: FC<Props> = ({
     return (
       <div className="py-3.5 px-5 space-y-2 font-bold text-center">
         <Spinner size="md" className="mx-auto" />
-        <div>Loading your modules</div>
+        <div>{t('Loading modules')}</div>
       </div>
     )
 
   return (
     <div className="py-3.5 px-5 space-y-3">
-      <ErrorMessage title="Failed to load modules" error={error} />
+      <ErrorMessage title={t('Failed to load modules')} error={error} />
       {showFeeEntry ? (
         <FeeEntry
           selectedModule={selectedModule}

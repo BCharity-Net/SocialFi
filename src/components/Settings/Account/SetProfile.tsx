@@ -206,7 +206,7 @@ const SetProfile: FC = () => {
         <div className="flex flex-col space-y-2">
           <Button
             className="ml-auto"
-            type="submit"
+            type={t('Submit')}
             disabled={
               typedDataLoading ||
               signLoading ||

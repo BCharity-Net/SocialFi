@@ -2,6 +2,7 @@ import Slug from '@components/Shared/Slug'
 import { Mirror } from '@generated/types'
 import { HeartIcon } from '@heroicons/react/solid'
 import React, { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   mirror: Mirror
@@ -9,6 +10,7 @@ interface Props {
 }
 
 const ReferralAlert: FC<Props> = ({ mirror, referralFee = 0 }) => {
+  const { t } = useTranslation('common')
   if (mirror?.__typename !== 'Mirror' || referralFee === 0) return null
 
   return (
@@ -17,7 +19,7 @@ const ReferralAlert: FC<Props> = ({ mirror, referralFee = 0 }) => {
       <Slug slug={mirror?.profile?.handle} prefix="@" />
       <span>
         {' '}
-        will get <b>{referralFee}%</b> referral fee
+        {t('Will get')} <b>{referralFee}%</b> {t('Referral 1')}
       </span>
     </div>
   )

@@ -4,6 +4,7 @@ import { Profile } from '@generated/types'
 import { StarIcon } from '@heroicons/react/outline'
 import dynamic from 'next/dynamic'
 import { Dispatch, FC, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import Loader from '../Loader'
 import Slug from '../Slug'
@@ -29,6 +30,7 @@ const SuperFollow: FC<Props> = ({
   showText = false,
   again = false
 }) => {
+  const { t } = useTranslation('common')
   const [showFollowModal, setShowFollowModal] = useState<boolean>(false)
 
   return (
@@ -38,7 +40,7 @@ const SuperFollow: FC<Props> = ({
         variant="super"
         outline
         onClick={() => setShowFollowModal(!showFollowModal)}
-        aria-label="Super Follow"
+        aria-label={t('Super follow')}
         icon={<StarIcon className="w-4 h-4" />}
       >
         {showText && `Super follow`}
@@ -46,7 +48,7 @@ const SuperFollow: FC<Props> = ({
       <Modal
         title={
           <span>
-            Super follow <Slug slug={profile?.handle} prefix="@" />{' '}
+            {t('Super follow')} <Slug slug={profile?.handle} prefix="@" />{' '}
             {again ? 'again' : ''}
           </span>
         }
