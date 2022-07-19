@@ -1,16 +1,9 @@
-import Collectors from '@components/Shared/Collectors'
 import Markup from '@components/Shared/Markup'
 import { Card } from '@components/UI/Card'
-import { Modal } from '@components/UI/Modal'
 import { BCharityPost } from '@generated/bcharitytypes'
-import { ClockIcon, UsersIcon } from '@heroicons/react/outline'
 import imagekitURL from '@lib/imagekitURL'
-import React, { FC, ReactNode, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import React, { FC, ReactNode } from 'react'
 import { STATIC_ASSETS } from 'src/constants'
-import { useAppPersistStore } from 'src/store/app'
-
-import Verify from './Verify'
 
 const Badge: FC<BadgeProps> = ({ title, value }) => (
   <div className="flex bg-gray-200 rounded-full border border-gray-300 dark:bg-gray-800 dark:border-gray-700 text-[12px] w-fit">
@@ -31,9 +24,6 @@ interface Props {
 }
 
 const Hours: FC<Props> = ({ post }) => {
-  const { t } = useTranslation('common')
-  const { currentUser } = useAppPersistStore()
-  const [showVerifyModal, setShowVerifyModal] = useState<boolean>(false)
   const cover = post?.metadata?.cover?.original?.url
 
   return (
@@ -53,68 +43,35 @@ const Hours: FC<Props> = ({ post }) => {
         }}
       />
       <div className="p-5">
-        <div className="mr-0 space-y-1 sm:mr-16">
-          <div className="text-xl font-bold">
-            {' '}
-            VHR Submission for {post.metadata.name},{' '}
-            {`${post.metadata.attributes[2].value} `}
-            {!(
-              post.metadata.attributes[2].value ===
-              post.metadata.attributes[3].value
-            ) && `to ${post.metadata.attributes[3].value}`}
-          </div>
-          <div className="block justify-between items-center sm:flex">
-            <div className="text-sm leading-7 whitespace-pre-wrap break-words float rig">
-              <Markup>{post.metadata.description}</Markup>
-            </div>
-            {currentUser ? (
-              <div className="pt-3 sm:pt-0">
-                <Verify post={post} />
+        <div className="mr-0 space-y-1 sm:mr-16"></div>
+
+        <div className="text-xl font-bold">
+          {' '}
+          VHR Submission for {post.metadata.name},{' '}
+          {`${post.metadata.attributes[2].value} `}
+          {!(
+            post.metadata.attributes[2].value ===
+            post.metadata.attributes[3].value
+          ) && `to ${post.metadata.attributes[3].value}`}
+        </div>
+
+        <br></br>
+
+        <div className="text-sm leading-7 whitespace-pre-wrap break-words">
+          <Markup>{post.metadata.description}</Markup>
+        </div>
+
+        <br></br>
+
+        <div className="text-sm leading-7 whitespace-pre-wrap break-words">
+          <Badge
+            title={
+              <div className="flex items-center space-x-1">
+                <div>Total Hours</div>
               </div>
-            ) : null}
-          </div>
-          <div
-            className="block sm:flex items-center !my-3 space-y-2 sm:space-y-0 sm:space-x-3"
-            data-test="fundraise-meta"
-          >
-            {post?.stats?.totalAmountOfCollects > 0 && (
-              <>
-                <button
-                  type="button"
-                  className="text-sm"
-                  onClick={() => setShowVerifyModal(!showVerifyModal)}
-                >
-                  <Badge
-                    title={
-                      <div className="flex items-center space-x-1">
-                        <UsersIcon className="w-3 h-3" />
-                        <div>{t('Collects')}</div>
-                      </div>
-                    }
-                    value={post?.stats?.totalAmountOfCollects}
-                  />
-                </button>
-                <Modal
-                  title="Verify"
-                  icon={<ClockIcon className="w-5 h-5 text-brand" />}
-                  show={showVerifyModal}
-                  onClose={() => setShowVerifyModal(false)}
-                >
-                  <Collectors pubId={post?.pubId ?? post?.id} />
-                </Modal>
-              </>
-            )}
-            <div className="text-sm">
-              <Badge
-                title={
-                  <div className="flex items-center space-x-1">
-                    <div>Total Hours</div>
-                  </div>
-                }
-                value={post.metadata.attributes[4].value}
-              />
-            </div>
-          </div>
+            }
+            value={post.metadata.attributes[4].value}
+          />
         </div>
       </div>
 

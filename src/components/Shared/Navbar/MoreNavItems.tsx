@@ -1,7 +1,6 @@
 import { Menu, Transition } from '@headlessui/react'
 import {
   CashIcon,
-  ClockIcon,
   SupportIcon,
   UserIcon,
   UsersIcon
@@ -82,7 +81,7 @@ const MoreNavItems: FC = () => {
                     }
                   >
                     <div className="flex items-center space-x-1.5">
-                      <ClockIcon className="w-4 h-4" />
+                      <CashIcon className="w-4 h-4" />
                       <div>{t('Verify Hours')}</div>
                     </div>
                   </Menu.Item>
