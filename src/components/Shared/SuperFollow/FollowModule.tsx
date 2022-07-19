@@ -20,6 +20,7 @@ import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
 import { Dispatch, FC, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import {
   CONNECT_WALLET,
   ERROR_MESSAGE,
@@ -108,6 +109,7 @@ const FollowModule: FC<Props> = ({
   setFollowersCount,
   again
 }) => {
+  const { t } = useTranslation('common')
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
   const [allowed, setAllowed] = useState<boolean>(true)
@@ -281,7 +283,7 @@ const FollowModule: FC<Props> = ({
           {again ? 'again' : ''}
         </div>
         <div className="text-gray-500">
-          Follow {again ? 'again' : ''} and get some awesome perks!
+          Follow {again ? 'again' : ''} {t('Get perks')}
         </div>
       </div>
       <div className="flex items-center py-2 space-x-1.5">
@@ -303,7 +305,7 @@ const FollowModule: FC<Props> = ({
       <div className="flex items-center space-x-2">
         <UserIcon className="w-4 h-4 text-gray-500" />
         <div className="space-x-1.5">
-          <span>Recipient:</span>
+          <span>{t('Recipient 1')}</span>
           <a
             href={`${POLYGONSCAN_URL}/address/${followModule?.recipient}`}
             target="_blank"
@@ -315,34 +317,36 @@ const FollowModule: FC<Props> = ({
         </div>
       </div>
       <div className="pt-5 space-y-2">
-        <div className="text-lg font-bold">Perks you get</div>
+        <div className="text-lg font-bold">{t('Perks')}</div>
         <ul className="space-y-1 text-sm text-gray-500">
           <li className="flex space-x-2 tracking-normal leading-6">
             <div>•</div>
             <div>
-              You can comment on @{profile?.handle}&rsquo;s publications
-            </div>
-          </li>
-          <li className="flex space-x-2 tracking-normal leading-6">
-            <div>•</div>
-            <div>You can collect @{profile?.handle}&rsquo;s publications</div>
-          </li>
-          <li className="flex space-x-2 tracking-normal leading-6">
-            <div>•</div>
-            <div>
-              You will get super follow badge in @{profile?.handle}&rsquo;s
-              profile
+              {t('You can comment on')} {profile?.handle}&rsquo;
+              {t('s publications')}
             </div>
           </li>
           <li className="flex space-x-2 tracking-normal leading-6">
             <div>•</div>
             <div>
-              You will have high voting power if you followed multiple times
+              {t('You can collect')} {profile?.handle}&rsquo;
+              {t('s publications')}
             </div>
           </li>
           <li className="flex space-x-2 tracking-normal leading-6">
             <div>•</div>
-            <div>More coming soon™</div>
+            <div>
+              {t('Super follow badge')}
+              {profile?.handle}&rsquo;{t('s profile')}
+            </div>
+          </li>
+          <li className="flex space-x-2 tracking-normal leading-6">
+            <div>•</div>
+            <div>{t('High voting power')}</div>
+          </li>
+          <li className="flex space-x-2 tracking-normal leading-6">
+            <div>•</div>
+            <div>{t('More coming')}</div>
           </li>
         </ul>
       </div>
@@ -373,7 +377,7 @@ const FollowModule: FC<Props> = ({
                 )
               }
             >
-              Super follow {again ? 'again' : 'now'}
+              {t('Super follow')} {again ? 'again' : 'now'}
             </Button>
           ) : (
             <WarningMessage
@@ -386,7 +390,7 @@ const FollowModule: FC<Props> = ({
         ) : (
           <div className="mt-5">
             <AllowanceButton
-              title="Allow follow module"
+              title={t('Allow follow module')}
               module={allowanceData?.approvedModuleAllowanceAmount[0]}
               allowed={allowed}
               setAllowed={setAllowed}

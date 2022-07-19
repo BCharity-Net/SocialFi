@@ -6,6 +6,7 @@ import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
 import { motion } from 'framer-motion'
 import { ChangeEvent, Dispatch, FC, useId, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   attachments: BCharityAttachment[]
@@ -13,6 +14,7 @@ interface Props {
 }
 
 const Attachment: FC<Props> = ({ attachments, setAttachments }) => {
+  const { t } = useTranslation('common')
   const [loading, setLoading] = useState<boolean>(false)
   const id = useId()
 
@@ -62,7 +64,7 @@ const Attachment: FC<Props> = ({ attachments, setAttachments }) => {
       <motion.button
         whileTap={{ scale: 0.9 }}
         type="button"
-        aria-label="Choose Attachment"
+        aria-label={t('Choose attachment')}
       >
         <label className="flex gap-1 items-center cursor-pointer" htmlFor={id}>
           {loading ? (

@@ -4,6 +4,7 @@ import { Spinner } from '@components/UI/Spinner'
 import { ArrowRightIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
 import React, { FC } from 'react'
+import { useTranslation } from 'react-i18next'
 
 const HAS_PUBLICATION_INDEXED_QUERY = gql`
   query HasPubicationIndexed($request: PublicationQueryRequest!) {
@@ -24,6 +25,7 @@ interface Props {
 }
 
 const Pending: FC<Props> = ({ txHash, indexing, indexed, type, urlPrefix }) => {
+  const { t } = useTranslation('common')
   const { data, loading } = useQuery(HAS_PUBLICATION_INDEXED_QUERY, {
     variables: {
       request: { txHash }
@@ -49,7 +51,7 @@ const Pending: FC<Props> = ({ txHash, indexing, indexed, type, urlPrefix }) => {
                   className="mx-auto"
                   icon={<ArrowRightIcon className="mr-1 w-4 h-4" />}
                 >
-                  Go to {type}
+                  {t('Go to')} {type}
                 </Button>
               </a>
             </Link>

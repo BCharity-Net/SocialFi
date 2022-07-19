@@ -199,7 +199,7 @@ const List: FC = () => {
     return (
       <ErrorMessage
         className="m-3"
-        title="Failed to load notifications"
+        title={t('Notification failed')}
         error={error}
       />
     )
