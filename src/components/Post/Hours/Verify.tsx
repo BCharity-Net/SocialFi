@@ -1,26 +1,41 @@
 import { LensHubProxy } from '@abis/LensHubProxy'
 import { VHR_ABI } from '@abis/VHR_ABI'
 import { gql, useMutation, useQuery } from '@apollo/client'
+import { CREATE_COMMENT_TYPED_DATA_MUTATION } from '@components/Comment/NewComment'
 import { Button } from '@components/UI/Button'
 import { Spinner } from '@components/UI/Spinner'
 import { BCharityPost } from '@generated/bcharitytypes'
-import { CreateCollectBroadcastItemResult } from '@generated/types'
+import {
+  CreateCollectBroadcastItemResult,
+  CreateCommentBroadcastItemResult,
+  EnabledModule
+} from '@generated/types'
 import { BROADCAST_MUTATION } from '@gql/BroadcastMutation'
 import { CollectModuleFields } from '@gql/CollectModuleFields'
 import { CheckCircleIcon } from '@heroicons/react/outline'
+import {
+  defaultFeeData,
+  defaultModuleData,
+  FEE_DATA_TYPE,
+  getModule
+} from '@lib/getModule'
 import Logger from '@lib/logger'
 import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
+import uploadToIPFS from '@lib/uploadToIPFS'
 import React, { FC, useState } from 'react'
 import toast from 'react-hot-toast'
 import {
+  APP_NAME,
   CONNECT_WALLET,
   ERROR_MESSAGE,
   ERRORS,
   LENSHUB_PROXY,
-  RELAY_ON
+  RELAY_ON,
+  VHR_TOKEN
 } from 'src/constants'
 import { useAppPersistStore, useAppStore } from 'src/store/app'
+import { v4 as uuid } from 'uuid'
 import { useAccount, useContractWrite, useSignTypedData } from 'wagmi'
 
 import IndexStatus from '../../Shared/IndexStatus'
@@ -94,17 +109,13 @@ const Verify: FC<Props> = ({ post }) => {
   const { isAuthenticated, currentUser } = useAppPersistStore()
   const { address } = useAccount()
   const [hoursAddressDisable, setHoursAddressDisable] = useState<boolean>(false)
+  const [selectedModule, setSelectedModule] =
+    useState<EnabledModule>(defaultModuleData)
+  const [feeData, setFeeData] = useState<FEE_DATA_TYPE>(defaultFeeData)
   const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
     onError(error) {
       toast.error(error?.message)
     }
-  })
-
-  const { write: writeVhrTransfer } = useContractWrite({
-    addressOrName: '0x28EE241ab245699968F2980D3D1b1d23120ab8BE',
-    contractInterface: VHR_ABI,
-    functionName: 'transfer',
-    args: [post.profile.ownedBy, post.metadata.attributes[4].value]
   })
 
   useQuery(COLLECT_QUERY, {
@@ -123,14 +134,159 @@ const Verify: FC<Props> = ({ post }) => {
     }
   })
 
+  const { isLoading: vhrWriteLoading, write: writeVhrTransfer } =
+    useContractWrite({
+      addressOrName: VHR_TOKEN,
+      contractInterface: VHR_ABI,
+      functionName: 'transfer',
+      args: [post.profile.ownedBy, post.metadata.attributes[4].value],
+      onSuccess(data) {
+        createComment(data.hash)
+        createCollect()
+      }
+    })
+
+  const { isLoading: commentWriteLoading, write: commentWrite } =
+    useContractWrite({
+      addressOrName: LENSHUB_PROXY,
+      contractInterface: LensHubProxy,
+      functionName: 'commentWithSig',
+      onSuccess() {
+        setSelectedModule(defaultModuleData)
+        setFeeData(defaultFeeData)
+      },
+      onError(error: any) {
+        toast.error(error?.data?.message ?? error?.message)
+      }
+    })
+
+  const [commentBroadcast, { loading: commentBroadcastLoading }] = useMutation(
+    BROADCAST_MUTATION,
+    {
+      onError(error) {
+        if (error.message === ERRORS.notMined) {
+          toast.error(error.message)
+        }
+        Logger.error('[Relay Error]', error.message)
+      }
+    }
+  )
+  const [createCommentTypedData] = useMutation(
+    CREATE_COMMENT_TYPED_DATA_MUTATION,
+    {
+      async onCompleted({
+        createCommentTypedData
+      }: {
+        createCommentTypedData: CreateCommentBroadcastItemResult
+      }) {
+        Logger.log('[Mutation]', 'Generated createCommentTypedData')
+        const { id, typedData } = createCommentTypedData
+        const {
+          profileId,
+          profileIdPointed,
+          pubIdPointed,
+          contentURI,
+          collectModule,
+          collectModuleInitData,
+          referenceModule,
+          referenceModuleData,
+          referenceModuleInitData,
+          deadline
+        } = typedData?.value
+
+        try {
+          const signature = await signTypedDataAsync({
+            domain: omit(typedData?.domain, '__typename'),
+            types: omit(typedData?.types, '__typename'),
+            value: omit(typedData?.value, '__typename')
+          })
+          setUserSigNonce(userSigNonce + 1)
+          const { v, r, s } = splitSignature(signature)
+          const sig = { v, r, s, deadline }
+          const inputStruct = {
+            profileId,
+            profileIdPointed,
+            pubIdPointed,
+            contentURI,
+            collectModule,
+            collectModuleInitData,
+            referenceModule,
+            referenceModuleData,
+            referenceModuleInitData,
+            sig
+          }
+          if (RELAY_ON) {
+            const {
+              data: { broadcast: result }
+            } = await commentBroadcast({
+              variables: { request: { id, signature } }
+            })
+
+            if ('reason' in result) commentWrite({ args: inputStruct })
+          } else {
+            commentWrite({ args: inputStruct })
+          }
+        } catch (error) {
+          Logger.warn('[Sign Error]', error)
+        }
+      },
+      onError(error) {
+        toast.error(error.message ?? ERROR_MESSAGE)
+      }
+    }
+  )
+
+  const createComment = async (hash: string) => {
+    if (!isAuthenticated) return toast.error(CONNECT_WALLET)
+
+    // TODO: Add animated_url support
+    const { path } = await uploadToIPFS({
+      version: '1.0.0',
+      metadata_id: uuid(),
+      description: 'VHR transfer transaction token',
+      content: hash,
+      name: `VHR transfer transaction token`,
+      contentWarning: null, // TODO
+      attributes: [
+        {
+          traitType: 'string',
+          key: 'type',
+          value: 'comment'
+        }
+      ],
+      createdOn: new Date(),
+      appId: APP_NAME
+    }).finally(() => {})
+    createCommentTypedData({
+      variables: {
+        options: { overrideSigNonce: userSigNonce },
+        request: {
+          profileId: currentUser?.id,
+          publicationId:
+            post?.__typename === 'Mirror'
+              ? post?.mirrorOf?.id
+              : post?.pubId ?? post?.id,
+          contentURI: `https://ipfs.infura.io/ipfs/${path}`,
+          collectModule: feeData.recipient
+            ? {
+                [getModule(selectedModule.moduleName).config]: feeData
+              }
+            : getModule(selectedModule.moduleName).config,
+          referenceModule: {
+            followerOnlyReferenceModule: false
+          }
+        }
+      }
+    })
+  }
+
   const onCompleted = () => {
     toast.success('Transaction submitted successfully!')
   }
-
   const {
-    data: writeData,
-    isLoading: writeLoading,
-    write
+    data: collectWriteData,
+    isLoading: collectWriteLoading,
+    write: collectWrite
   } = useContractWrite({
     addressOrName: LENSHUB_PROXY,
     contractInterface: LensHubProxy,
@@ -142,17 +298,18 @@ const Verify: FC<Props> = ({ post }) => {
       toast.error(error?.data?.message ?? error?.message)
     }
   })
-
-  const [broadcast, { data: broadcastData, loading: broadcastLoading }] =
-    useMutation(BROADCAST_MUTATION, {
-      onCompleted,
-      onError(error) {
-        if (error.message === ERRORS.notMined) {
-          toast.error(error.message)
-        }
-        Logger.error('[Relay Error]', error.message)
+  const [
+    collectBroadcast,
+    { data: collectBroadcastData, loading: collectBroadcastLoading }
+  ] = useMutation(BROADCAST_MUTATION, {
+    onCompleted,
+    onError(error) {
+      if (error.message === ERRORS.notMined) {
+        toast.error(error.message)
       }
-    })
+      Logger.error('[Relay Error]', error.message)
+    }
+  })
   const [createCollectTypedData, { loading: typedDataLoading }] = useMutation(
     CREATE_COLLECT_TYPED_DATA_MUTATION,
     {
@@ -185,11 +342,13 @@ const Verify: FC<Props> = ({ post }) => {
           if (RELAY_ON) {
             const {
               data: { broadcast: result }
-            } = await broadcast({ variables: { request: { id, signature } } })
+            } = await collectBroadcast({
+              variables: { request: { id, signature } }
+            })
 
-            if ('reason' in result) write({ args: inputStruct })
+            if ('reason' in result) collectWrite({ args: inputStruct })
           } else {
-            write({ args: inputStruct })
+            collectWrite({ args: inputStruct })
           }
         } catch (error) {
           Logger.warn('[Sign Error]', error)
@@ -207,7 +366,7 @@ const Verify: FC<Props> = ({ post }) => {
     createCollectTypedData({
       variables: {
         options: { overrideSigNonce: userSigNonce },
-        request: { publicationId: post.id }
+        request: { publicationId: post?.pubId ?? post?.id }
       }
     })
   }
@@ -220,20 +379,25 @@ const Verify: FC<Props> = ({ post }) => {
             className="sm:mt-0 sm:ml-auto"
             onClick={() => {
               writeVhrTransfer()
-              createCollect()
             }}
             disabled={
               typedDataLoading ||
               signLoading ||
-              writeLoading ||
-              broadcastLoading
+              vhrWriteLoading ||
+              commentWriteLoading ||
+              collectWriteLoading ||
+              commentBroadcastLoading ||
+              collectBroadcastLoading
             }
             variant="success"
             icon={
               typedDataLoading ||
               signLoading ||
-              writeLoading ||
-              broadcastLoading ? (
+              vhrWriteLoading ||
+              commentWriteLoading ||
+              collectWriteLoading ||
+              commentBroadcastLoading ||
+              collectBroadcastLoading ? (
                 <Spinner variant="success" size="xs" />
               ) : (
                 <CheckCircleIcon className="w-4 h-4" />
@@ -242,13 +406,13 @@ const Verify: FC<Props> = ({ post }) => {
           >
             Verify
           </Button>
-          {writeData?.hash ?? broadcastData?.broadcast?.txHash ? (
+          {collectWriteData?.hash ?? collectBroadcastData?.broadcast?.txHash ? (
             <div className="mt-2">
               <IndexStatus
                 txHash={
-                  writeData?.hash
-                    ? writeData?.hash
-                    : broadcastData?.broadcast?.txHash
+                  collectWriteData?.hash
+                    ? collectWriteData?.hash
+                    : collectBroadcastData?.broadcast?.txHash
                 }
               />
             </div>
