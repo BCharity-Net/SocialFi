@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
-import { GridItemFour, GridItemSix, GridLayout } from '@components/GridLayout'
+import { GridItemSix, GridLayout } from '@components/GridLayout'
 import SinglePost from '@components/Post/SinglePost'
 import { Card } from '@components/UI/Card'
 import { Spinner } from '@components/UI/Spinner'
@@ -54,6 +54,7 @@ const Fundraisers: FC<Props> = ({}) => {
   const { t } = useTranslation('common')
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
   const [publications, setPublications] = useState<BCharityPost[]>([])
+
   const { currentUser } = useAppPersistStore()
   const { data, loading, error, fetchMore } = useQuery(EXPLORE_FEED_QUERY, {
     variables: {
@@ -69,8 +70,8 @@ const Fundraisers: FC<Props> = ({}) => {
       const fundraise = data?.explorePublications?.items.filter((i: any) => {
         return i.metadata.attributes[0].value == 'fundraise'
       })
-      console.log(fundraise)
-      setPageInfo(data?.explorePublications?.pageInfo)
+      console.log('amount of fundraise posts found ', fundraise.length)
+      setPageInfo(fundraise)
       setPublications(fundraise)
       Logger.log(
         '[Query]',
@@ -93,12 +94,10 @@ const Fundraisers: FC<Props> = ({}) => {
         }
       })
       const fundraise = data?.publications?.items.filter((i: any) => {
-        console.log('fundraise', i.metadata.attributes[0].value)
         return i.metadata.attributes[0].value == 'fundraise'
       })
-      console.log('filter ', fundraise)
-      setPageInfo(data?.explorePublications?.pageInfo)
-      setPublications([...publications, ...data?.explorePublications?.items]) //fundraise
+      setPageInfo(fundraise)
+      setPublications([...publications, fundraise]) //data?.explorePublications?.items
       Logger.log(
         '[Query]',
         `Fetched next 10 explore publications FeedType:${feedType} Next:${pageInfo?.next}`
@@ -108,23 +107,27 @@ const Fundraisers: FC<Props> = ({}) => {
   // {publications?.map((post: BCharityPost, index: number) => (
   //   <SinglePost key={`${post?.id}_${index}`} post={post} />
   // ))}
+  // var post = publications.map((post: BCharityPost, index: number) => {
+  //   console.log('post', post)
+  //   return post
+  // })
+
   return (
     <GridLayout>
       <SEO title={`Fundraisers • ${APP_NAME}`} />
+
       {publications?.map((post: BCharityPost, index: number) => (
         <GridItemSix key={`${post?.id}_${index}`}>
           <Card>
             <SinglePost post={post} />
           </Card>
+          {pageInfo?.next && publications.length !== pageInfo?.totalCount && (
+            <span ref={observe} className="flex justify-center p-5">
+              <Spinner size="sm" />
+            </span>
+          )}
         </GridItemSix>
       ))}
-      <GridItemFour>
-        {pageInfo?.next && publications.length !== pageInfo?.totalCount && (
-          <span ref={observe} className="flex justify-center p-5">
-            <Spinner size="sm" />
-          </span>
-        )}
-      </GridItemFour>
     </GridLayout>
   )
 }
