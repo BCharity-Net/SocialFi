@@ -21,7 +21,6 @@ const Hours: FC<Props> = ({ post }) => {
   const { currentUser } = useAppPersistStore()
   const [showVerifyModal, setShowVerifyModal] = useState<boolean>(false)
   const cover = post?.metadata?.cover?.original?.url
-
   return (
     <Card forceRounded testId="hours">
       <div
