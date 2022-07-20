@@ -47,6 +47,9 @@ const NOTIFICATIONS_QUERY = gql`
                   value
                 }
               }
+              profile {
+                handle
+              }
               hidden
             }
           }
@@ -109,7 +112,7 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
             })
           })
         return {
-          from: i.metadata.name,
+          from: i.profile.handle,
           description: i.metadata.description,
           startDate: i.metadata.attributes[2].value,
           endDate: i.metadata.attributes[3].value,
@@ -124,13 +127,13 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
     )
   }
 
-  const handleNFTData = (data: any, index: number, id: string) =>
+  const handleNFTData = (data: any, index: number, id: string, name: string) =>
     fetch(data)
       .then((i) => i)
       .then((result) => {
         result.json().then((metadata) => {
           tableData[index] = {
-            from: metadata.name,
+            from: name,
             description: metadata.description,
             startDate: metadata.attributes[2].value,
             endDate: metadata.attributes[3].value,
@@ -288,7 +291,12 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
                 <NFTDetails
                   address={addressData[index]}
                   callback={(data: any) => {
-                    handleNFTData(data, index, tableData[index].verified.postID)
+                    handleNFTData(
+                      data,
+                      index,
+                      tableData[index].verified.postID,
+                      tableData[index].from
+                    )
                   }}
                 />
               </>
