@@ -69,7 +69,6 @@ const Fundraisers: FC<Props> = ({}) => {
       const fundraise = data?.explorePublications?.items.filter((i: any) => {
         return i.metadata.attributes[0].value == 'fundraise'
       })
-      console.log(fundraise)
       setPageInfo(data?.explorePublications?.pageInfo)
       setPublications(fundraise)
       Logger.log(
@@ -93,7 +92,6 @@ const Fundraisers: FC<Props> = ({}) => {
         }
       })
       const fundraise = data?.publications?.items.filter((i: any) => {
-        console.log('fundraise', i.metadata.attributes[0].value)
         return i.metadata.attributes[0].value == 'fundraise'
       })
       console.log('filter ', fundraise)
