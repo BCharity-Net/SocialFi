@@ -450,8 +450,9 @@ const Hours: NextPage = () => {
                 {...form.register('totalHours')}
               />
 
-              <TextArea
+              <Input
                 label={t('Program')}
+                type='text'
                 placeholder={t('Volunteer program name(s)')}
                 {...form.register('program')}
               />
