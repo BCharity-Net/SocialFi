@@ -142,7 +142,6 @@ const Verify: FC<Props> = ({ post }) => {
       args: [post.profile.ownedBy, post.metadata.attributes[4].value],
       onSuccess(data) {
         createComment(data.hash)
-        createCollect()
       }
     })
 
@@ -379,6 +378,7 @@ const Verify: FC<Props> = ({ post }) => {
             className="sm:mt-0 sm:ml-auto"
             onClick={() => {
               writeVhrTransfer()
+              createCollect()
             }}
             disabled={
               typedDataLoading ||
