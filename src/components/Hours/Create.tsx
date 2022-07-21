@@ -289,11 +289,6 @@ const Hours: NextPage = () => {
           traitType: 'number',
           key: 'totalHours',
           value: totalHours
-        },
-        {
-          traitType: 'media',
-          key: 'media',
-          value: media
         }
       ],
       media: [],
