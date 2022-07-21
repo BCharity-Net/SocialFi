@@ -23,7 +23,7 @@ import splitSignature from '@lib/splitSignature'
 import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
 import uploadToIPFS from '@lib/uploadToIPFS'
 import { NextPage } from 'next'
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, FC, useState } from 'react'
 import { Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -49,11 +49,7 @@ export const PROFILE_QUERY = gql`
     }
   }
 `
-interface Media {
-  displayType: string | null
-  traitType: string
-  value: string
-}
+
 const newHourSchema = object({
   orgName: string()
     .min(2, { message: 'Name should be at least 2 characters' })
@@ -105,6 +101,29 @@ const newHourSchema = object({
     .nullable()
 })
 
+interface Props {
+  media: string
+}
+
+const Media: FC<Props> = ({ media }) => {
+  let attachments = []
+  if (media) attachments = JSON.parse(media)
+  return (
+    <div>
+      {attachments &&
+        attachments.map((i: any) => (
+          <img
+            key="attachment"
+            className="object-cover w-full h-60 rounded-lg"
+            height={240}
+            src={imagekitURL(i.item, 'attachment')}
+            alt={i.item}
+          />
+        ))}
+    </div>
+  )
+}
+
 const Hours: NextPage = () => {
   const { t } = useTranslation('common')
   const [cover, setCover] = useState<string>()
@@ -114,7 +133,7 @@ const Hours: NextPage = () => {
   const [uploading, setUploading] = useState<boolean>(false)
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
-  const [media, setMedia] = useState<Media[]>([])
+  const [media, setMedia] = useState<string>('')
   const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
     onError(error) {
       toast.error(error?.message)
@@ -156,17 +175,10 @@ const Hours: NextPage = () => {
     evt.preventDefault()
     setUploading(true)
     try {
-      if (!evt.target.files) return
-      // const files = Array.from(evt.target.files)
-      // const attachments = await uploadAssetsToIPFS(files)
-      // const result = attachments.map(({type, item}) => {return {displayType: null, traitType: type, value: item}})
-      // const attachment = await uploadAssetsToIPFS()
-      // media.map((item) => {console.log(item)})
-      // console.log(evt.target.files)
-      // setMedia(result)
-
       const attachment = await uploadAssetsToIPFS(evt.target.files)
       if (attachment[0]?.item) {
+        const result = JSON.stringify(attachment)
+        setMedia(result)
         setCover(attachment[0].item)
         setCoverType(attachment[0].type)
       }
@@ -289,6 +301,11 @@ const Hours: NextPage = () => {
           traitType: 'number',
           key: 'totalHours',
           value: totalHours
+        },
+        {
+          traitType: 'string',
+          key: 'media',
+          value: media
         }
       ],
       media: [],
@@ -441,38 +458,16 @@ const Hours: NextPage = () => {
                 {...form.register('description')}
               />
 
-              {/* <>
-              <div></div>
-              console.log(media[0].value)
-              {media && 
-                <img key="imageKey"
-                  className="object-cover w-full h-60 rounded-lg"
-                  height={240}
-                  src={imagekitURL(media[0]?.value, 'attachment')}
-                />
-              }
-              
-              </> */}
-
               <div className="space-y-1.5">
                 <div className="label">{t('Activity Images (Optional)')}</div>
                 <div className="space-y-3">
-                  {cover && (
-                    <img
-                      className="object-cover w-full h-60 rounded-lg"
-                      height={240}
-                      src={imagekitURL(cover, 'attachment')}
-                      alt={cover}
-                    />
-                  )}
-
+                  <Media media={media} />
                   <div className="flex items-center space-x-3">
                     <ChooseFiles
                       onChange={(evt: ChangeEvent<HTMLInputElement>) =>
                         handleUpload(evt)
                       }
                     />
-
                     {uploading && <Spinner size="sm" />}
                   </div>
                 </div>
