@@ -268,7 +268,6 @@ const Hours: NextPage = () => {
     const { path } = await uploadToIPFS({
       version: '1.0.0',
       metadata_id: uuid(),
-      program: program,
       description: description,
       content: `@${orgName} VHR submission`,
       external_url: null,
@@ -304,9 +303,14 @@ const Hours: NextPage = () => {
         },
         {
           traitType: 'string',
+          key: 'program',
+          value: program
+        },
+        {
+          traitType: 'string',
           key: 'media',
           value: media
-        }
+        }, 
       ],
       media: [],
       createdOn: new Date(),
@@ -448,7 +452,7 @@ const Hours: NextPage = () => {
 
               <TextArea
                 label={t('Program')}
-                placeholder={t('Program TextArea')}
+                placeholder={t('Volunteer program name(s)')}
                 {...form.register('program')}
               />
 
