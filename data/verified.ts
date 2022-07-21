@@ -42,5 +42,6 @@ export const testnetVerified = [
   '0x15' /** @yoginth.test */,
   '0x01' /** @lensprotocol.test */,
   '0x02' /** @donosonaumczuk.test */,
+  '0x4084' /** @vanboy.test */,
   '0x03ca' /** @ecslew.test */
 ]
