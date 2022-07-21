@@ -221,9 +221,18 @@ const HourFeed: FC<Props> = ({ profile }) => {
           {
             Header: 'Total Hours',
             accessor: 'totalHours',
-            Cell: (props: { value: number }) => {
+            Cell: (props: { value: number; vhr: string }) => {
+              if (props.vhr === '') {
+                return <a>{props.value}</a>
+              }
+              const url = `${POLYGONSCAN_URL}/tx/${props.vhr}`
               return (
-                <a className="text-brand-500 hover:cursor-pointer">
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-brand-500"
+                >
                   {props.value}{' '}
                   {<ExternalLinkIcon className="w-4 h-4 inline-flex" />}
                 </a>
@@ -290,20 +299,8 @@ const HourFeed: FC<Props> = ({ profile }) => {
                 <tr {...row.getRowProps()}>
                   {row.cells.map((cell, j) => {
                     return (
-                      <td
-                        className="p-4"
-                        onClick={() => {
-                          if (j != 4 || vhrTxnData[index] === '') return
-                          const newWindow = window.open(
-                            `${POLYGONSCAN_URL}/tx/${vhrTxnData[index]}`,
-                            '_blank',
-                            'noopener,noreferrer'
-                          )
-                          if (newWindow) newWindow.opener = null
-                        }}
-                        {...cell.getCellProps()}
-                      >
-                        {cell.render('Cell')}
+                      <td className="p-4" {...cell.getCellProps()}>
+                        {cell.render('Cell', { vhr: vhrTxnData[index] })}
                       </td>
                     )
                   })}
@@ -317,6 +314,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
                     if (publications.length !== 0) {
                       vhrTxnData[index] = publications[0].metadata.content
                       setVhrTxnData(vhrTxnData)
+                      setTableData([...tableData])
                     }
                   }}
                 />
