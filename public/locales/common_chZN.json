@@ -106,9 +106,9 @@
   "Reject": "用户拒绝请求",
 
   "Searching users": "搜索用户",
-  "Following": "您关注的人",
-  "Followers": "追随者",
-  "Follow": "遵循",
+  "Following": "已关注",
+  "Followers": "粉丝",
+  "Follow": "关注",
   "Posts": "帖子",
   "Comments": "评论",
   "Mirrors": "转发",
@@ -222,7 +222,7 @@
   "Allow/revoke modules": "允许/撤销模块",
   "Allowance description": "为了使用收集功能，您需要允许您使用的模块，您可以随时允许和撤销该模块。",
   "Allowance data": "正在加载津贴数据!",
-  "Allow": "允许",
+  "Allow": "捐赠",
   "Limited fee collect": "收费有限",
   "Fee collect": "收费",
   "Fee collect description": "收费模块允许任何追随者收集相关的出版物，只要他们支付由发帖人设定的费用。",
@@ -348,7 +348,7 @@
   "Select file": "选择文件",
 
   "Posted on": "发表于 ",
-  "Follows you": "上关注您",
+  "Follows you": "正关注您",
   "Loading following": "正在加载以下内容",
 
   "Type": "类型",

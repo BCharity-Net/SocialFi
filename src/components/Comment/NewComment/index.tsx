@@ -70,7 +70,7 @@ export const CREATE_COMMENT_TYPED_DATA_MUTATION = gql`
   ) {
     createCommentTypedData(options: $options, request: $request) {
       id
-      expiresAt
+      expiresAt 
       typedData {
         types {
           CommentWithSig {
