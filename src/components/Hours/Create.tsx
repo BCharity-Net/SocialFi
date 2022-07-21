@@ -92,13 +92,13 @@ const newHourSchema = object({
       message: 'Total hours should be a whole number or to one decimal place'
     }),
 
-  program: string().max(40, {
-    message: 'Program should not exceed 40 characters!'
-  }),
+  program: string()
+  .min(1, { message: 'You must write a program name!'})
+  .max(40, { message: 'Program name should not exceed 40 characters!' }),
 
   description: string()
+    .min(1, { message: 'You must write a description!'})
     .max(250, { message: 'Description should not exceed 250 characters' })
-    .nullable()
 })
 
 interface Props {
