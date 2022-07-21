@@ -2,7 +2,7 @@ import { LensHubProxy } from '@abis/LensHubProxy'
 import { gql, useLazyQuery, useMutation } from '@apollo/client'
 import { GridItemEight, GridItemFour, GridLayout } from '@components/GridLayout'
 import { CREATE_POST_TYPED_DATA_MUTATION } from '@components/Post/NewPost'
-import ChooseFile from '@components/Shared/ChooseFile'
+import ChooseFiles from '@components/Shared/ChooseFiles'
 import Pending from '@components/Shared/Pending'
 import SettingsHelper from '@components/Shared/SettingsHelper'
 import { Button } from '@components/UI/Button'
@@ -49,7 +49,11 @@ export const PROFILE_QUERY = gql`
     }
   }
 `
-
+interface Media {
+  displayType: string | null
+  traitType: string
+  value: string
+}
 const newHourSchema = object({
   orgName: string()
     .min(2, { message: 'Name should be at least 2 characters' })
@@ -91,6 +95,11 @@ const newHourSchema = object({
     .regex(/^\d+(?:\.\d{1})?$/, {
       message: 'Total hours should be a whole number or to one decimal place'
     }),
+
+  program: string().max(40, {
+    message: 'Program should not exceed 40 characters!'
+  }),
+
   description: string()
     .max(250, { message: 'Description should not exceed 250 characters' })
     .nullable()
@@ -105,6 +114,7 @@ const Hours: NextPage = () => {
   const [uploading, setUploading] = useState<boolean>(false)
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
+  const [media, setMedia] = useState<Media[]>([])
   const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
     onError(error) {
       toast.error(error?.message)
@@ -146,6 +156,15 @@ const Hours: NextPage = () => {
     evt.preventDefault()
     setUploading(true)
     try {
+      if (!evt.target.files) return
+      // const files = Array.from(evt.target.files)
+      // const attachments = await uploadAssetsToIPFS(files)
+      // const result = attachments.map(({type, item}) => {return {displayType: null, traitType: type, value: item}})
+      // const attachment = await uploadAssetsToIPFS()
+      // media.map((item) => {console.log(item)})
+      // console.log(evt.target.files)
+      // setMedia(result)
+
       const attachment = await uploadAssetsToIPFS(evt.target.files)
       if (attachment[0]?.item) {
         setCover(attachment[0].item)
@@ -228,6 +247,7 @@ const Hours: NextPage = () => {
     startDate: string,
     endDate: string | undefined,
     totalHours: string,
+    program: string | null,
     description: string | null
   ) => {
     if (!isAuthenticated) return toast.error(CONNECT_WALLET)
@@ -236,6 +256,7 @@ const Hours: NextPage = () => {
     const { path } = await uploadToIPFS({
       version: '1.0.0',
       metadata_id: uuid(),
+      program: program,
       description: description,
       content: `@${orgName} VHR submission`,
       external_url: null,
@@ -268,6 +289,11 @@ const Hours: NextPage = () => {
           traitType: 'number',
           key: 'totalHours',
           value: totalHours
+        },
+        {
+          traitType: 'media',
+          key: 'media',
+          value: media
         }
       ],
       media: [],
@@ -326,6 +352,7 @@ const Hours: NextPage = () => {
                 startDate,
                 endDate,
                 totalHours,
+                program,
                 description
               }) => {
                 createHours(
@@ -334,6 +361,7 @@ const Hours: NextPage = () => {
                   startDate,
                   endDate,
                   totalHours,
+                  program,
                   description
                 )
               }}
@@ -379,6 +407,7 @@ const Hours: NextPage = () => {
                   const startDate = form.getValues('startDate')
                   const endDate = form.getValues('endDate')
                   if (endDate === '') form.setValue('endDate', startDate)
+                  console.log('1')
                 }}
                 {...form.register('startDate')}
               />
@@ -391,6 +420,7 @@ const Hours: NextPage = () => {
                     const startDate = form.getValues('startDate')
                     // const endDate = form.getValues('endDate')
                     form.setValue('endDate', startDate)
+                    console.log('2')
                   }}
                   {...form.register('endDate')}
                 />
@@ -403,11 +433,32 @@ const Hours: NextPage = () => {
                 placeholder="5"
                 {...form.register('totalHours')}
               />
+
+              <TextArea
+                label={t('Program')}
+                placeholder={t('Program TextArea')}
+                {...form.register('program')}
+              />
+
               <TextArea
                 label={t('Activity Description')}
                 placeholder={t('Activity TextArea')}
                 {...form.register('description')}
               />
+
+              {/* <>
+              <div></div>
+              console.log(media[0].value)
+              {media && 
+                <img key="imageKey"
+                  className="object-cover w-full h-60 rounded-lg"
+                  height={240}
+                  src={imagekitURL(media[0]?.value, 'attachment')}
+                />
+              }
+              
+              </> */}
+
               <div className="space-y-1.5">
                 <div className="label">{t('Activity Images (Optional)')}</div>
                 <div className="space-y-3">
@@ -419,12 +470,14 @@ const Hours: NextPage = () => {
                       alt={cover}
                     />
                   )}
+
                   <div className="flex items-center space-x-3">
-                    <ChooseFile
+                    <ChooseFiles
                       onChange={(evt: ChangeEvent<HTMLInputElement>) =>
                         handleUpload(evt)
                       }
                     />
+
                     {uploading && <Spinner size="sm" />}
                   </div>
                 </div>
