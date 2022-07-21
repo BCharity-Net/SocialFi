@@ -36,6 +36,7 @@ export const PROFILE_QUERY = gql`
       handle
       ownedBy
       name
+      bio
       metadata
       followNftAddress
       isFollowedByMe
@@ -44,7 +45,11 @@ export const PROFILE_QUERY = gql`
         key
         value
       }
-      bio
+      onChainIdentity {
+        ens {
+          name
+        }
+      }
       stats {
         totalFollowers
         totalFollowing
@@ -82,7 +87,7 @@ const ViewProfile: NextPage = () => {
   } = useRouter()
   const { currentUser } = useAppPersistStore()
   const [feedType, setFeedType] = useState<string>(
-    type && ['post', 'comment', 'mirror', 'nft'].includes(type as string)
+    type && ['post', 'comment', 'mirror', 'nft', 'vhr'].includes(type as string)
       ? type?.toString().toUpperCase()
       : 'POST'
   )

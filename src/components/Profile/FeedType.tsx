@@ -99,21 +99,20 @@ const FeedType: FC<Props> = ({ stats, address, id, setFeedType, feedType }) => {
         type="NFT"
         testId="type-nfts"
       />
-      {!isVerified(id) && (
+      {isVerified(id) ? (
+        <FeedLink
+          name="OrgVHR"
+          icon={<ClockIcon className="w-4 h-4" />}
+          type="org"
+          testId="type-org"
+        />
+      ) : (
         <FeedLink
           name="VHR"
           icon={<ClockIcon className="w-4 h-4" />}
           type="vhr"
           count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
           testId="type-vhr"
-        />
-      )}
-      {isVerified(id) && (
-        <FeedLink
-          name="OrgVHR"
-          icon={<ClockIcon className="w-4 h-4" />}
-          type="org"
-          testId="type-org"
         />
       )}
     </div>

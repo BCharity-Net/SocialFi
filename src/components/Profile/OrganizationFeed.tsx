@@ -73,6 +73,7 @@ interface Data {
   verified: {
     index: number
     value: string
+    postID: string
   }
 }
 
@@ -115,14 +116,15 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
           totalHours: i.metadata.attributes[4].value,
           verified: {
             index: index,
-            value: verified ? 'Verified' : 'Unverified'
+            value: verified ? 'Verified' : 'Unverified',
+            postID: i.id
           }
         }
       })
     )
   }
 
-  const handleNFTData = (data: any, index: number) =>
+  const handleNFTData = (data: any, index: number, id: string) =>
     fetch(data)
       .then((i) => i)
       .then((result) => {
@@ -135,7 +137,8 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
             totalHours: metadata.attributes[4].value,
             verified: {
               index: index,
-              value: 'Verified'
+              value: 'Verified',
+              postID: id
             }
           }
           setTableData(tableData)
@@ -219,15 +222,19 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
           {
             Header: 'Status',
             accessor: 'verified',
-            Cell: (props: { value: { index: number; value: string } }) => {
+            Cell: (props: {
+              value: { index: number; value: string; postID: string }
+            }) => {
               const status = props.value.value
               const index = props.value.index
-              if (status !== 'Verified') {
-                return <span>{status}</span>
+              const postID = props.value.postID
+              let url = `/posts/${postID}`
+              if (status === 'Verified') {
+                url = `${POLYGONSCAN_URL}/token/${addressData[index]}`
               }
               return (
                 <a
-                  href={`${POLYGONSCAN_URL}/token/${addressData[index]}`}
+                  href={url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-brand-500"
@@ -281,7 +288,7 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
                 <NFTDetails
                   address={addressData[index]}
                   callback={(data: any) => {
-                    handleNFTData(data, index)
+                    handleNFTData(data, index, tableData[index].verified.postID)
                   }}
                 />
               </>

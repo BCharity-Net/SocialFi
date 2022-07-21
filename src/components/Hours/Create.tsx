@@ -64,7 +64,15 @@ const newHourSchema = object({
 
   endDate: string()
     .max(10, { message: 'Invalid date' })
-    .min(10, { message: 'Invalid date' }),
+    .min(10, { message: 'Invalid date' })
+    .optional()
+    .refine(
+      (val) => {
+        if (val === '') return false
+        return true
+      },
+      { message: 'You should enter an end date' }
+    ),
   // .refine((dateInput) => {
   //   var endYear = parseInt(dateInput.substring(0, 4))
   //   var endMonth = parseInt(dateInput.substring(5, 7))
@@ -218,7 +226,7 @@ const Hours: NextPage = () => {
     orgName: string,
     orgWalletAddress: string,
     startDate: string,
-    endDate: string,
+    endDate: string | undefined,
     totalHours: string,
     description: string | null
   ) => {
@@ -362,7 +370,7 @@ const Hours: NextPage = () => {
                 label={singleDay ? `${t('Date')}` : `${t('Start Date')}`}
                 type="startDate"
                 placeholder={'Enter your start date'}
-                change={(e: React.ChangeEvent<HTMLInputElement>) => {
+                change={() => {
                   if (singleDay === true) {
                     setSingleDay(false)
                   } else {
@@ -380,9 +388,9 @@ const Hours: NextPage = () => {
                   label={t('End Date')}
                   type="date"
                   placeholder={'Enter your end date'}
-                  change={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  change={() => {
                     const startDate = form.getValues('startDate')
-                    const endDate = form.getValues('endDate')
+                    // const endDate = form.getValues('endDate')
                     form.setValue('endDate', startDate)
                     console.log('2')
                   }}

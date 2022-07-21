@@ -63,14 +63,14 @@ const SelectReferenceModule = dynamic(
   }
 )
 
-const CREATE_COMMENT_TYPED_DATA_MUTATION = gql`
+export const CREATE_COMMENT_TYPED_DATA_MUTATION = gql`
   mutation CreateCommentTypedData(
     $options: TypedDataOptions
     $request: CreatePublicCommentRequest!
   ) {
     createCommentTypedData(options: $options, request: $request) {
       id
-      expiresAt
+      expiresAt 
       typedData {
         types {
           CommentWithSig {
