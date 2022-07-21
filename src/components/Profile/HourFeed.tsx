@@ -297,7 +297,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
             return (
               <>
                 <tr {...row.getRowProps()}>
-                  {row.cells.map((cell, j) => {
+                  {row.cells.map((cell) => {
                     return (
                       <td className="p-4" {...cell.getCellProps()}>
                         {cell.render('Cell', { vhr: vhrTxnData[index] })}

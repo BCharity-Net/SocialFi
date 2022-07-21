@@ -7,12 +7,14 @@ import { ErrorMessage } from '@components/UI/ErrorMessage'
 import { Profile } from '@generated/types'
 import { CollectionIcon, ExternalLinkIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
+import { ethers } from 'ethers'
 import React, { FC, useMemo, useState } from 'react'
 import { useTable } from 'react-table'
 import { POLYGONSCAN_URL } from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
 
 import NFTDetails from './NFTDetails'
+import VhrToken from './VhrToken'
 
 const WHO_COLLECTED_QUERY = gql`
   query WhoCollected($request: WhoCollectedPublicationRequest!) {
@@ -83,6 +85,8 @@ interface Data {
 const OrganizationFeed: FC<Props> = ({ profile }) => {
   const { currentUser } = useAppPersistStore()
   const [tableData, setTableData] = useState<Data[]>([])
+  const [pubIdData, setPubIdData] = useState<string[]>([])
+  const [vhrTxnData, setVhrTxnData] = useState<string[]>([])
   const [addressData, setAddressData] = useState<string[]>([])
   const [getCollectAddress] = useLazyQuery(WHO_COLLECTED_QUERY, {
     onCompleted() {
@@ -178,9 +182,16 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
           })
         }
       })
-      const addresses: string[] = notifs.map((i: any) => {
-        return i.mentionPublication.collectNftAddress
+      const pubId: string[] = [],
+        vhrTxn: string[] = [],
+        addresses: string[] = []
+      notifs.map((i: any) => {
+        pubId.push(i.mentionPublication.id)
+        vhrTxn.push('')
+        addresses.push(i.mentionPublication.collectNftAddress)
       })
+      setPubIdData([...pubIdData, ...pubId])
+      setVhrTxnData([...vhrTxnData, ...vhrTxn])
       setAddressData([...addressData, ...addresses])
     }
   })
@@ -220,7 +231,24 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
           },
           {
             Header: 'Total Hours',
-            accessor: 'totalHours'
+            accessor: 'totalHours',
+            Cell: (props: { value: number; vhr: string }) => {
+              if (props.vhr === '') {
+                return <a>{props.value}</a>
+              }
+              const url = `${POLYGONSCAN_URL}/tx/${props.vhr}`
+              return (
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-brand-500"
+                >
+                  {props.value}{' '}
+                  {<ExternalLinkIcon className="w-4 h-4 inline-flex" />}
+                </a>
+              )
+            }
           },
           {
             Header: 'Status',
@@ -283,11 +311,24 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
                   {row.cells.map((cell) => {
                     return (
                       <td className="p-4" {...cell.getCellProps()}>
-                        {cell.render('Cell')}
+                        {cell.render('Cell', { vhr: vhrTxnData[index] })}
                       </td>
                     )
                   })}
                 </tr>
+                <VhrToken
+                  pubId={pubIdData[index]}
+                  callback={(data: any) => {
+                    const publications = data.publications.items.filter(
+                      (i: any) => ethers.utils.isHexString(i.metadata.content)
+                    )
+                    if (publications.length !== 0) {
+                      vhrTxnData[index] = publications[0].metadata.content
+                      setVhrTxnData(vhrTxnData)
+                      setTableData([...tableData])
+                    }
+                  }}
+                />
                 <NFTDetails
                   address={addressData[index]}
                   callback={(data: any) => {
