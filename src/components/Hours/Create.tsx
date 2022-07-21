@@ -268,7 +268,6 @@ const Hours: NextPage = () => {
     const { path } = await uploadToIPFS({
       version: '1.0.0',
       metadata_id: uuid(),
-      program: program,
       description: description,
       content: `@${orgName} VHR submission`,
       external_url: null,
@@ -301,6 +300,11 @@ const Hours: NextPage = () => {
           traitType: 'number',
           key: 'totalHours',
           value: totalHours
+        },
+        {
+          traitType: 'string',
+          key: 'program',
+          value: program
         },
         {
           traitType: 'string',
