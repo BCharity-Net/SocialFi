@@ -71,7 +71,7 @@ interface Props {
 
 interface Data {
   from: string
-  description: string
+  program: string
   startDate: string
   endDate: string
   totalHours: number
@@ -117,7 +117,7 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
           })
         return {
           from: i.profile.handle,
-          description: i.metadata.description,
+          program: i.metadata.attributes[5].value,
           startDate: i.metadata.attributes[2].value,
           endDate: i.metadata.attributes[3].value,
           totalHours: i.metadata.attributes[4].value,
@@ -138,7 +138,7 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
         result.json().then((metadata) => {
           tableData[index] = {
             from: name,
-            description: metadata.description,
+            program: metadata.attributes[5].value,
             startDate: metadata.attributes[2].value,
             endDate: metadata.attributes[3].value,
             totalHours: metadata.attributes[4].value,
@@ -218,8 +218,8 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
             }
           },
           {
-            Header: 'Description',
-            accessor: 'description'
+            Header: 'Program',
+            accessor: 'program'
           },
           {
             Header: 'Start Date',
