@@ -68,7 +68,7 @@ const Hours: FC<Props> = ({ post }) => {
   // const { t } = useTranslation('common')
   const { currentUser } = useAppPersistStore()
   const [showVerifyModal, setShowVerifyModal] = useState<boolean>(false)
-
+  if (post.metadata.attributes.length < 9) return <div />
   return (
     <Card forceRounded testId="hours">
       <div className="p-5">
@@ -190,7 +190,7 @@ const Hours: FC<Props> = ({ post }) => {
 
         <br></br>
         <div>
-          {post.metadata.attributes[6].value && (
+          {post.metadata.attributes[8].value && (
             <>
               <div className="text-xl font-bold">Event Images</div>
               <Media media={post.metadata.attributes[8].value} />
