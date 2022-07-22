@@ -4,7 +4,7 @@ import React, { FC } from 'react'
 
 import Collected from './Collected'
 import Commented from './Commented'
-import PublicationCommented from './PublicationCommented'
+import CommentedPublication from './CommentedPublication'
 import GroupPost from './GroupPost'
 import Mirrored from './Mirrored'
 
@@ -28,8 +28,8 @@ const PostType: FC<Props> = ({ post, showType, showThread }) => {
       {type === 'Comment' &&
         pathname === '/posts/[id]' &&
         postType !== 'group post' && (
-          <PublicationCommented publication={post} />
-      )}
+          <CommentedPublication publication={post} />
+        )}
       {type === 'Comment' &&
         !showThread &&
         !isCollected &&

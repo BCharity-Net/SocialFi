@@ -4,7 +4,6 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import Link from 'next/link'
 import React, { FC } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import PostActions from './Actions'
 import HiddenPost from './HiddenPost'
@@ -27,7 +26,6 @@ const SinglePost: FC<Props> = ({
   showActions = true
 }) => {
   const postType = post?.metadata?.attributes[0]?.value
-  const { t } = useTranslation('common')
 
   return (
     <div className="p-5" data-test="publication">

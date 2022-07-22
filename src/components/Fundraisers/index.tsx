@@ -12,7 +12,6 @@ import { PostFields } from '@gql/PostFields'
 import Logger from '@lib/logger'
 import React, { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
-import { useTranslation } from 'react-i18next'
 import { APP_NAME } from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
 
@@ -51,12 +50,11 @@ interface Props {
 
 const Fundraisers: FC<Props> = ({}) => {
   const feedType = 'LATEST'
-  const { t } = useTranslation('common')
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
   const [publications, setPublications] = useState<BCharityPost[]>([])
 
   const { currentUser } = useAppPersistStore()
-  const { data, loading, error, fetchMore } = useQuery(EXPLORE_FEED_QUERY, {
+  const { fetchMore } = useQuery(EXPLORE_FEED_QUERY, {
     variables: {
       request: {
         sortCriteria: feedType,
