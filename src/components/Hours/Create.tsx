@@ -74,7 +74,6 @@ const newHourSchema = object({
       { message: 'You should enter an end date' }
     ),
 
-
   totalHours: string()
     .regex(/^(0*[1-9][0-9]*(\.[0-9]+)?|0+\.[0-9]*[1-9][0-9]*)$/, {
       message: 'Total hours should be larger than zero'
