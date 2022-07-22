@@ -12,6 +12,7 @@ import {
 } from '@generated/types'
 import { BROADCAST_MUTATION } from '@gql/BroadcastMutation'
 import { CollectModuleFields } from '@gql/CollectModuleFields'
+import { CommentFields } from '@gql/CommentFields'
 import { CheckCircleIcon } from '@heroicons/react/outline'
 import {
   defaultFeeData,
@@ -23,6 +24,7 @@ import Logger from '@lib/logger'
 import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
 import uploadToIPFS from '@lib/uploadToIPFS'
+import { ethers } from 'ethers'
 import React, { FC, useState } from 'react'
 import toast from 'react-hot-toast'
 import {
@@ -99,6 +101,27 @@ const CREATE_COLLECT_TYPED_DATA_MUTATION = gql`
   }
 `
 
+const COMMENT_FEED_QUERY = gql`
+  query CommentFeed(
+    $request: PublicationsQueryRequest!
+    $reactionRequest: ReactionFieldResolverRequest
+    $profileId: ProfileId
+  ) {
+    publications(request: $request) {
+      items {
+        ... on Comment {
+          ...CommentFields
+        }
+      }
+      pageInfo {
+        totalCount
+        next
+      }
+    }
+  }
+  ${CommentFields}
+`
+
 interface Props {
   post: BCharityPost
 }
@@ -112,9 +135,28 @@ const Verify: FC<Props> = ({ post }) => {
   const [selectedModule, setSelectedModule] =
     useState<EnabledModule>(defaultModuleData)
   const [feeData, setFeeData] = useState<FEE_DATA_TYPE>(defaultFeeData)
+  const [txnData, setTxnData] = useState<string>()
+  const [hasVhrTxn, setHasVrhTxn] = useState<boolean>(false)
   const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
     onError(error) {
       toast.error(error?.message)
+    }
+  })
+
+  useQuery(COMMENT_FEED_QUERY, {
+    variables: {
+      request: { commentsOf: post.id },
+      reactionRequest: currentUser ? { profileId: currentUser?.id } : null,
+      profileId: currentUser?.id ?? null
+    },
+    fetchPolicy: 'no-cache',
+    onCompleted(data) {
+      const publications = data.publications.items.filter((i: any) =>
+        ethers.utils.isHexString(i.metadata.content)
+      )
+      if (publications.length !== 0) {
+        setHasVrhTxn(true)
+      }
     }
   })
 
@@ -141,7 +183,11 @@ const Verify: FC<Props> = ({ post }) => {
       functionName: 'transfer',
       args: [post.profile.ownedBy, post.metadata.attributes[4].value],
       onSuccess(data) {
+        setTxnData(data.hash)
         createComment(data.hash)
+      },
+      onError(error: any) {
+        toast.error(error?.data?.message ?? error?.message)
       }
     })
 
@@ -155,6 +201,7 @@ const Verify: FC<Props> = ({ post }) => {
         setFeeData(defaultFeeData)
       },
       onError(error: any) {
+        if (txnData) createComment(txnData)
         toast.error(error?.data?.message ?? error?.message)
       }
     })
@@ -294,6 +341,7 @@ const Verify: FC<Props> = ({ post }) => {
       onCompleted()
     },
     onError(error: any) {
+      createCollect()
       toast.error(error?.data?.message ?? error?.message)
     }
   })
@@ -377,7 +425,7 @@ const Verify: FC<Props> = ({ post }) => {
           <Button
             className="sm:mt-0 sm:ml-auto"
             onClick={() => {
-              writeVhrTransfer()
+              if (!hasVhrTxn) writeVhrTransfer()
               createCollect()
             }}
             disabled={
