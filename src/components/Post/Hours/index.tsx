@@ -26,6 +26,7 @@ const Media: FC<MediaProps> = ({ media }) => {
   const [activeIndex, setActiveIndex] = useState<number>(0)
   let attachments : any[] = []
   if (media) attachments = JSON.parse(media)
+
   return (
     <div>
       {attachments && 
@@ -75,20 +76,6 @@ const Hours: FC<Props> = ({ post }) => {
   const cover = post?.metadata?.cover?.original?.url
   return (
     <Card forceRounded testId="hours">
-      <div
-        className="h-40 rounded-t-xl border-b sm:h-52 dark:border-b-gray-700/80"
-        style={{
-          backgroundImage: `url(${
-            cover
-              ? imagekitURL(cover, 'attachment')
-              : `${STATIC_ASSETS}/patterns/2.svg`
-          })`,
-          backgroundColor: '#8b5cf6',
-          backgroundSize: cover ? 'cover' : '30%',
-          backgroundPosition: 'center center',
-          backgroundRepeat: cover ? 'no-repeat' : 'repeat'
-        }}
-      />
       <div className="p-5">
         <div className="mr-0 space-y-1 sm:mr-16"></div>
         <div className="block justify-between items-center sm:flex">
@@ -216,7 +203,7 @@ const Hours: FC<Props> = ({ post }) => {
         <br></br>
         <div>
           {
-            post.metadata.attributes[6].value && 
+            post.metadata.attributes[8].value && 
             <>
             <div className="text-xl font-bold">
             Event Images 
