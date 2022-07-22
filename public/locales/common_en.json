@@ -448,7 +448,7 @@
   "Change wallet": "Please change your network wallet!",
 
   "Verify Hours": "Verify Hours",
-  "Hours Description": "Submit hours to the LensHub network to earn rewards.",
+  "Hours Description": "Submit hours to the BCharity network to earn rewards.",
   "Hours": "Hours",
   "Organization Name": "Organization Name",
   "Organization Wallet Address": "Organization Wallet Address",
@@ -458,6 +458,7 @@
   "Multiple Dates": "Multiple Dates",
   "Total Hours": "Total Hours",
   "Activity Description": "Activity Description",
+  "Program TextArea": "Volunteer Program",
   "Activity TextArea": "Tell us about your volunteer experience!",
   "Activity Images (Optional)": "Activity Images (Optional)"
 
