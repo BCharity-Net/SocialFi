@@ -13,7 +13,7 @@ const ChooseFiles: FC<Props> = ({ onChange }) => {
         htmlFor="file"
         className="modal-close px-4 bg-violet-500 p-2 rounded-lg text-white hover:bg-violet-600"
       >
-        {t('Select files')}
+        {t('Select file(s)')}
       </label>
       <input
         id="file"
