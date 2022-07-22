@@ -4,9 +4,9 @@ import React, { FC } from 'react'
 
 import Collected from './Collected'
 import Commented from './Commented'
+import CommentedPublication from './CommentedPublication'
 import GroupPost from './GroupPost'
 import Mirrored from './Mirrored'
-import PublicationCommented from './PublicationCommented'
 
 interface Props {
   post: BCharityPost
@@ -28,7 +28,7 @@ const PostType: FC<Props> = ({ post, showType, showThread }) => {
       {type === 'Comment' &&
         pathname === '/posts/[id]' &&
         postType !== 'group post' && (
-          <PublicationCommented publication={post} />
+          <CommentedPublication publication={post} />
         )}
       {type === 'Comment' &&
         !showThread &&
