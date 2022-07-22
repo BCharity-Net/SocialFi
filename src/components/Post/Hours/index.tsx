@@ -1,14 +1,11 @@
 import Collectors from '@components/Shared/Collectors'
-import Markup from '@components/Shared/Markup'
 import { Button } from '@components/UI/Button'
 import { Card } from '@components/UI/Card'
 import { Modal } from '@components/UI/Modal'
 import { BCharityPost } from '@generated/bcharitytypes'
 import { ClockIcon } from '@heroicons/react/outline'
 import imagekitURL from '@lib/imagekitURL'
-import { SwitchLayoutGroupContext } from 'framer-motion'
 import React, { FC, useState } from 'react'
-import { STATIC_ASSETS } from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
 
 import Verify from './Verify'
@@ -21,50 +18,48 @@ interface MediaProps {
   media: string | undefined | null
 }
 
-
 const Media: FC<MediaProps> = ({ media }) => {
   const [activeIndex, setActiveIndex] = useState<number>(0)
-  let attachments : any[] = []
+  let attachments: any[] = []
   if (media) attachments = JSON.parse(media)
-
   return (
     <div>
-      {attachments && 
-      <>
-        <img
-          key="attachment"
-          className="object-cover w-full h-full rounded-lg border-[3px] border-black margin mb-[20px]"
-          // height={240}
-          src={imagekitURL(attachments[activeIndex].item, 'attachment')}
-          alt={attachments[activeIndex].item}
-        />
-        <div className="w-full h-full overflow-x-scroll scroll whitespace-nowrap scroll-smooth">
-        {
-        attachments.map((i: any, index : any) => (
-          index === activeIndex ? 
+      {attachments && (
+        <>
           <img
             key="attachment"
-            className="object-cover w-[200px] h-[100px] rounded-lg inline-block mr-[20px] border-[3px] border-black"
-            src={imagekitURL(i.item, 'attachment')}
-            alt={i.item}
-            onClick={() => {
-              setActiveIndex(index)
-            }}
+            className="object-cover w-full h-full rounded-lg border-[3px] border-black margin mb-[20px]"
+            // height={240}
+            src={imagekitURL(attachments[activeIndex].item, 'attachment')}
+            alt={attachments[activeIndex].item}
           />
-          :
-          <img
-            key="attachment"
-            className="object-cover w-[200px] h-[100px] rounded-lg inline-block mr-[20px] cursor-pointer blur-[1px] border-[3px] border-gray-300"
-            src={imagekitURL(i.item, 'attachment')}
-            alt={i.item}
-            onClick={() => {
-              setActiveIndex(index)
-            }}
-          />
-        ))}
-        </div>
+          <div className="w-full h-full overflow-x-scroll scroll whitespace-nowrap scroll-smooth">
+            {attachments.map((i: any, index: any) =>
+              index === activeIndex ? (
+                <img
+                  key="attachment"
+                  className="object-cover w-[200px] h-[100px] rounded-lg inline-block mr-[20px] border-[3px] border-black"
+                  src={imagekitURL(i.item, 'attachment')}
+                  alt={i.item}
+                  onClick={() => {
+                    setActiveIndex(index)
+                  }}
+                />
+              ) : (
+                <img
+                  key="attachment"
+                  className="object-cover w-[200px] h-[100px] rounded-lg inline-block mr-[20px] cursor-pointer blur-[1px] border-[3px] border-gray-300"
+                  src={imagekitURL(i.item, 'attachment')}
+                  alt={i.item}
+                  onClick={() => {
+                    setActiveIndex(index)
+                  }}
+                />
+              )
+            )}
+          </div>
         </>
-        }
+      )}
     </div>
   )
 }
@@ -73,7 +68,7 @@ const Hours: FC<Props> = ({ post }) => {
   // const { t } = useTranslation('common')
   const { currentUser } = useAppPersistStore()
   const [showVerifyModal, setShowVerifyModal] = useState<boolean>(false)
-  const cover = post?.metadata?.cover?.original?.url
+
   return (
     <Card forceRounded testId="hours">
       <div className="p-5">
@@ -162,9 +157,7 @@ const Hours: FC<Props> = ({ post }) => {
               </th>
             </tr>
             <tr className="text-center font-bold bg-violet-200">
-              <th className="border border-violet-500 px-6 py-2">
-                Program
-              </th>
+              <th className="border border-violet-500 px-6 py-2">Program</th>
               <th className="border border-violet-500 px-6 py-2">
                 {post.metadata.attributes[5].value}
               </th>
@@ -180,41 +173,31 @@ const Hours: FC<Props> = ({ post }) => {
             </tr>
 
             <tr className="text-center font-bold bg-violet-200">
+              <th className="border border-violet-500 px-6 py-2">Category</th>
               <th className="border border-violet-500 px-6 py-2">
-                Category
-              </th>
-              <th className="border border-violet-500 px-6 py-2">
-              {post.metadata.attributes[7].value}
+                {post.metadata.attributes[7].value}
               </th>
             </tr>
 
             <tr className="text-center font-bold bg-violet-200">
-              <th className="border border-violet-500 px-6 py-2">
-                Outcome
-              </th>
+              <th className="border border-violet-500 px-6 py-2">Outcome</th>
               <th className="border border-violet-500 px-6 py-2">
                 {post.metadata.description}
               </th>
             </tr>
-
           </table>
         </div>
 
         <br></br>
         <div>
-          {
-            post.metadata.attributes[8].value && 
+          {post.metadata.attributes[6].value && (
             <>
-            <div className="text-xl font-bold">
-            Event Images 
-            </div> 
-            <Media media={post.metadata.attributes[8].value} />
+              <div className="text-xl font-bold">Event Images</div>
+              <Media media={post.metadata.attributes[8].value} />
             </>
-          }
+          )}
+        </div>
       </div>
-      
-      
-    </div>
     </Card>
   )
 }
