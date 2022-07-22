@@ -22,7 +22,6 @@ const Media: FC<MediaProps> = ({ media }) => {
   const [activeIndex, setActiveIndex] = useState<number>(0)
   let attachments: any[] = []
   if (media) attachments = JSON.parse(media)
-
   return (
     <div>
       {attachments && (
