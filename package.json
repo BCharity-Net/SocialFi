@@ -58,7 +58,7 @@
     "react-hook-form": "^7.33.1",
     "react-hot-toast": "^2.3.0",
     "react-i18next": "^11.18.0",
-    "react-mentions": "4.4.6", 
+    "react-mentions": "4.4.7", 
     "react-query": "4.0.0",   
     "react-table": "^7.8.0",
     "store": "^2.0.12",
