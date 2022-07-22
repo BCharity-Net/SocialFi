@@ -8,8 +8,9 @@ import { Profile } from '@generated/types'
 import { CollectionIcon, ExternalLinkIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import { ethers } from 'ethers'
+import { matchSorter } from 'match-sorter'
 import React, { FC, useMemo, useState } from 'react'
-import { useTable } from 'react-table'
+import { useFilters, useTable } from 'react-table'
 import { POLYGONSCAN_URL } from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
 
@@ -196,6 +197,35 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
     }
   })
 
+  const FuzzySearch = (item: any) => {
+    const [value, setValue] = React.useState('')
+    const column = item.column
+    // const count = column.preFilteredRows.length
+    return (
+      <input
+        className="w-full"
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value)
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            column.setFilter(value || undefined)
+          }
+        }}
+        placeholder={`Search`}
+      />
+    )
+  }
+
+  function fuzzyTextFilterFn(rows: any, id: any, filterValue: any) {
+    return matchSorter(rows, filterValue, {
+      keys: [(row: any) => row.values[id]]
+    })
+  }
+
+  fuzzyTextFilterFn.autoRemove = (val: any) => !val
+
   const columns = useMemo(
     () => [
       {
@@ -215,19 +245,29 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
                   {user}
                 </a>
               )
-            }
+            },
+            Filter: FuzzySearch,
+            filter: 'fuzzyText'
           },
           {
             Header: 'Program',
-            accessor: 'program'
+            accessor: 'program',
+            Filter: FuzzySearch,
+            filter: 'fuzzyText'
           },
           {
             Header: 'Start Date',
-            accessor: 'startDate'
+            accessor: 'startDate',
+            Filter: () => {
+              return <div />
+            }
           },
           {
             Header: 'End Date',
-            accessor: 'endDate'
+            accessor: 'endDate',
+            Filter: () => {
+              return <div />
+            }
           },
           {
             Header: 'Total Hours',
@@ -248,6 +288,9 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
                   {<ExternalLinkIcon className="w-4 h-4 inline-flex" />}
                 </a>
               )
+            },
+            Filter: () => {
+              return <div />
             }
           },
           {
@@ -274,6 +317,9 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
                   {<ExternalLinkIcon className="w-4 h-4 inline-flex" />}
                 </a>
               )
+            },
+            Filter: () => {
+              return <div />
             }
           }
         ]
@@ -284,7 +330,16 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
 
   const Table = () => {
     const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
-      useTable({ columns, data: tableData })
+      useTable(
+        {
+          columns,
+          data: tableData,
+          filterTypes: {
+            fuzzyText: fuzzyTextFilterFn
+          }
+        },
+        useFilters
+      )
 
     return (
       <table
@@ -297,6 +352,7 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
               {headerGroup.headers.map((column) => (
                 <th className="p-4" {...column.getHeaderProps()}>
                   {column.render('Header')}
+                  <div>{column.canFilter ? column.render('Filter') : null}</div>
                 </th>
               ))}
             </tr>
@@ -323,9 +379,13 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
                       (i: any) => ethers.utils.isHexString(i.metadata.content)
                     )
                     if (publications.length !== 0) {
-                      vhrTxnData[index] = publications[0].metadata.content
-                      setVhrTxnData(vhrTxnData)
-                      setTableData([...tableData])
+                      if (
+                        vhrTxnData[index] != publications[0].metadata.content
+                      ) {
+                        vhrTxnData[index] = publications[0].metadata.content
+                        setVhrTxnData(vhrTxnData)
+                        setTableData([...tableData])
+                      }
                     }
                   }}
                 />
