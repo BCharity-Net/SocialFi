@@ -56,8 +56,8 @@ interface Props {
 }
 
 const Fundraisers: FC<Props> = ({}) => {
-  const feedType = 'LATEST'
   const { t } = useTranslation('common')
+  const feedType = 'LATEST'
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
   const [publications, setPublications] = useState<BCharityPost[]>([])
   const [revenueData, setRevenueData] = useState<number[]>([])

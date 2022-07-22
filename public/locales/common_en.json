@@ -2,7 +2,7 @@
   "Welcome": "Welcome to BCharity Baas👋",
   "Welcome Description": "Next generation group-driven composable, decentralized, and permissionless public good sector Web3 built on blockchains.",
 
-  "VHR Title": "VHR Crypto OnChain Volunteer Hours",
+  "VHR Title": "VHR Web3 - Volunteer Soulbound Token",
   "VHR Description": "First ever native utility token to track global donation transparently spent on volunteerism. --- Forever Love On-Chain!",
 
   "Beta Title": "Beta warning!",
@@ -349,7 +349,6 @@
   "Twitter exceeds": "Twitter should not exceed 100 characters",
   "Bio exceeds": "Bio should not exceed 260 characters",
 
-  "Select file": "Select file",
   "Select files": "Select files",
 
   "Posted on": "Posted on ",
@@ -448,7 +447,7 @@
   "Change wallet": "Please change your network wallet!",
 
   "Verify Hours": "Verify Hours",
-  "Hours Description": "Submit hours to the LensHub network to earn rewards.",
+  "Hours Description": "Submit hours to the BCharity network to earn rewards.",
   "Hours": "Hours",
   "Organization Name": "Organization Name",
   "Organization Wallet Address": "Organization Wallet Address",
@@ -458,6 +457,7 @@
   "Multiple Dates": "Multiple Dates",
   "Total Hours": "Total Hours",
   "Activity Description": "Activity Description",
+  "Program TextArea": "Volunteer Program",
   "Activity TextArea": "Tell us about your volunteer experience!",
   "Activity Images (Optional)": "Activity Images (Optional)"
 

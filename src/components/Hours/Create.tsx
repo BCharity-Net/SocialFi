@@ -73,16 +73,6 @@ const newHourSchema = object({
       },
       { message: 'You should enter an end date' }
     ),
-  // .refine((dateInput) => {
-  //   var endYear = parseInt(dateInput.substring(0, 4))
-  //   var endMonth = parseInt(dateInput.substring(5, 7))
-  //   var endDay = parseInt(dateInput.substring(8, 10))
-  //   var s = form.getValues('startDate')
-
-  //   dateInput.charAt(0) === '1', console.log(dateInput.substring(8, 10))
-  // }, {
-  //   message: "End date must be after start date"
-  // }),
 
   totalHours: string()
     .regex(/^(0*[1-9][0-9]*(\.[0-9]+)?|0+\.[0-9]*[1-9][0-9]*)$/, {
@@ -92,13 +82,21 @@ const newHourSchema = object({
       message: 'Total hours should be a whole number or to one decimal place'
     }),
 
-  program: string().max(40, {
-    message: 'Program should not exceed 40 characters!'
-  }),
+  program: string()
+    .min(1, { message: 'You must write a program name!' })
+    .max(40, { message: 'Program name should not exceed 40 characters!' }),
+
+  city: string()
+    .min(1, { message: 'You must write your city!' })
+    .max(40, { message: 'City name should not exceed 40 characters!' }),
+
+  category: string()
+    .min(1, { message: 'You must write a category!' })
+    .max(40, { message: 'Category name should not exceed 40 characters!' }),
 
   description: string()
+    .min(1, { message: 'You must write a description!' })
     .max(250, { message: 'Description should not exceed 250 characters' })
-    .nullable()
 })
 
 interface Props {
@@ -259,8 +257,10 @@ const Hours: NextPage = () => {
     startDate: string,
     endDate: string | undefined,
     totalHours: string,
-    program: string | null,
-    description: string | null
+    program: string,
+    city: string,
+    category: string,
+    description: string
   ) => {
     if (!isAuthenticated) return toast.error(CONNECT_WALLET)
 
@@ -305,6 +305,16 @@ const Hours: NextPage = () => {
           traitType: 'string',
           key: 'program',
           value: program
+        },
+        {
+          traitType: 'string',
+          key: 'city',
+          value: city
+        },
+        {
+          traitType: 'string',
+          key: 'category',
+          value: category
         },
         {
           traitType: 'string',
@@ -369,6 +379,8 @@ const Hours: NextPage = () => {
                 endDate,
                 totalHours,
                 program,
+                city,
+                category,
                 description
               }) => {
                 createHours(
@@ -378,6 +390,8 @@ const Hours: NextPage = () => {
                   endDate,
                   totalHours,
                   program,
+                  city,
+                  category,
                   description
                 )
               }}
@@ -450,10 +464,25 @@ const Hours: NextPage = () => {
                 {...form.register('totalHours')}
               />
 
-              <TextArea
+              <Input
                 label={t('Program')}
-                placeholder={t('Program TextArea')}
+                type="text"
+                placeholder={t('Volunteer program name(s)')}
                 {...form.register('program')}
+              />
+
+              <Input
+                label={t('City/Region')}
+                type="text"
+                placeholder={t('Calgary, AB')}
+                {...form.register('city')}
+              />
+
+              <Input
+                label={t('Category')}
+                type="text"
+                placeholder={t('Education')}
+                {...form.register('category')}
               />
 
               <TextArea
