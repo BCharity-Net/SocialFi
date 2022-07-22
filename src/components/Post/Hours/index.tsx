@@ -69,7 +69,7 @@ const Hours: FC<Props> = ({ post }) => {
   // const { t } = useTranslation('common')
   const { currentUser } = useAppPersistStore()
   const [showVerifyModal, setShowVerifyModal] = useState<boolean>(false)
-  const cover = post?.metadata?.cover?.original?.url
+  if (post.metadata.attributes.length < 9) return <div />
   return (
     <Card forceRounded testId="hours">
       <div className="p-5">
