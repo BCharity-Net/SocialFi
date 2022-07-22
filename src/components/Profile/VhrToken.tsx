@@ -29,7 +29,7 @@ interface Props {
   callback?: Function
 }
 
-const NFTDetails: FC<Props> = ({ pubId, callback }) => {
+const VhrToken: FC<Props> = ({ pubId, callback }) => {
   const { currentUser } = useAppPersistStore()
   useQuery(COMMENT_FEED_QUERY, {
     variables: {
@@ -46,4 +46,4 @@ const NFTDetails: FC<Props> = ({ pubId, callback }) => {
   return <div />
 }
 
-export default NFTDetails
+export default VhrToken

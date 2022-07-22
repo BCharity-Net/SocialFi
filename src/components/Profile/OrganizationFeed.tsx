@@ -7,12 +7,14 @@ import { ErrorMessage } from '@components/UI/ErrorMessage'
 import { Profile } from '@generated/types'
 import { CollectionIcon, ExternalLinkIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
+import { ethers } from 'ethers'
 import React, { FC, useMemo, useState } from 'react'
 import { useTable } from 'react-table'
 import { POLYGONSCAN_URL } from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
 
 import NFTDetails from './NFTDetails'
+import VhrToken from './VhrToken'
 
 const WHO_COLLECTED_QUERY = gql`
   query WhoCollected($request: WhoCollectedPublicationRequest!) {
@@ -47,6 +49,9 @@ const NOTIFICATIONS_QUERY = gql`
                   value
                 }
               }
+              profile {
+                handle
+              }
               hidden
             }
           }
@@ -66,7 +71,7 @@ interface Props {
 
 interface Data {
   from: string
-  description: string
+  program: string
   startDate: string
   endDate: string
   totalHours: number
@@ -80,6 +85,8 @@ interface Data {
 const OrganizationFeed: FC<Props> = ({ profile }) => {
   const { currentUser } = useAppPersistStore()
   const [tableData, setTableData] = useState<Data[]>([])
+  const [pubIdData, setPubIdData] = useState<string[]>([])
+  const [vhrTxnData, setVhrTxnData] = useState<string[]>([])
   const [addressData, setAddressData] = useState<string[]>([])
   const [getCollectAddress] = useLazyQuery(WHO_COLLECTED_QUERY, {
     onCompleted() {
@@ -109,8 +116,8 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
             })
           })
         return {
-          from: i.metadata.name,
-          description: i.metadata.description,
+          from: i.profile.handle,
+          program: i.metadata.attributes[5].value,
           startDate: i.metadata.attributes[2].value,
           endDate: i.metadata.attributes[3].value,
           totalHours: i.metadata.attributes[4].value,
@@ -124,14 +131,14 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
     )
   }
 
-  const handleNFTData = (data: any, index: number, id: string) =>
+  const handleNFTData = (data: any, index: number, id: string, name: string) =>
     fetch(data)
       .then((i) => i)
       .then((result) => {
         result.json().then((metadata) => {
           tableData[index] = {
-            from: metadata.name,
-            description: metadata.description,
+            from: name,
+            program: metadata.attributes[5].value,
             startDate: metadata.attributes[2].value,
             endDate: metadata.attributes[3].value,
             totalHours: metadata.attributes[4].value,
@@ -175,9 +182,16 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
           })
         }
       })
-      const addresses: string[] = notifs.map((i: any) => {
-        return i.mentionPublication.collectNftAddress
+      const pubId: string[] = [],
+        vhrTxn: string[] = [],
+        addresses: string[] = []
+      notifs.map((i: any) => {
+        pubId.push(i.mentionPublication.id)
+        vhrTxn.push('')
+        addresses.push(i.mentionPublication.collectNftAddress)
       })
+      setPubIdData([...pubIdData, ...pubId])
+      setVhrTxnData([...vhrTxnData, ...vhrTxn])
       setAddressData([...addressData, ...addresses])
     }
   })
@@ -204,8 +218,8 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
             }
           },
           {
-            Header: 'Description',
-            accessor: 'description'
+            Header: 'Program',
+            accessor: 'program'
           },
           {
             Header: 'Start Date',
@@ -217,7 +231,24 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
           },
           {
             Header: 'Total Hours',
-            accessor: 'totalHours'
+            accessor: 'totalHours',
+            Cell: (props: { value: number; vhr: string }) => {
+              if (props.vhr === '') {
+                return <a>{props.value}</a>
+              }
+              const url = `${POLYGONSCAN_URL}/tx/${props.vhr}`
+              return (
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-brand-500"
+                >
+                  {props.value}{' '}
+                  {<ExternalLinkIcon className="w-4 h-4 inline-flex" />}
+                </a>
+              )
+            }
           },
           {
             Header: 'Status',
@@ -280,15 +311,33 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
                   {row.cells.map((cell) => {
                     return (
                       <td className="p-4" {...cell.getCellProps()}>
-                        {cell.render('Cell')}
+                        {cell.render('Cell', { vhr: vhrTxnData[index] })}
                       </td>
                     )
                   })}
                 </tr>
+                <VhrToken
+                  pubId={pubIdData[index]}
+                  callback={(data: any) => {
+                    const publications = data.publications.items.filter(
+                      (i: any) => ethers.utils.isHexString(i.metadata.content)
+                    )
+                    if (publications.length !== 0) {
+                      vhrTxnData[index] = publications[0].metadata.content
+                      setVhrTxnData(vhrTxnData)
+                      setTableData([...tableData])
+                    }
+                  }}
+                />
                 <NFTDetails
                   address={addressData[index]}
                   callback={(data: any) => {
-                    handleNFTData(data, index, tableData[index].verified.postID)
+                    handleNFTData(
+                      data,
+                      index,
+                      tableData[index].verified.postID,
+                      tableData[index].from
+                    )
                   }}
                 />
               </>
