@@ -84,19 +84,19 @@ const newHourSchema = object({
     }),
 
   program: string()
-  .min(1, { message: 'You must write a program name!'})
-  .max(40, { message: 'Program name should not exceed 40 characters!' }),
+    .min(1, { message: 'You must write a program name!' })
+    .max(40, { message: 'Program name should not exceed 40 characters!' }),
 
   city: string()
-  .min(1, { message: 'You must write your city!'})
-  .max(40, { message: 'City name should not exceed 40 characters!' }),
+    .min(1, { message: 'You must write your city!' })
+    .max(40, { message: 'City name should not exceed 40 characters!' }),
 
   category: string()
-  .min(1, { message: 'You must write a category!'})
-  .max(40, { message: 'Category name should not exceed 40 characters!' }),
+    .min(1, { message: 'You must write a category!' })
+    .max(40, { message: 'Category name should not exceed 40 characters!' }),
 
   description: string()
-    .min(1, { message: 'You must write a description!'})
+    .min(1, { message: 'You must write a description!' })
     .max(250, { message: 'Description should not exceed 250 characters' })
 })
 
@@ -321,7 +321,7 @@ const Hours: NextPage = () => {
           traitType: 'string',
           key: 'media',
           value: media
-        }, 
+        }
       ],
       media: [],
       createdOn: new Date(),
@@ -467,21 +467,21 @@ const Hours: NextPage = () => {
 
               <Input
                 label={t('Program')}
-                type='text'
+                type="text"
                 placeholder={t('Volunteer program name(s)')}
                 {...form.register('program')}
               />
 
               <Input
                 label={t('City/Region')}
-                type='text'
+                type="text"
                 placeholder={t('Calgary, AB')}
                 {...form.register('city')}
               />
 
               <Input
                 label={t('Category')}
-                type='text'
+                type="text"
                 placeholder={t('Education')}
                 {...form.register('category')}
               />
