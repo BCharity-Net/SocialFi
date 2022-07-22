@@ -71,7 +71,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
   })
 
   const collectModule: any = data?.publication?.collectModule
-
+  // console.log('collectModule', collectModule)
   const { data: revenueData, loading: revenueLoading } = useQuery(
     PUBLICATION_REVENUE_QUERY,
     {
@@ -90,6 +90,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
             fund?.pubId ?? fund?.id
           }`
         )
+        console.log('This is the fund', fund)
       }
     }
   )
@@ -100,6 +101,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
     )
   }, [revenueData])
 
+  console.log('revenue', revenue)
   const goalAmount = fund?.metadata?.attributes[1]?.value
   const percentageReached = revenue
     ? (revenue / parseInt(goalAmount as string)) * 100
