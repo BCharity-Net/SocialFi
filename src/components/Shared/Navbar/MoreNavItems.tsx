@@ -3,7 +3,8 @@ import {
   CashIcon,
   SupportIcon,
   UserIcon,
-  UsersIcon
+  UsersIcon,
+  ClockIcon
 } from '@heroicons/react/outline'
 import clsx from 'clsx'
 import { FC, Fragment } from 'react'
@@ -81,7 +82,7 @@ const MoreNavItems: FC = () => {
                     }
                   >
                     <div className="flex items-center space-x-1.5">
-                      <CashIcon className="w-4 h-4" />
+                    <ClockIcon className="w-4 h-4" />
                       <div>{t('Verify Hours')}</div>
                     </div>
                   </Menu.Item>
