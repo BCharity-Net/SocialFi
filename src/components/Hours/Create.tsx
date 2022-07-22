@@ -73,16 +73,7 @@ const newHourSchema = object({
       },
       { message: 'You should enter an end date' }
     ),
-  // .refine((dateInput) => {
-  //   var endYear = parseInt(dateInput.substring(0, 4))
-  //   var endMonth = parseInt(dateInput.substring(5, 7))
-  //   var endDay = parseInt(dateInput.substring(8, 10))
-  //   var s = form.getValues('startDate')
 
-  //   dateInput.charAt(0) === '1', console.log(dateInput.substring(8, 10))
-  // }, {
-  //   message: "End date must be after start date"
-  // }),
 
   totalHours: string()
     .regex(/^(0*[1-9][0-9]*(\.[0-9]+)?|0+\.[0-9]*[1-9][0-9]*)$/, {
