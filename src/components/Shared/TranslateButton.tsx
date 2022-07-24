@@ -1,16 +1,13 @@
 import { Menu, Transition } from '@headlessui/react'
 import clsx from 'clsx'
-import React from 'react'
+import React, { FC } from 'react'
 import { Fragment } from 'react'
 
 import i18n from '../../i18n'
 
-//import common_en from '../../translations/en/common.json'
-//import common_zhCN from '../../translations/zh-CN/common.json'
-export default function TranslateButton() {
+const TranslateButton: FC = () => {
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng)
-    console.log(i18n.language)
   }
 
   return (
@@ -53,18 +50,26 @@ export default function TranslateButton() {
           >
             <Menu.Items
               static
-              className="absolute py-1 mt-2 w-52 bg-white rounded-xl border shadow-sm dark:bg-gray-900 focus:outline-none dark:border-gray-700/80"
+              className="absolute right-0 py-1 mt-2 w-48 bg-white rounded-xl border shadow-sm dark:bg-gray-900 focus:outline-none dark:border-gray-700/80"
             >
-              <Menu.Item as="div" onClick={() => changeLanguage('en')}>
-                <div className="flex items-center space-x-1.5 hover:bg-gray-200 cursor-pointer">
-                  English
-                </div>
+              <Menu.Item
+                as="div"
+                onClick={() => changeLanguage('en')}
+                className={({ active }: { active: boolean }) =>
+                  clsx({ 'dropdown-active': active }, 'menu-item')
+                }
+              >
+                <div>English</div>
               </Menu.Item>
 
-              <Menu.Item as="div" onClick={() => changeLanguage('zhCN')}>
-                <div className="flex items-center space-x-1.5 hover:bg-gray-200 cursor-pointer">
-                  简体中文
-                </div>
+              <Menu.Item
+                as="div"
+                onClick={() => changeLanguage('zhCN')}
+                className={({ active }: { active: boolean }) =>
+                  clsx({ 'dropdown-active': active }, 'menu-item')
+                }
+              >
+                <div>简体中文</div>
               </Menu.Item>
             </Menu.Items>
           </Transition>
@@ -73,3 +78,5 @@ export default function TranslateButton() {
     </Menu>
   )
 }
+
+export default TranslateButton
