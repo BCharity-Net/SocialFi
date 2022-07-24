@@ -349,7 +349,7 @@
   "Twitter exceeds": "Twitter should not exceed 100 characters",
   "Bio exceeds": "Bio should not exceed 260 characters",
 
-  "Select files": "Select files",
+  "Select file(s)": "Select files",
 
   "Posted on": "Posted on ",
   "Follows you": "Follows you",
@@ -456,9 +456,9 @@
   "End Date": "End Date",
   "Multiple Dates": "Multiple Dates",
   "Total Hours": "Total Hours",
+  "Program TextArea": "Volunteer Program",
   "Activity Description": "Activity Description",
   "Program TextArea": "Volunteer Program",
   "Activity TextArea": "Tell us about your volunteer experience!",
   "Activity Images (Optional)": "Activity Images (Optional)"
-
 }
