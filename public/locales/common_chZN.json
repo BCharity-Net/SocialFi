@@ -345,8 +345,7 @@
   "Twitter exceeds": "推特不应超过100个字符",
   "Bio exceeds": "简历不应超过260个字符",
 
-  "Select file": "选择文件",
-  "Select files": "选择文件",
+  "Select file(s)": "选择文件",
 
   "Posted on": "发表于 ",
   "Follows you": "正关注您",
@@ -454,6 +453,7 @@
   "End Date": "结束日期",
   "Multiple Dates": "多期",
   "Total Hours": "小时数",
+  "Program TextArea": "志愿服务项目",
   "Activity Description": "服务内容",
   "Activity TextArea": "讲述您的志愿服务内容!",
   "Activity Images (Optional)": "活动图片（可选）"
