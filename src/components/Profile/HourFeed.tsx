@@ -176,13 +176,44 @@ const HourFeed: FC<Props> = ({ profile }) => {
     )
   }
 
+  const DateSearch = (item: any) => {
+    const column = item.column
+    return (
+      <input
+        className="w-full"
+        value={item.filterValue}
+        type="date"
+        onChange={(e) => {
+          column.setFilter(e.target.value || undefined)
+        }}
+      />
+    )
+  }
+
   function fuzzyTextFilterFn(rows: any, id: any, filterValue: any) {
     return matchSorter(rows, filterValue, {
       keys: [(row: any) => row.values[id]]
     })
   }
-
   fuzzyTextFilterFn.autoRemove = (val: any) => !val
+
+  function greaterThanEqualToFn(rows: any, id: any, filterValue: any) {
+    return rows.filter((row: any) => {
+      const rowValue = new Date(row.values[id])
+      const filterDate = new Date(filterValue)
+      return rowValue >= filterDate
+    })
+  }
+  greaterThanEqualToFn.autoRemove = (val: any) => !val
+
+  function lessThanEqualToFn(rows: any, id: any, filterValue: any) {
+    return rows.filter((row: any) => {
+      const rowValue = new Date(row.values[id])
+      const filterDate = new Date(filterValue)
+      return rowValue <= filterDate
+    })
+  }
+  lessThanEqualToFn.autoRemove = (val: any) => !val
 
   const columns = useMemo(
     () => [
@@ -205,27 +236,25 @@ const HourFeed: FC<Props> = ({ profile }) => {
               )
             },
             Filter: FuzzySearch,
-            filter: 'fuzzyText'
+            filter: fuzzyTextFilterFn
           },
           {
             Header: 'Program',
             accessor: 'program',
             Filter: FuzzySearch,
-            filter: 'fuzzyText'
+            filter: fuzzyTextFilterFn
           },
           {
             Header: 'Start Date',
             accessor: 'startDate',
-            Filter: () => {
-              return <div />
-            }
+            Filter: DateSearch,
+            filter: greaterThanEqualToFn
           },
           {
             Header: 'End Date',
             accessor: 'endDate',
-            Filter: () => {
-              return <div />
-            }
+            Filter: DateSearch,
+            filter: lessThanEqualToFn
           },
           {
             Header: 'Total Hours',
@@ -291,10 +320,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
       useTable(
         {
           columns,
-          data: tableData,
-          filterTypes: {
-            fuzzyText: fuzzyTextFilterFn
-          }
+          data: tableData
         },
         useFilters
       )
