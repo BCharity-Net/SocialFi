@@ -1,12 +1,11 @@
 /* eslint-disable react/jsx-key */
-import { gql, useLazyQuery, useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
 import { Card } from '@components/UI/Card'
 import { EmptyState } from '@components/UI/EmptyState'
 import { ErrorMessage } from '@components/UI/ErrorMessage'
 import { Profile } from '@generated/types'
 import { CollectionIcon, ExternalLinkIcon } from '@heroicons/react/outline'
-import Logger from '@lib/logger'
 import { ethers } from 'ethers'
 import { matchSorter } from 'match-sorter'
 import React, { FC, useMemo, useState } from 'react'
@@ -89,33 +88,13 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
   const [pubIdData, setPubIdData] = useState<string[]>([])
   const [vhrTxnData, setVhrTxnData] = useState<string[]>([])
   const [addressData, setAddressData] = useState<string[]>([])
-  const [getCollectAddress] = useLazyQuery(WHO_COLLECTED_QUERY, {
-    onCompleted() {
-      Logger.log('Lazy Query =>', `Fetched collected result`)
-    }
-  })
-
-  const fetchCollectAddress = (pubId: string) =>
-    getCollectAddress({
-      variables: {
-        request: { publicationId: pubId }
-      }
-    }).then(({ data }) => {
-      return data.whoCollectedPublication.items
-    })
 
   const handleTableData = async (data: any) => {
     return Promise.all(
       data.map(async (j: any, index: number) => {
         const i = j.mentionPublication
         let verified = false
-        if (i.collectNftAddress)
-          await fetchCollectAddress(i.id).then((data) => {
-            data.forEach((item: any) => {
-              if (verified) return
-              verified = item.address === i.metadata.attributes[1].value
-            })
-          })
+        if (i.collectNftAddress) verified = true
         return {
           from: i.profile.handle,
           program: i.metadata.attributes[5].value,

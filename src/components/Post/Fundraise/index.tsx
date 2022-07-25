@@ -90,7 +90,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
             fund?.pubId ?? fund?.id
           }`
         )
-        console.log('This is the fund', fund)
+        // console.log('This is the fund', fund)
       }
     }
   )
@@ -101,7 +101,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
     )
   }, [revenueData])
 
-  console.log('revenue', revenue)
+  // console.log('revenue', revenue)
   const goalAmount = fund?.metadata?.attributes[1]?.value
   const percentageReached = revenue
     ? (revenue / parseInt(goalAmount as string)) * 100
