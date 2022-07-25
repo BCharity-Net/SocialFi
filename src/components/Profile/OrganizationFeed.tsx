@@ -7,12 +7,20 @@ import { ErrorMessage } from '@components/UI/ErrorMessage'
 import { Profile } from '@generated/types'
 import { CollectionIcon, ExternalLinkIcon } from '@heroicons/react/outline'
 import { ethers } from 'ethers'
-import { matchSorter } from 'match-sorter'
 import React, { FC, useMemo, useState } from 'react'
 import { useFilters, useTable } from 'react-table'
 import { POLYGONSCAN_URL } from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
 
+import {
+  DateSearch,
+  FuzzySearch,
+  fuzzyTextFilterFn,
+  getStatusFn,
+  greaterThanEqualToFn,
+  lessThanEqualToFn,
+  SelectColumnFilter
+} from './Filters'
 import NFTDetails from './NFTDetails'
 import VhrToken from './VhrToken'
 
@@ -172,64 +180,6 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
     }
   })
 
-  const FuzzySearch = (item: any) => {
-    const [value, setValue] = React.useState('')
-    const column = item.column
-    // const count = column.preFilteredRows.length
-    return (
-      <input
-        className="w-full"
-        value={value}
-        onChange={(e) => {
-          setValue(e.target.value)
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            column.setFilter(value || undefined)
-          }
-        }}
-        placeholder={`Search`}
-      />
-    )
-  }
-
-  const DateSearch = (item: any) => {
-    const column = item.column
-    return (
-      <input
-        className="w-full"
-        value={item.filterValue}
-        type="date"
-        onChange={(e) => {
-          column.setFilter(e.target.value || undefined)
-        }}
-      />
-    )
-  }
-
-  function fuzzyTextFilterFn(rows: any, id: any, filterValue: any) {
-    return matchSorter(rows, filterValue, {
-      keys: [(row: any) => row.values[id]]
-    })
-  }
-  fuzzyTextFilterFn.autoRemove = (val: any) => !val
-
-  function greaterThanEqualToFn(rows: any, id: any, filterValue: any) {
-    return rows.filter((row: any) => {
-      const rowValue = new Date(row.values[id])
-      const filterDate = new Date(filterValue)
-      return rowValue >= filterDate
-    })
-  }
-
-  function lessThanEqualToFn(rows: any, id: any, filterValue: any) {
-    return rows.filter((row: any) => {
-      const rowValue = new Date(row.values[id])
-      const filterDate = new Date(filterValue)
-      return rowValue <= filterDate
-    })
-  }
-
   const columns = useMemo(
     () => [
       {
@@ -332,9 +282,8 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
                 </a>
               )
             },
-            Filter: () => {
-              return <div />
-            }
+            Filter: SelectColumnFilter,
+            filter: getStatusFn
           }
         ]
       }
