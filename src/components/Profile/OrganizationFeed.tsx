@@ -16,16 +16,6 @@ import { useAppPersistStore } from 'src/store/app'
 import NFTDetails from './NFTDetails'
 import VhrToken from './VhrToken'
 
-const WHO_COLLECTED_QUERY = gql`
-  query WhoCollected($request: WhoCollectedPublicationRequest!) {
-    whoCollectedPublication(request: $request) {
-      items {
-        address
-      }
-    }
-  }
-`
-
 const NOTIFICATIONS_QUERY = gql`
   query Notifications($request: NotificationRequest!) {
     notifications(request: $request) {

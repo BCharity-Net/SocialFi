@@ -19,16 +19,6 @@ import { useAppPersistStore } from 'src/store/app'
 import NFTDetails from './NFTDetails'
 import VhrToken from './VhrToken'
 
-const WHO_COLLECTED_QUERY = gql`
-  query WhoCollected($request: WhoCollectedPublicationRequest!) {
-    whoCollectedPublication(request: $request) {
-      items {
-        address
-      }
-    }
-  }
-`
-
 const PROFILE_FEED_QUERY = gql`
   query ProfileFeed(
     $request: PublicationsQueryRequest!
