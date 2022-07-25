@@ -7,12 +7,18 @@ import { ErrorMessage } from '@components/UI/ErrorMessage'
 import { Profile } from '@generated/types'
 import { CollectionIcon, ExternalLinkIcon } from '@heroicons/react/outline'
 import { ethers } from 'ethers'
-import { matchSorter } from 'match-sorter'
 import React, { FC, useMemo, useState } from 'react'
 import { useFilters, useTable } from 'react-table'
 import { POLYGONSCAN_URL } from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
 
+import {
+  DateSearch,
+  FuzzySearch,
+  fuzzyTextFilterFn,
+  greaterThanEqualToFn,
+  lessThanEqualToFn
+} from './Filters'
 import NFTDetails from './NFTDetails'
 import VhrToken from './VhrToken'
 
@@ -62,6 +68,8 @@ interface Props {
 interface Data {
   from: string
   program: string
+  city: string
+  category: string
   startDate: string
   endDate: string
   totalHours: number
@@ -88,6 +96,8 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
         return {
           from: i.profile.handle,
           program: i.metadata.attributes[5].value,
+          city: i.metadata.attributes[6].value,
+          category: i.metadata.attributes[7].value,
           startDate: i.metadata.attributes[2].value,
           endDate: i.metadata.attributes[3].value,
           totalHours: i.metadata.attributes[4].value,
@@ -109,6 +119,8 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
           tableData[index] = {
             from: name,
             program: metadata.attributes[5].value,
+            city: metadata.attributes[6].value,
+            category: metadata.attributes[7].value,
             startDate: metadata.attributes[2].value,
             endDate: metadata.attributes[3].value,
             totalHours: metadata.attributes[4].value,
@@ -166,35 +178,6 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
     }
   })
 
-  const FuzzySearch = (item: any) => {
-    const [value, setValue] = React.useState('')
-    const column = item.column
-    // const count = column.preFilteredRows.length
-    return (
-      <input
-        className="w-full"
-        value={value}
-        onChange={(e) => {
-          setValue(e.target.value)
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            column.setFilter(value || undefined)
-          }
-        }}
-        placeholder={`Search`}
-      />
-    )
-  }
-
-  function fuzzyTextFilterFn(rows: any, id: any, filterValue: any) {
-    return matchSorter(rows, filterValue, {
-      keys: [(row: any) => row.values[id]]
-    })
-  }
-
-  fuzzyTextFilterFn.autoRemove = (val: any) => !val
-
   const columns = useMemo(
     () => [
       {
@@ -216,27 +199,37 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
               )
             },
             Filter: FuzzySearch,
-            filter: 'fuzzyText'
+            filter: fuzzyTextFilterFn
           },
           {
             Header: 'Program',
             accessor: 'program',
             Filter: FuzzySearch,
-            filter: 'fuzzyText'
+            filter: fuzzyTextFilterFn
+          },
+          {
+            Header: 'City/Region',
+            accessor: 'city',
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
+          },
+          {
+            Header: 'Category',
+            accessor: 'category',
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
           },
           {
             Header: 'Start Date',
             accessor: 'startDate',
-            Filter: () => {
-              return <div />
-            }
+            Filter: DateSearch,
+            filter: greaterThanEqualToFn
           },
           {
             Header: 'End Date',
             accessor: 'endDate',
-            Filter: () => {
-              return <div />
-            }
+            Filter: DateSearch,
+            filter: lessThanEqualToFn
           },
           {
             Header: 'Total Hours',
@@ -302,10 +295,7 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
       useTable(
         {
           columns,
-          data: tableData,
-          filterTypes: {
-            fuzzyText: fuzzyTextFilterFn
-          }
+          data: tableData
         },
         useFilters
       )
@@ -393,7 +383,7 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
       )}
       <ErrorMessage title="Failed to load hours" error={error} />
       {!error && !loading && data?.notifications?.items?.length !== 0 && (
-        <Card>
+        <Card className="overflow-x-scroll scroll">
           <Table />
         </Card>
       )}
