@@ -11,7 +11,6 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppPersistStore } from 'src/store/app'
 
-import TranslateButton from '../TranslateButton'
 import MenuItems from './MenuItems'
 import MoreNavItems from './MoreNavItems'
 import Search from './Search'

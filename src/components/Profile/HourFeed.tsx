@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { gql, useLazyQuery, useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
 import { Card } from '@components/UI/Card'
 import { EmptyState } from '@components/UI/EmptyState'
@@ -9,7 +9,6 @@ import { CommentFields } from '@gql/CommentFields'
 import { MirrorFields } from '@gql/MirrorFields'
 import { PostFields } from '@gql/PostFields'
 import { CollectionIcon, ExternalLinkIcon } from '@heroicons/react/outline'
-import Logger from '@lib/logger'
 import { ethers } from 'ethers'
 import { matchSorter } from 'match-sorter'
 import React, { FC, useMemo, useState } from 'react'
@@ -19,16 +18,6 @@ import { useAppPersistStore } from 'src/store/app'
 
 import NFTDetails from './NFTDetails'
 import VhrToken from './VhrToken'
-
-const WHO_COLLECTED_QUERY = gql`
-  query WhoCollected($request: WhoCollectedPublicationRequest!) {
-    whoCollectedPublication(request: $request) {
-      items {
-        address
-      }
-    }
-  }
-`
 
 const PROFILE_FEED_QUERY = gql`
   query ProfileFeed(
@@ -82,32 +71,12 @@ const HourFeed: FC<Props> = ({ profile }) => {
   const [pubIdData, setPubIdData] = useState<string[]>([])
   const [vhrTxnData, setVhrTxnData] = useState<string[]>([])
   const [addressData, setAddressData] = useState<string[]>([])
-  const [getCollectAddress] = useLazyQuery(WHO_COLLECTED_QUERY, {
-    onCompleted() {
-      Logger.log('Lazy Query =>', `Fetched collected result`)
-    }
-  })
-
-  const fetchCollectAddress = (pubId: string) =>
-    getCollectAddress({
-      variables: {
-        request: { publicationId: pubId }
-      }
-    }).then(({ data }) => {
-      return data.whoCollectedPublication.items
-    })
 
   const handleTableData = async (data: any) => {
     return Promise.all(
       data.map(async (i: any, index: number) => {
         let verified = false
-        if (i.collectNftAddress)
-          await fetchCollectAddress(i.id).then((data) => {
-            data.forEach((item: any) => {
-              if (verified) return
-              verified = item.address === i.metadata.attributes[1].value
-            })
-          })
+        if (i.collectNftAddress) verified = true
         return {
           orgName: i.metadata.name,
           program: i.metadata.attributes[5].value,
@@ -218,7 +187,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
   const columns = useMemo(
     () => [
       {
-        Header: 'VHR Verification',
+        Header: 'VHR Submissions',
         columns: [
           {
             Header: 'Organization',

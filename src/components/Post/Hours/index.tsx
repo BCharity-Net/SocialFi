@@ -76,8 +76,7 @@ const Hours: FC<Props> = ({ post }) => {
         <div className="block justify-between items-center sm:flex">
           <div className="text-xl font-bold">
             {' '}
-            VHR Volunteer Hours Verification
-            Submitted by {post.profile.name} (
+            VHR Volunteer Hours Verification Submitted by {post.profile.name} (
             {post.profile.handle}):
           </div>
           {currentUser &&
