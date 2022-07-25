@@ -16,8 +16,10 @@ import {
   DateSearch,
   FuzzySearch,
   fuzzyTextFilterFn,
+  getStatusFn,
   greaterThanEqualToFn,
-  lessThanEqualToFn
+  lessThanEqualToFn,
+  SelectColumnFilter
 } from './Filters'
 import NFTDetails from './NFTDetails'
 import VhrToken from './VhrToken'
@@ -280,9 +282,8 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
                 </a>
               )
             },
-            Filter: () => {
-              return <div />
-            }
+            Filter: SelectColumnFilter,
+            filter: getStatusFn
           }
         ]
       }

@@ -1,5 +1,36 @@
 import { matchSorter } from 'match-sorter'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
+import { Row } from 'react-table'
+
+interface Data {
+  orgName: string
+  program: string
+  city: string
+  category: string
+  startDate: string
+  endDate: string
+  totalHours: number
+  verified: {
+    index: number
+    value: string
+    postID: string
+  }
+}
+
+interface Data {
+  from: string
+  program: string
+  city: string
+  category: string
+  startDate: string
+  endDate: string
+  totalHours: number
+  verified: {
+    index: number
+    value: string
+    postID: string
+  }
+}
 
 export const FuzzySearch = (item: any) => {
   const [value, setValue] = useState('')
@@ -36,14 +67,51 @@ export const DateSearch = (item: any) => {
   )
 }
 
-export const fuzzyTextFilterFn = (rows: any, id: any, filterValue: any) => {
+export const SelectColumnFilter = (item: any) => {
+  const filterValue = item.column.filterValue
+  const setFilter = item.column.setFilter
+  const preFilteredRows = item.column.preFilteredRows
+  const id = item.column.id
+  const options = useMemo(() => {
+    const options = new Set()
+    preFilteredRows.forEach((row: any) => {
+      options.add(row.values[id])
+    })
+    return [...options.values()]
+  }, [id, preFilteredRows])
+  return (
+    <select
+      value={filterValue}
+      onChange={(e) => {
+        setFilter(e.target.value || undefined)
+      }}
+    >
+      <option value="">All</option>
+      {options.map((option: any, i) => (
+        <option key={i} value={option.value}>
+          {option.value}
+        </option>
+      ))}
+    </select>
+  )
+}
+
+export const fuzzyTextFilterFn = (
+  rows: Row<Data>[],
+  id: number,
+  filterValue: any
+) => {
   return matchSorter(rows, filterValue, {
     keys: [(row: any) => row.values[id]]
   })
 }
 fuzzyTextFilterFn.autoRemove = (val: any) => !val
 
-export const greaterThanEqualToFn = (rows: any, id: any, filterValue: any) => {
+export const greaterThanEqualToFn = (
+  rows: Row<Data>[],
+  id: number,
+  filterValue: any
+) => {
   return rows.filter((row: any) => {
     const rowValue = new Date(row.values[id])
     const filterDate = new Date(filterValue)
@@ -51,10 +119,25 @@ export const greaterThanEqualToFn = (rows: any, id: any, filterValue: any) => {
   })
 }
 
-export const lessThanEqualToFn = (rows: any, id: any, filterValue: any) => {
+export const lessThanEqualToFn = (
+  rows: Row<Data>[],
+  id: number,
+  filterValue: any
+) => {
   return rows.filter((row: any) => {
     const rowValue = new Date(row.values[id])
     const filterDate = new Date(filterValue)
     return rowValue <= filterDate
+  })
+}
+
+export const getStatusFn = (
+  rows: Row<Data>[],
+  id: number,
+  filterValue: any
+) => {
+  return rows.filter((row: Row<Data>) => {
+    const rowValue = row.values[id].value
+    return rowValue === filterValue
   })
 }
