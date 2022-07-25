@@ -11,6 +11,7 @@ import { FC } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppPersistStore } from 'src/store/app'
 
+import TranslateButton from '../TranslateButton'
 import MenuItems from './MenuItems'
 import MoreNavItems from './MoreNavItems'
 import Search from './Search'
@@ -127,7 +128,7 @@ const Navbar: FC = () => {
               <div className="flex gap-8 items-center">
                 {isAuthenticated && currentUser && <NewPostModal />}
                 {isAuthenticated && currentUser && <NotificationIcon />}
-
+                <TranslateButton />
                 <MenuItems pingData={pingData} />
               </div>
             </div>

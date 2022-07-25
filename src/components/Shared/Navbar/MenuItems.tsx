@@ -29,7 +29,6 @@ import { useAppPersistStore, useAppStore } from 'src/store/app'
 import { useDisconnect } from 'wagmi'
 
 import Slug from '../Slug'
-import TranslateButton from '../TranslateButton'
 import Login from './Login'
 
 export const NextLink = ({ href, children, ...rest }: Record<string, any>) => (
@@ -277,7 +276,6 @@ const MenuItems: FC<Props> = ({ pingData }) => {
       >
         <Login />
       </Modal>
-      <TranslateButton />
       <Button
         icon={
           <img
