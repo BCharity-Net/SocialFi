@@ -183,7 +183,7 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
   const columns = useMemo(
     () => [
       {
-        Header: 'VHR Submissions',
+        Header: 'VHR Verification',
         columns: [
           {
             Header: 'From',
