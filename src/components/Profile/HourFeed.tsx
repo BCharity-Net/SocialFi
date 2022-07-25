@@ -218,7 +218,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
   const columns = useMemo(
     () => [
       {
-        Header: 'VHR Submissions',
+        Header: 'VHR Verification',
         columns: [
           {
             Header: 'Organization',
@@ -322,10 +322,10 @@ const HourFeed: FC<Props> = ({ profile }) => {
       useTable(
         {
           columns,
-          data: tableData
-          // filterTypes: {
-          //   fuzzyText: fuzzyTextFilterFn
-          // }
+          data: tableData,
+          filterTypes: {
+            fuzzyText: fuzzyTextFilterFn
+          }
         },
         useFilters
       )
@@ -341,7 +341,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
               {headerGroup.headers.map((column) => (
                 <th className="p-4" {...column.getHeaderProps()}>
                   {column.render('Header')}
-                  {/* <div>{column.canFilter ? column.render('Filter') : null}</div> */}
+                  <div>{column.canFilter ? column.render('Filter') : null}</div>
                 </th>
               ))}
             </tr>
