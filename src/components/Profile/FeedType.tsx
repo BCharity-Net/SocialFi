@@ -104,6 +104,7 @@ const FeedType: FC<Props> = ({ stats, address, id, setFeedType, feedType }) => {
           name="OrgVHR"
           icon={<ClockIcon className="w-4 h-4" />}
           type="org"
+          count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
           testId="type-org"
         />
       ) : (
