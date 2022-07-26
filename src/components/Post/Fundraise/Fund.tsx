@@ -75,7 +75,7 @@ interface Props {
 const Fund: FC<Props> = ({ fund, collectModule, setRevenue, revenue }) => {
   const { t } = useTranslation('common')
   const { userSigNonce, setUserSigNonce } = useAppStore()
-  const { isConnected } = useAppPersistStore()
+  const { isAuthenticated } = useAppPersistStore()
   const [allowed, setAllowed] = useState<boolean>(true)
   const { address } = useAccount()
   const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
@@ -112,7 +112,7 @@ const Fund: FC<Props> = ({ fund, collectModule, setRevenue, revenue }) => {
           referenceModules: []
         }
       },
-      skip: !collectModule?.amount?.asset?.address || !isConnected,
+      skip: !collectModule?.amount?.asset?.address || !isAuthenticated,
       onCompleted(data) {
         setAllowed(data?.approvedModuleAllowanceAmount[0]?.allowance !== '0x00')
         Logger.log('[Query]', `Fetched allowance data`)
@@ -200,7 +200,7 @@ const Fund: FC<Props> = ({ fund, collectModule, setRevenue, revenue }) => {
   )
 
   const createCollect = () => {
-    if (!isConnected) return toast.error(CONNECT_WALLET)
+    if (!isAuthenticated) return toast.error(CONNECT_WALLET)
 
     createCollectTypedData({
       variables: {

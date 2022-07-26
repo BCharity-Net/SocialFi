@@ -29,7 +29,7 @@ export const DateSearch = (item: any) => {
   const column = item.column
   return (
     <input
-      className="w-full"
+      className="w-full border-0 p-0 text-neutral-500"
       value={item.filterValue}
       type="date"
       onChange={(e) => {
@@ -47,12 +47,13 @@ export const SelectColumnFilter = (item: any) => {
   const options = useMemo(() => {
     const options = new Set()
     preFilteredRows.forEach((row: any) => {
-      options.add(row.values[id])
+      options.add(row.values[id].value)
     })
     return [...options.values()]
   }, [id, preFilteredRows])
   return (
     <select
+      className="border-0 text-neutral-500"
       value={filterValue}
       onChange={(e) => {
         setFilter(e.target.value || undefined)
@@ -60,8 +61,8 @@ export const SelectColumnFilter = (item: any) => {
     >
       <option value="">All</option>
       {options.map((option: any, i) => (
-        <option key={i} value={option.value}>
-          {option.value}
+        <option key={i} value={option}>
+          {option}
         </option>
       ))}
     </select>
