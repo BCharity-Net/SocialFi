@@ -341,7 +341,7 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
                   {row.cells.map((cell) => {
                     return (
                       <td className="p-4" {...cell.getCellProps()}>
-                        {cell.render('Cell', { vhr: vhrTxnData[index] })}
+                        {cell.render('Cell', { vhr: vhrTxnData })}
                       </td>
                     )
                   })}
@@ -398,7 +398,7 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
       )}
       <ErrorMessage title="Failed to load hours" error={error} />
       {!error && !loading && data?.notifications?.items?.length !== 0 && (
-        <Card className="overflow-x-scroll scroll">
+        <Card>
           <Table />
         </Card>
       )}

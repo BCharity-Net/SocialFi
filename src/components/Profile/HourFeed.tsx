@@ -382,7 +382,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
       )}
       <ErrorMessage title="Failed to load hours" error={error} />
       {!error && !loading && data?.publications?.items?.length !== 0 && (
-        <Card className="overflow-x-scroll scroll">
+        <Card>
           <Table />
         </Card>
       )}

@@ -1,6 +1,11 @@
 // import { Profile } from '@generated/types'
 import { gql, useQuery } from '@apollo/client'
-import { GridItemEight, GridItemFour, GridLayout } from '@components/GridLayout'
+import {
+  GridItemEight,
+  GridItemFour,
+  GridItemTwelve,
+  GridLayout
+} from '@components/GridLayout'
 import NFTShimmer from '@components/Shared/Shimmer/NFTShimmer'
 import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
 import SEO from '@components/utils/SEO'
@@ -117,27 +122,41 @@ const ViewProfile: NextPage = () => {
       )}
       <Cover cover={profile?.coverPicture?.original?.url} />
       <GridLayout className="pt-6">
-        <GridItemFour>
-          <Details profile={profile} />
-        </GridItemFour>
-        <GridItemEight className="space-y-5">
-          <FeedType
-            stats={profile?.stats}
-            address={profile?.ownedBy}
-            id={profile?.id}
-            setFeedType={setFeedType}
-            feedType={feedType}
-          />
-          {(feedType === 'POST' ||
-            feedType === 'COMMENT' ||
-            feedType === 'MIRROR') && (
-            <Feed profile={profile} type={feedType} />
-          )}
-          {feedType === 'NFT' && <NFTFeed profile={profile} />}
-          {isVerified(profile?.id)
-            ? feedType === 'org' && <OrganizationFeed profile={profile} />
-            : feedType === 'vhr' && <HourFeed profile={profile} />}
-        </GridItemEight>
+        {feedType === 'org' || feedType == 'vhr' ? (
+          <GridItemTwelve className="space-y-5">
+            <FeedType
+              stats={profile?.stats}
+              address={profile?.ownedBy}
+              id={profile?.id}
+              setFeedType={setFeedType}
+              feedType={feedType}
+            />
+            {isVerified(profile?.id)
+              ? feedType === 'org' && <OrganizationFeed profile={profile} />
+              : feedType === 'vhr' && <HourFeed profile={profile} />}
+          </GridItemTwelve>
+        ) : (
+          <>
+            <GridItemFour>
+              <Details profile={profile} />
+            </GridItemFour>
+            <GridItemEight className="space-y-5">
+              <FeedType
+                stats={profile?.stats}
+                address={profile?.ownedBy}
+                id={profile?.id}
+                setFeedType={setFeedType}
+                feedType={feedType}
+              />
+              {(feedType === 'POST' ||
+                feedType === 'COMMENT' ||
+                feedType === 'MIRROR') && (
+                <Feed profile={profile} type={feedType} />
+              )}
+              {feedType === 'NFT' && <NFTFeed profile={profile} />}
+            </GridItemEight>
+          </>
+        )}
       </GridLayout>
     </>
   )
