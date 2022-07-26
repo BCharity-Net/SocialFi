@@ -2,35 +2,7 @@ import { matchSorter } from 'match-sorter'
 import React, { useMemo, useState } from 'react'
 import { Row } from 'react-table'
 
-interface Data {
-  orgName: string
-  program: string
-  city: string
-  category: string
-  startDate: string
-  endDate: string
-  totalHours: number
-  verified: {
-    index: number
-    value: string
-    postID: string
-  }
-}
-
-interface Data {
-  from: string
-  program: string
-  city: string
-  category: string
-  startDate: string
-  endDate: string
-  totalHours: number
-  verified: {
-    index: number
-    value: string
-    postID: string
-  }
-}
+import { Data } from './HourFeed'
 
 export const FuzzySearch = (item: any) => {
   const [value, setValue] = useState('')

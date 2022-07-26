@@ -60,14 +60,17 @@ interface Props {
   profile: Profile
 }
 
-interface Data {
+export interface Data {
   orgName: string
   program: string
   city: string
   category: string
   startDate: string
   endDate: string
-  totalHours: number
+  totalHours: {
+    index: number
+    value: number
+  }
   verified: {
     index: number
     value: string
@@ -94,7 +97,10 @@ const HourFeed: FC<Props> = ({ profile }) => {
           category: i.metadata.attributes[7].value,
           startDate: i.metadata.attributes[2].value,
           endDate: i.metadata.attributes[3].value,
-          totalHours: i.metadata.attributes[4].value,
+          totalHours: {
+            index: index,
+            value: i.metadata.attributes[4].value
+          },
           verified: {
             index: index,
             value: verified ? 'Verified' : 'Unverified',
@@ -117,7 +123,10 @@ const HourFeed: FC<Props> = ({ profile }) => {
             category: metadata.attributes[7].value,
             startDate: metadata.attributes[2].value,
             endDate: metadata.attributes[3].value,
-            totalHours: metadata.attributes[4].value,
+            totalHours: {
+              index: index,
+              value: metadata.attributes[4].value
+            },
             verified: {
               index: index,
               value: 'Verified',
@@ -225,11 +234,17 @@ const HourFeed: FC<Props> = ({ profile }) => {
           {
             Header: 'Total Hours',
             accessor: 'totalHours',
-            Cell: (props: { value: number; vhr: string }) => {
-              if (props.vhr === '') {
-                return <a>{props.value}</a>
+            Cell: (props: {
+              value: { index: number; value: number }
+              vhr: string
+            }) => {
+              const index = props.value.index
+              const value = props.value.value
+              const vhr = props.vhr[index]
+              if (vhr === '') {
+                return <a>{value}</a>
               }
-              const url = `${POLYGONSCAN_URL}/tx/${props.vhr}`
+              const url = `${POLYGONSCAN_URL}/tx/${vhr}`
               return (
                 <a
                   href={url}
@@ -237,8 +252,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
                   rel="noopener noreferrer"
                   className="text-brand-500"
                 >
-                  {props.value}{' '}
-                  {<ExternalLinkIcon className="w-4 h-4 inline-flex" />}
+                  {value} {<ExternalLinkIcon className="w-4 h-4 inline-flex" />}
                 </a>
               )
             },
@@ -316,7 +330,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
                   {row.cells.map((cell) => {
                     return (
                       <td className="p-4" {...cell.getCellProps()}>
-                        {cell.render('Cell', { vhr: vhrTxnData[index] })}
+                        {cell.render('Cell', { vhr: vhrTxnData })}
                       </td>
                     )
                   })}

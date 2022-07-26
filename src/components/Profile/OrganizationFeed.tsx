@@ -68,13 +68,16 @@ interface Props {
 }
 
 interface Data {
-  from: string
+  orgName: string
   program: string
   city: string
   category: string
   startDate: string
   endDate: string
-  totalHours: number
+  totalHours: {
+    index: number
+    value: number
+  }
   verified: {
     index: number
     value: string
@@ -96,13 +99,16 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
         let verified = false
         if (i.collectNftAddress) verified = true
         return {
-          from: i.profile.handle,
+          orgName: i.profile.handle,
           program: i.metadata.attributes[5].value,
           city: i.metadata.attributes[6].value,
           category: i.metadata.attributes[7].value,
           startDate: i.metadata.attributes[2].value,
           endDate: i.metadata.attributes[3].value,
-          totalHours: i.metadata.attributes[4].value,
+          totalHours: {
+            index: index,
+            value: i.metadata.attributes[4].value
+          },
           verified: {
             index: index,
             value: verified ? 'Verified' : 'Unverified',
@@ -119,13 +125,16 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
       .then((result) => {
         result.json().then((metadata) => {
           tableData[index] = {
-            from: name,
+            orgName: name,
             program: metadata.attributes[5].value,
             city: metadata.attributes[6].value,
             category: metadata.attributes[7].value,
             startDate: metadata.attributes[2].value,
             endDate: metadata.attributes[3].value,
-            totalHours: metadata.attributes[4].value,
+            totalHours: {
+              index: index,
+              value: metadata.attributes[4].value
+            },
             verified: {
               index: index,
               value: 'Verified',
@@ -187,7 +196,7 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
         columns: [
           {
             Header: 'From',
-            accessor: 'from',
+            accessor: 'orgName',
             Cell: (props: { value: string }) => {
               const user = props.value
               return (
@@ -236,11 +245,17 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
           {
             Header: 'Total Hours',
             accessor: 'totalHours',
-            Cell: (props: { value: number; vhr: string }) => {
-              if (props.vhr === '') {
-                return <a>{props.value}</a>
+            Cell: (props: {
+              value: { index: number; value: number }
+              vhr: string
+            }) => {
+              const index = props.value.index
+              const value = props.value.value
+              const vhr = props.vhr[index]
+              if (vhr === '') {
+                return <a>{value}</a>
               }
-              const url = `${POLYGONSCAN_URL}/tx/${props.vhr}`
+              const url = `${POLYGONSCAN_URL}/tx/${vhr}`
               return (
                 <a
                   href={url}
@@ -248,8 +263,7 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
                   rel="noopener noreferrer"
                   className="text-brand-500"
                 >
-                  {props.value}{' '}
-                  {<ExternalLinkIcon className="w-4 h-4 inline-flex" />}
+                  {value} {<ExternalLinkIcon className="w-4 h-4 inline-flex" />}
                 </a>
               )
             },
@@ -356,7 +370,7 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
                       data,
                       index,
                       tableData[index].verified.postID,
-                      tableData[index].from
+                      tableData[index].orgName
                     )
                   }}
                 />
