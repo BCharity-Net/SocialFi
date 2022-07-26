@@ -71,7 +71,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
   })
 
   const collectModule: any = data?.publication?.collectModule
-  // console.log('collectModule', collectModule)
+
   const { data: revenueData, loading: revenueLoading } = useQuery(
     PUBLICATION_REVENUE_QUERY,
     {
