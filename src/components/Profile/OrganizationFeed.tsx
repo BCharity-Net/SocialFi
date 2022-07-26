@@ -8,7 +8,7 @@ import { Profile } from '@generated/types'
 import { CollectionIcon, ExternalLinkIcon } from '@heroicons/react/outline'
 import { ethers } from 'ethers'
 import React, { FC, useMemo, useState } from 'react'
-import { useFilters, useTable } from 'react-table'
+import { Row, useFilters, useTable } from 'react-table'
 import { POLYGONSCAN_URL } from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
 
@@ -305,6 +305,14 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
     [addressData]
   )
 
+  const computeHours = (rows: Row<Data>[]) => {
+    let result = 0
+    rows.forEach((row) => {
+      result += row.values.totalHours.value * 1
+    })
+    return result
+  }
+
   const Table = () => {
     const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
       useTable(
@@ -321,16 +329,31 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
         {...getTableProps()}
       >
         <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th className="p-4" {...column.getHeaderProps()}>
-                  {column.render('Header')}
-                  <div>{column.canFilter ? column.render('Filter') : null}</div>
+          {headerGroups.map((headerGroup, index) => {
+            return index === 0 ? (
+              <tr>
+                <th
+                  className="p-4"
+                  {...headerGroup.headers[0].getHeaderProps()}
+                >
+                  {headerGroup.headers[0] &&
+                    headerGroup.headers[0].render('Header')}
+                  <p>Total Hours: {computeHours(rows)}</p>
                 </th>
-              ))}
-            </tr>
-          ))}
+              </tr>
+            ) : (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <th className="p-4" {...column.getHeaderProps()}>
+                    {column.render('Header')}
+                    <div>
+                      {column.canFilter ? column.render('Filter') : null}
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            )
+          })}
         </thead>
         <tbody {...getTableBodyProps()}>
           {rows.map((row, index) => {
