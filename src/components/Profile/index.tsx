@@ -130,6 +130,7 @@ const ViewProfile: NextPage = () => {
               id={profile?.id}
               setFeedType={setFeedType}
               feedType={feedType}
+              profile={profile}
             />
             {isVerified(profile?.id)
               ? feedType === 'org' && <OrganizationFeed profile={profile} />
@@ -147,6 +148,7 @@ const ViewProfile: NextPage = () => {
                 id={profile?.id}
                 setFeedType={setFeedType}
                 feedType={feedType}
+                profile={profile}
               />
               {(feedType === 'POST' ||
                 feedType === 'COMMENT' ||
