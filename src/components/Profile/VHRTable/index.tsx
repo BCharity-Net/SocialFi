@@ -52,6 +52,7 @@ const VHRTable: FC<Props> = ({
   from
 }) => {
   const { currentUser } = useAppPersistStore()
+  const [onEnter, setOnEnter] = useState<boolean>(false)
   const [tableData, setTableData] = useState<Data[]>([])
   const [pubIdData, setPubIdData] = useState<string[]>([])
   const [vhrTxnData, setVhrTxnData] = useState<string[]>([])
@@ -118,8 +119,12 @@ const VHRTable: FC<Props> = ({
     skip: !profile?.id,
     fetchPolicy: 'no-cache',
     onCompleted(data) {
+      if (onEnter) {
+        tableData.splice(0, tableData.length)
+        setTableData(tableData)
+        setOnEnter(false)
+      }
       const hours = handleQueryComplete(data)
-
       handleTableData(hours).then((result: Data[]) => {
         setTableData([...tableData, ...result])
         if (tableData.length != tableLimit) {
@@ -141,6 +146,7 @@ const VHRTable: FC<Props> = ({
       setPubIdData([...pubIdData, ...pubId])
       setVhrTxnData([...vhrTxnData, ...vhrTxn])
       setAddressData([...addressData, ...addresses])
+      setOnEnter(true)
     }
   })
 

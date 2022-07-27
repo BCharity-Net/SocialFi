@@ -69,6 +69,7 @@ interface Data {
 
 const OrgVerifiedHours: FC<Props> = ({ profile, callback }) => {
   const { currentUser } = useAppPersistStore()
+  const [onEnter, setOnEnter] = useState<boolean>(false)
   const [tableData, setTableData] = useState<Data[]>([])
   const [pubIdData, setPubIdData] = useState<string[]>([])
   const [vhrTxnData, setVhrTxnData] = useState<string[]>([])
@@ -114,6 +115,11 @@ const OrgVerifiedHours: FC<Props> = ({ profile, callback }) => {
     skip: !profile?.id,
     fetchPolicy: 'no-cache',
     onCompleted(data) {
+      if (onEnter) {
+        tableData.splice(0, tableData.length)
+        setTableData(tableData)
+        setOnEnter(false)
+      }
       const notifs = data?.notifications?.items.filter((i: any) => {
         return (
           i.__typename === 'NewMentionNotification' &&
@@ -142,6 +148,7 @@ const OrgVerifiedHours: FC<Props> = ({ profile, callback }) => {
       setPubIdData([...pubIdData, ...pubId])
       setVhrTxnData([...vhrTxnData, ...vhrTxn])
       setAddressData([...addressData, ...addresses])
+      setOnEnter(true)
     }
   })
 
