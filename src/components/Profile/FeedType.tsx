@@ -1,4 +1,4 @@
-import { ProfileStats } from '@generated/types'
+import { Profile, ProfileStats } from '@generated/types'
 import {
   ChatAlt2Icon,
   ClockIcon,
@@ -9,10 +9,12 @@ import {
 import isVerified from '@lib/isVerified'
 import nFormatter from '@lib/nFormatter'
 import clsx from 'clsx'
-import React, { Dispatch, FC, ReactNode } from 'react'
+import React, { Dispatch, FC, ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { VHR_TOKEN } from 'src/constants'
 import { useBalance } from 'wagmi'
+
+import OrgVerifiedHours from './OrgVerifiedHours'
 
 interface Props {
   stats: ProfileStats
@@ -20,10 +22,19 @@ interface Props {
   id: string
   setFeedType: Dispatch<string>
   feedType: string
+  profile: Profile
 }
 
-const FeedType: FC<Props> = ({ stats, address, id, setFeedType, feedType }) => {
+const FeedType: FC<Props> = ({
+  stats,
+  address,
+  id,
+  setFeedType,
+  feedType,
+  profile
+}) => {
   const { t } = useTranslation('common')
+  const [orgVerifiedHours, setOrgVerifiedHours] = useState<number>()
   const { data: vhrBalance } = useBalance({
     addressOrName: address,
     token: VHR_TOKEN,
@@ -100,12 +111,21 @@ const FeedType: FC<Props> = ({ stats, address, id, setFeedType, feedType }) => {
         testId="type-nfts"
       />
       {isVerified(id) ? (
-        <FeedLink
-          name="OrgVHR"
-          icon={<ClockIcon className="w-4 h-4" />}
-          type="org"
-          testId="type-org"
-        />
+        <>
+          <OrgVerifiedHours
+            profile={profile}
+            callback={(hours: number) => {
+              setOrgVerifiedHours(hours)
+            }}
+          />
+          <FeedLink
+            name="OrgVHR"
+            icon={<ClockIcon className="w-4 h-4" />}
+            type="org"
+            count={orgVerifiedHours}
+            testId="type-org"
+          />
+        </>
       ) : (
         <FeedLink
           name="VHR"
