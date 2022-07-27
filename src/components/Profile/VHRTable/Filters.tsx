@@ -2,7 +2,11 @@ import { matchSorter } from 'match-sorter'
 import React, { useMemo, useState } from 'react'
 import { Row } from 'react-table'
 
-import { Data } from './HourFeed'
+import { Data } from './index'
+
+export const NoFilter = () => {
+  return <div />
+}
 
 export const FuzzySearch = (item: any) => {
   const [value, setValue] = useState('')
