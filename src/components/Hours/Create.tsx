@@ -41,6 +41,8 @@ import { v4 as uuid } from 'uuid'
 import { useContractWrite, useSignTypedData } from 'wagmi'
 import { object, string } from 'zod'
 
+import Autocomplete from './Autosuggest'
+
 export const PROFILE_QUERY = gql`
   query Profile($request: SingleProfileQueryRequest!) {
     profile(request: $request) {
@@ -478,11 +480,16 @@ const Hours: NextPage = () => {
                 {...form.register('city')}
               />
 
-              <Input
-                label={t('Category')}
-                type="text"
-                placeholder={t('Education')}
-                {...form.register('category')}
+              <Autocomplete
+                lang={[
+                  'Education',
+                  'Environment',
+                  'Animals',
+                  'Social',
+                  'Healthcare',
+                  'Sports and Leisure',
+                  'Disaster Relief'
+                ]}
               />
 
               <TextArea
