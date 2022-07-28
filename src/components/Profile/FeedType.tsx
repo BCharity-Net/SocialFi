@@ -1,6 +1,7 @@
 import { Profile, ProfileStats } from '@generated/types'
 import {
   ChatAlt2Icon,
+  ClipboardListIcon,
   ClockIcon,
   PencilAltIcon,
   PhotographIcon,
@@ -124,6 +125,12 @@ const FeedType: FC<Props> = ({
             type="org"
             count={orgVerifiedHours}
             testId="type-org"
+          />
+          <FeedLink
+            name="Opportunities"
+            icon={<ClipboardListIcon className="w-4 h-4" />}
+            type="opportunities"
+            testId="type-opportunities"
           />
         </>
       ) : (

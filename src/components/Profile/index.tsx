@@ -24,6 +24,7 @@ import Cover from './Cover'
 import Details from './Details'
 import FeedType from './FeedType'
 import HourFeed from './HourFeed'
+import OpportunitiesFeed from './OpportunitiesFeed'
 import OrganizationFeed from './OrganizationFeed'
 import ProfilePageShimmer from './Shimmer'
 
@@ -122,7 +123,9 @@ const ViewProfile: NextPage = () => {
       )}
       <Cover cover={profile?.coverPicture?.original?.url} />
       <GridLayout className="pt-6">
-        {feedType === 'org' || feedType == 'vhr' ? (
+        {feedType === 'org' ||
+        feedType === 'vhr' ||
+        feedType === 'opportunities' ? (
           <GridItemTwelve className="space-y-5">
             <FeedType
               stats={profile?.stats}
@@ -132,9 +135,17 @@ const ViewProfile: NextPage = () => {
               feedType={feedType}
               profile={profile}
             />
-            {isVerified(profile?.id)
-              ? feedType === 'org' && <OrganizationFeed profile={profile} />
-              : feedType === 'vhr' && <HourFeed profile={profile} />}
+            {isVerified(profile?.id) ? (
+              feedType === 'org' ? (
+                <OrganizationFeed profile={profile} />
+              ) : (
+                feedType === 'opportunities' && (
+                  <OpportunitiesFeed profile={profile} />
+                )
+              )
+            ) : (
+              feedType === 'vhr' && <HourFeed profile={profile} />
+            )}
           </GridItemTwelve>
         ) : (
           <>
