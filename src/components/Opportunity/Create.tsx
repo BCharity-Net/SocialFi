@@ -112,7 +112,7 @@ const Media: FC<Props> = ({ media }) => {
   )
 }
 
-const Opportunities: NextPage = () => {
+const Opportunity: NextPage = () => {
   const { t } = useTranslation('common')
   const [cover, setCover] = useState<string>()
   const [singleDay, setSingleDay] = useState<boolean>(true)
@@ -572,4 +572,4 @@ const Opportunities: NextPage = () => {
   )
 }
 
-export default Opportunities
+export default Opportunity
