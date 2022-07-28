@@ -86,6 +86,20 @@ const MoreNavItems: FC = () => {
                       <div>{t('Verify Hours')}</div>
                     </div>
                   </Menu.Item>
+
+                  <Menu.Item
+                    as={NextLink}
+                    href="/create/opportunity"
+                    className={({ active }: { active: boolean }) =>
+                      clsx({ 'dropdown-active': active }, 'menu-item')
+                    }
+                  >
+                    <div className="flex items-center space-x-1.5">
+                      <ClockIcon className="w-4 h-4" />
+                      <div>{t('Create Volunteer Opportunities')}</div>
+                    </div>
+                  </Menu.Item>
+
                   {!IS_MAINNET && (
                     <Menu.Item
                       as={NextLink}
