@@ -1,14 +1,8 @@
-import Collectors from '@components/Shared/Collectors'
-import { Button } from '@components/UI/Button'
 import { Card } from '@components/UI/Card'
-import { Modal } from '@components/UI/Modal'
 import { BCharityPost } from '@generated/bcharitytypes'
-import { ClockIcon } from '@heroicons/react/outline'
 import imagekitURL from '@lib/imagekitURL'
 import React, { FC, useState } from 'react'
 import { useAppPersistStore } from 'src/store/app'
-
-import Apply from './Apply'
 
 interface Props {
   post: BCharityPost
@@ -78,29 +72,6 @@ const Opportunities: FC<Props> = ({ post }) => {
             {' '}
             <div className="text-2xl"> Volunteer Opportunities </div>
           </div>
-          {currentUser &&
-            (post?.stats?.totalAmountOfCollects < 1 ? (
-              <div className="pt-3 sm:pt-0">
-                <Apply post={post} />
-              </div>
-            ) : (
-              <div className="p-3">
-                <Button
-                  className="sm:mt-0 sm:ml-auto"
-                  onClick={() => setShowVerifyModal(!showVerifyModal)}
-                >
-                  Verified
-                </Button>
-                <Modal
-                  title="Verified"
-                  icon={<ClockIcon className="w-5 h-5 text-brand" />}
-                  show={showVerifyModal}
-                  onClose={() => setShowVerifyModal(false)}
-                >
-                  <Collectors pubId={post?.pubId ?? post?.id} />
-                </Modal>
-              </div>
-            ))}
         </div>
         <div>
           <table className="border border-violet-500 w-10 whitespace-nowrap">
@@ -184,6 +155,13 @@ const Opportunities: FC<Props> = ({ post }) => {
               </th>
               <th className="border border-violet-500 px-6 py-2">
                 {post.metadata.attributes[8].value}
+              </th>
+            </tr>
+
+            <tr className="text-center font-bold bg-violet-200">
+              <th className="border border-violet-500 px-6 py-2">Outcome</th>
+              <th className="border border-violet-500 px-6 py-2">
+                {post.metadata.description}
               </th>
             </tr>
           </table>

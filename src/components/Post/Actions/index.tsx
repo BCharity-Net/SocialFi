@@ -21,8 +21,7 @@ const PostActions: FC<Props> = ({ post }) => {
       <Like post={post} />
       {post?.collectModule?.__typename !== 'RevertCollectModuleSettings' &&
         postType !== 'fundraise' &&
-        postType !== 'hours' &&
-        postType !== 'opportunities' && <Collect post={post} />}
+        postType !== 'hours' && <Collect post={post} />}
       <PostMenu post={post} />
     </div>
   ) : null

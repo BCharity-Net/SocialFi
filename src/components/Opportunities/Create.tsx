@@ -259,7 +259,7 @@ const Opportunities: NextPage = () => {
       version: '1.0.0',
       metadata_id: uuid(),
       description: description,
-      content: `@${currentUser?.handle} VHR submission`,
+      content: `@${currentUser?.handle} Volunteer opportunities`,
       external_url: null,
       image: cover ? cover : `https://avatar.tobi.sh/${uuid()}.png`,
       imageMimeType: coverType,
