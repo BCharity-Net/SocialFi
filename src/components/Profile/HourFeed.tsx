@@ -125,7 +125,7 @@ const HourFeed: FC<Props> = ({ profile }) => {
       profile={profile}
       handleQueryComplete={(data: any) => {
         return data?.publications?.items.filter((i: any) => {
-          return i.metadata.attributes[0].value == 'hours'
+          return i.metadata.attributes[0].value === 'hours'
         })
       }}
       getColumns={(add: string[]) => {
