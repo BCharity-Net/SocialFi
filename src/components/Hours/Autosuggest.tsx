@@ -1,9 +1,13 @@
 import dynamic from 'next/dynamic'
-import React, { useState } from 'react'
+import React, { FC, useState } from 'react'
 
 const HelpTooltip = dynamic(() => import('src/components/UI/HelpTooltip'))
 
-const Autocomplete = ({ lang }) => {
+interface Props {
+  lang: any
+}
+
+const Autocomplete: FC<Props> = ({ lang }) => {
   const [searchtext, setSearchtext] = useState('')
   const [suggest, setSuggest] = useState([])
   const handleChange = (e: { target: { value: any } }) => {
