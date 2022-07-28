@@ -39,7 +39,7 @@ import { v4 as uuid } from 'uuid'
 import { useContractWrite, useSignTypedData } from 'wagmi'
 import { object, string } from 'zod'
 
-import Autocomplete from '../UI/Autosuggest'
+import Autosuggest from '../UI/Autosuggest'
 
 export const PROFILE_QUERY = gql`
   query Profile($request: SingleProfileQueryRequest!) {
@@ -452,7 +452,7 @@ const Opportunities: NextPage = () => {
                 placeholder={t('Calgary, AB')}
                 {...form.register('city')}
               />
-              <Autocomplete
+              <Autosuggest
                 label="Category"
                 lang={[
                   'Education',
