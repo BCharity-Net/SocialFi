@@ -14,7 +14,7 @@ export const FuzzySearch = (item: any) => {
   // const count = column.preFilteredRows.length
   return (
     <input
-      className="w-full"
+      className="w-full dark:bg-gray-900"
       value={value}
       onChange={(e) => {
         setValue(e.target.value)
@@ -33,7 +33,7 @@ export const DateSearch = (item: any) => {
   const column = item.column
   return (
     <input
-      className="w-full border-0 p-0 text-neutral-500"
+      className="w-full border-0 p-0 text-neutral-500 dark:bg-gray-900"
       value={item.filterValue}
       type="date"
       onChange={(e) => {
@@ -57,7 +57,7 @@ export const SelectColumnFilter = (item: any) => {
   }, [id, preFilteredRows])
   return (
     <select
-      className="border-0 text-neutral-500"
+      className="border-0 text-neutral-500 dark:bg-gray-900 pt-0 pb-0 pl-0 pr-6"
       value={filterValue}
       onChange={(e) => {
         setFilter(e.target.value || undefined)
