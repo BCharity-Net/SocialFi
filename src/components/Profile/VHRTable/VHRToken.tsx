@@ -29,7 +29,7 @@ interface Props {
   callback?: Function
 }
 
-const VhrToken: FC<Props> = ({ pubId, callback }) => {
+const VHRToken: FC<Props> = ({ pubId, callback }) => {
   const { currentUser } = useAppPersistStore()
   useQuery(COMMENT_FEED_QUERY, {
     variables: {
@@ -46,4 +46,4 @@ const VhrToken: FC<Props> = ({ pubId, callback }) => {
   return <div />
 }
 
-export default VhrToken
+export default VHRToken

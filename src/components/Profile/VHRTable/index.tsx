@@ -11,8 +11,8 @@ import React, { FC, useState } from 'react'
 import { Row, useFilters, useTable } from 'react-table'
 import { useAppPersistStore } from 'src/store/app'
 
-import NFTDetails from '../NFTDetails'
-import VhrToken from '../VhrToken'
+import NFTDetails from './NFTDetails'
+import VHRToken from './VHRToken'
 
 interface Props {
   profile: Profile
@@ -216,7 +216,7 @@ const VHRTable: FC<Props> = ({
                     )
                   })}
                 </tr>
-                <VhrToken
+                <VHRToken
                   pubId={pubIdData[index]}
                   callback={(data: any) => {
                     const publications = data.publications.items.filter(
