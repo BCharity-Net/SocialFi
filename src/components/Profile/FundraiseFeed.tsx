@@ -8,11 +8,11 @@ import React, { FC, useMemo } from 'react'
 
 import FundraiseTable from './FundraiseTable'
 import { PostCell } from './FundraiseTable/Cells'
-import { NoFilter } from './FundraiseTable/Filters'
 import {
   DateSearch,
   FuzzySearch,
-  fuzzyTextFilterFn
+  fuzzyTextFilterFn,
+  NoFilter
 } from './FundraiseTable/Filters'
 
 const PROFILE_FEED_QUERY = gql`
