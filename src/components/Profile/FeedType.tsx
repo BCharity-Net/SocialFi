@@ -1,5 +1,6 @@
 import { Profile, ProfileStats } from '@generated/types'
 import {
+  CashIcon,
   ChatAlt2Icon,
   ClipboardListIcon,
   ClockIcon,
@@ -110,6 +111,12 @@ const FeedType: FC<Props> = ({
         icon={<PhotographIcon className="w-4 h-4" />}
         type="NFT"
         testId="type-nfts"
+      />
+      <FeedLink
+        name="Fundraisers"
+        icon={<CashIcon className="w-4 h-4" />}
+        type="fundraise"
+        testId="type-fundraise"
       />
       {isVerified(id) ? (
         <>

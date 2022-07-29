@@ -6,15 +6,14 @@ import { MirrorFields } from '@gql/MirrorFields'
 import { PostFields } from '@gql/PostFields'
 import React, { FC, useMemo } from 'react'
 
-import OpportunitiesTable from './OpportunitiesTable'
+import FundraiseTable from './FundraiseTable'
+import { PostCell } from './FundraiseTable/Cells'
+import { NoFilter } from './FundraiseTable/Filters'
 import {
   DateSearch,
   FuzzySearch,
-  fuzzyTextFilterFn,
-  greaterThanEqualToFn,
-  lessThanEqualToFn,
-  NoFilter
-} from './OpportunitiesTable/Filters'
+  fuzzyTextFilterFn
+} from './FundraiseTable/Filters'
 
 const PROFILE_FEED_QUERY = gql`
   query ProfileFeed(
@@ -49,58 +48,40 @@ interface Props {
   profile: Profile
 }
 
-const OpportunitiesFeed: FC<Props> = ({ profile }) => {
+const FundraiseFeed: FC<Props> = ({ profile }) => {
   const columns = useMemo(
     () => [
       {
-        Header: 'Volunteer Opportunities',
+        Header: 'Fundraisers',
         columns: [
           {
-            Header: 'Program',
-            accessor: 'program',
+            Header: 'Name',
+            accessor: 'name',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },
           {
-            Header: 'Position',
-            accessor: 'position',
+            Header: 'Description',
+            accessor: 'description',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },
           {
-            Header: 'Number of Volunteers',
-            accessor: 'volunteers',
+            Header: 'Goal',
+            accessor: 'goal',
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
+          },
+          {
+            Header: 'Date',
+            accessor: 'date',
+            Filter: DateSearch
+          },
+          {
+            Header: 'Link to Post',
+            accessor: 'postID',
+            Cell: PostCell,
             Filter: NoFilter
-          },
-          {
-            Header: 'City/Region',
-            accessor: 'city',
-            Filter: FuzzySearch,
-            filter: fuzzyTextFilterFn
-          },
-          {
-            Header: 'Category',
-            accessor: 'category',
-            Filter: FuzzySearch,
-            filter: fuzzyTextFilterFn
-          },
-          {
-            Header: 'Start Date',
-            accessor: 'startDate',
-            Filter: DateSearch,
-            filter: greaterThanEqualToFn
-          },
-          {
-            Header: 'End Date',
-            accessor: 'endDate',
-            Filter: DateSearch,
-            filter: lessThanEqualToFn
-          },
-          {
-            Header: 'Total Hours',
-            accessor: 'totalHours',
-            Filter: FuzzySearch,
-            filter: fuzzyTextFilterFn
           }
         ]
       }
@@ -111,11 +92,11 @@ const OpportunitiesFeed: FC<Props> = ({ profile }) => {
   const tableLimit = 10
 
   return (
-    <OpportunitiesTable
+    <FundraiseTable
       profile={profile}
       handleQueryComplete={(data: any) => {
         return data?.publications?.items.filter((i: any) => {
-          return i.metadata.attributes[0].value == 'opportunities'
+          return i.metadata.attributes[0].value === 'fundraise'
         })
       }}
       getColumns={() => {
@@ -132,4 +113,4 @@ const OpportunitiesFeed: FC<Props> = ({ profile }) => {
   )
 }
 
-export default OpportunitiesFeed
+export default FundraiseFeed

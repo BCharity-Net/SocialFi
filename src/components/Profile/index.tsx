@@ -23,6 +23,7 @@ import { useAppPersistStore } from 'src/store/app'
 import Cover from './Cover'
 import Details from './Details'
 import FeedType from './FeedType'
+import FundraiseFeed from './FundraiseFeed'
 import HourFeed from './HourFeed'
 import OpportunitiesFeed from './OpportunitiesFeed'
 import OrganizationFeed from './OrganizationFeed'
@@ -167,6 +168,7 @@ const ViewProfile: NextPage = () => {
                 <Feed profile={profile} type={feedType} />
               )}
               {feedType === 'NFT' && <NFTFeed profile={profile} />}
+              {feedType === 'fundraise' && <FundraiseFeed profile={profile} />}
             </GridItemEight>
           </>
         )}
