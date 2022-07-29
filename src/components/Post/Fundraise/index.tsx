@@ -345,7 +345,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
               />
               <input
                 type="number"
-                className="w-auto border-0 p-0 text-neutral-500 dark:bg-gray-900"
+                className="w-fit border-0 p-0 text-neutral-500 dark:bg-gray-900"
                 value={newAmount}
                 placeholder={collectModule?.amount?.value}
                 step={0.1}
