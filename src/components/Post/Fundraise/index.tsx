@@ -8,6 +8,7 @@ import FundraiseShimmer from '@components/Shared/Shimmer/FundraiseShimmer'
 import { Button } from '@components/UI/Button'
 import { Card } from '@components/UI/Card'
 import { Modal } from '@components/UI/Modal'
+import { Spinner } from '@components/UI/Spinner'
 import { Tooltip } from '@components/UI/Tooltip'
 import { BCharityPost } from '@generated/bcharitytypes'
 import { CreatePostBroadcastItemResult } from '@generated/types'
@@ -66,9 +67,6 @@ const Badge: FC<BadgeProps> = ({ title, value }) => (
       {title}
     </div>
     <div className="pr-3 pl-2 font-bold py-[0.3px]">{value}</div>
-    {/* make an input */}
-
-    {/* <input className="pr-3 pl-2 font-bold py-[0.3px]"> {value}</input> */}
   </div>
 )
 
@@ -114,8 +112,6 @@ const Fundraise: FC<Props> = ({ fund }) => {
             fund?.pubId ?? fund?.id
           }`
         )
-        console.log('fund', fund)
-        // console.log('This is the fund', fund)
       }
     }
   )
@@ -272,7 +268,6 @@ const Fundraise: FC<Props> = ({ fund }) => {
     })
   }
 
-  // console.log('revenue', revenue)
   const goalAmount = fund?.metadata?.attributes[1]?.value
   const percentageReached = revenue
     ? (revenue / parseInt(goalAmount as string)) * 100
@@ -339,13 +334,6 @@ const Fundraise: FC<Props> = ({ fund }) => {
                   </Modal>
                 </>
               )}
-              <input
-                type="number"
-                value={newAmount}
-                onChange={(e) => {
-                  setNewAmount(e.target.value)
-                }}
-              ></input>
               <Badge
                 title={
                   <div className="flex items-center space-x-1">
@@ -355,6 +343,56 @@ const Fundraise: FC<Props> = ({ fund }) => {
                 }
                 value={`${collectModule?.amount?.value} ${collectModule?.amount?.asset?.symbol}`}
               />
+              <input
+                type="number"
+                className="w-auto border-0 p-0 text-neutral-500 dark:bg-gray-900"
+                value={newAmount}
+                placeholder={collectModule?.amount?.value}
+                step={0.1}
+                min={0.1}
+                onChange={(e) => {
+                  setNewAmount(e.target.value)
+                }}
+              />
+              <Button
+                className="pr-3 pl-2 font-bold py-[0.3px]"
+                disabled={
+                  typedDataLoading ||
+                  isUploading ||
+                  signLoading ||
+                  writeLoading ||
+                  broadcastLoading
+                }
+                icon={
+                  typedDataLoading ||
+                  isUploading ||
+                  signLoading ||
+                  writeLoading ||
+                  broadcastLoading ? (
+                    <Spinner size="xs" />
+                  ) : (
+                    <div />
+                  )
+                }
+                onClick={() => {
+                  if (
+                    fund?.metadata?.name &&
+                    fund?.metadata?.attributes[1]?.value &&
+                    newAmount
+                  ) {
+                    createFundraise(
+                      fund?.metadata?.name,
+                      newAmount,
+                      fund?.metadata?.attributes[1]?.value,
+                      collectModule?.recipient,
+                      collectModule?.referralFee,
+                      fund?.metadata?.description
+                    )
+                  }
+                }}
+              >
+                Confirm
+              </Button>
             </div>
             <ReferralAlert
               mirror={fund}
@@ -454,27 +492,6 @@ const Fundraise: FC<Props> = ({ fund }) => {
                   </span>
                 </span>
               </span>
-              <Button
-                className="pr-3 pl-2 font-bold py-[0.3px]"
-                onClick={(e) => {
-                  if (
-                    fund?.metadata?.name &&
-                    fund?.metadata?.attributes[1]?.value &&
-                    newAmount
-                  ) {
-                    createFundraise(
-                      fund?.metadata?.name,
-                      newAmount,
-                      fund?.metadata?.attributes[1]?.value,
-                      collectModule?.recipient,
-                      collectModule?.referralFee,
-                      fund?.metadata?.description
-                    )
-                  }
-                }}
-              >
-                submit
-              </Button>
             </GridItemSix>
           )}
         </GridLayout>
