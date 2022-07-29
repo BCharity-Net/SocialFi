@@ -1,3 +1,3 @@
-import Opportunities from '@components/Opportunities/Create'
+import Opportunities from '@components/Opportunity/Create'
 
 export default Opportunities
