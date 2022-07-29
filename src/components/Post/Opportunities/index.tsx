@@ -2,7 +2,6 @@ import { Card } from '@components/UI/Card'
 import { BCharityPost } from '@generated/bcharitytypes'
 import imagekitURL from '@lib/imagekitURL'
 import React, { FC, useState } from 'react'
-import { useAppPersistStore } from 'src/store/app'
 
 interface Props {
   post: BCharityPost
@@ -60,8 +59,6 @@ const Media: FC<MediaProps> = ({ media }) => {
 
 const Opportunities: FC<Props> = ({ post }) => {
   // const { t } = useTranslation('common')
-  const { currentUser } = useAppPersistStore()
-  const [showVerifyModal, setShowVerifyModal] = useState<boolean>(false)
   if (post.metadata.attributes.length < 9) return <div />
   return (
     <Card forceRounded testId="hours">
@@ -70,7 +67,10 @@ const Opportunities: FC<Props> = ({ post }) => {
         <div className="block justify-between items-center sm:flex">
           <div className="text-xl font-bold">
             {' '}
-            <div className="text-2xl"> Volunteer Opportunities </div>
+            <div className="text-2xl">Volunteer Opportunities </div>
+            <div className="text-xl">
+              Make a comment to apply for this volunteer opportunity.
+            </div>
           </div>
         </div>
         <div>
