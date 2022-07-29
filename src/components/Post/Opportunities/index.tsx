@@ -172,7 +172,7 @@ const Opportunities: FC<Props> = ({ post }) => {
           {post.metadata.attributes[9].value && (
             <>
               <div className="text-xl font-bold">Event Images</div>
-              <Media media={post.metadata.attributes[8].value} />
+              <Media media={post.metadata.attributes[9].value} />
             </>
           )}
         </div>
