@@ -61,13 +61,12 @@ const Fundraisers: FC<Props> = ({}) => {
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
   const [publications, setPublications] = useState<BCharityPost[]>([])
   const [revenueData, setRevenueData] = useState<number[]>([])
-  const [showFundersModal, setShowFundersModal] = useState<boolean>(false)
   const { currentUser } = useAppPersistStore()
   const { data, loading, error, fetchMore } = useQuery(EXPLORE_FEED_QUERY, {
     variables: {
       request: {
         sortCriteria: feedType,
-        limit: 10,
+        limit: 50,
         noRandomize: feedType === 'LATEST'
       },
       reactionRequest: currentUser ? { profileId: currentUser?.id } : null,
@@ -75,12 +74,7 @@ const Fundraisers: FC<Props> = ({}) => {
     },
     onCompleted(data) {
       const fundraise = data?.explorePublications?.items.filter((i: any) => {
-        if (!i.metadata.attributes[0]) {
-          return false
-        } else {
-          console.log(i)
-          return i.metadata.attributes[0].value == 'fundraise'
-        }
+        return i?.metadata?.attributes[0]?.value == 'fundraise'
       })
       fundraise.map((i: any) => {
         // if (!fundraise) {
@@ -94,10 +88,11 @@ const Fundraisers: FC<Props> = ({}) => {
       setRevenueData([...revenueData])
       Logger.log(
         '[Query]',
-        `Fetched first 10 explore publications FeedType:${feedType}`
+        `Fetched first 50 explore publications FeedType:${feedType}`
       )
     }
   })
+  console.log(revenueData)
 
   const { observe } = useInView({
     onEnter: async () => {
@@ -106,7 +101,7 @@ const Fundraisers: FC<Props> = ({}) => {
           request: {
             sortCriteria: feedType,
             cursor: pageInfo?.next,
-            limit: 10,
+            limit: 50,
             noRandomize: feedType === 'LATEST'
           },
           reactionRequest: currentUser ? { profileId: currentUser?.id } : null,
@@ -114,31 +109,34 @@ const Fundraisers: FC<Props> = ({}) => {
         }
       })
       const fundraise = data?.explorePublications?.items.filter((i: any) => {
-        if (!i.metadata.attributes[0]) {
-          return false
-        } else {
-          return i.metadata.attributes[0].value == 'fundraise'
+        return i?.metadata?.attributes[0]?.value == 'fundraise'
+      })
+      // console.log('publication', publications.length)
+      const nextValues = data?.explorePublications?.items
+      let count = 0
+      // console.log('next 15', nextValues)
+      nextValues.forEach((i: any) => {
+        if (i?.metadata?.attributes[0]?.value == 'fundraise') {
+          count++
         }
       })
-      console.log(fundraise.length)
-      // if no more publications, keep fetching until there are no more publications
 
-      if (fundraise.length === 0) {
-        console.log('no fundraisers')
-      } else {
-        console.log('fundraisers found')
-      }
-
+      console.log('page info', pageInfo?.next)
+      console.log(
+        'explore publications',
+        data?.explorePublications?.pageInfo?.next
+      )
       setPageInfo(data?.explorePublications?.pageInfo)
-      setPublications([...publications, ...fundraise]) //data?.explorePublications?.items
+      setPublications([...publications, ...fundraise])
+      console.log('count', count)
       Logger.log(
         '[Query]',
-        `Fetched next 10 explore publications FeedType:${feedType} Next:${pageInfo?.next}`
+        `Fetched next 50 explore publications FeedType:${feedType} Next:${pageInfo?.next}`
       )
     }
   })
+
   var cover
-  console.log('publications length', publications.length)
   return (
     <GridLayout>
       <SEO title={`Fundraisers • ${APP_NAME}`} />
@@ -149,20 +147,26 @@ const Fundraisers: FC<Props> = ({}) => {
             <GridItemSix key={`${post?.id}_${index}`}>
               <Card>
                 {/* <SinglePost post={post} /> */}
-                <div
-                  className="h-40 rounded-t-xl border-b sm:h-52 dark:border-b-gray-700/80"
-                  style={{
-                    backgroundImage: `url(${
-                      cover
-                        ? imagekitURL(cover, 'attachment')
-                        : `${STATIC_ASSETS}/patterns/2.svg`
-                    })`,
-                    backgroundColor: '#8b5cf6',
-                    backgroundSize: cover ? 'cover' : '30%',
-                    backgroundPosition: 'center center',
-                    backgroundRepeat: cover ? 'no-repeat' : 'repeat'
-                  }}
-                />
+                <a
+                  href={`/posts/${post?.id}`}
+                  key={post?.id}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <div
+                    className="h-40 rounded-t-xl border-b sm:h-52 dark:border-b-gray-700/80"
+                    style={{
+                      backgroundImage: `url(${
+                        cover
+                          ? imagekitURL(cover, 'attachment')
+                          : `${STATIC_ASSETS}/patterns/2.svg`
+                      })`,
+                      backgroundColor: '#8b5cf6',
+                      backgroundSize: cover ? 'cover' : '30%',
+                      backgroundPosition: 'center center',
+                      backgroundRepeat: cover ? 'no-repeat' : 'repeat'
+                    }}
+                  />
+                </a>
                 <div className="p-5">
                   <div className="block justify-between items-center sm:flex">
                     <div className="mr-0 space-y-1 sm:mr-16">
