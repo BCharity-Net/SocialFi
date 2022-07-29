@@ -52,20 +52,30 @@ export const PROFILE_QUERY = gql`
 
 const newOpportunitySchema = object({
   program: string()
-    .max(30, { message: 'Program name too long' })
-    .min(1, { message: 'test' }),
+    .min(1, { message: 'You must write a program name!' })
+    .max(40, { message: 'Program name should not exceed 40 characters!' }),
+
   position: string()
-    .max(30, { message: 'Program name too long' })
-    .min(1, { message: 'test' }),
+    .min(1, { message: 'You must write a position name!' })
+    .max(40, { message: 'Program name should not exceed 40 characters!' }),
+
   volunteers: string()
-    .max(30, { message: 'Program name too long' })
-    .min(1, { message: 'test' }),
+    .regex(/^(0*[1-9][0-9]*(\.[0-9]+)?|0+\.[0-9]*[1-9][0-9]*)$/, {
+      message: 'Total volunteers should be larger than zero'
+    })
+    .regex(/^\d+(?:\.\d{1})?$/, {
+      message:
+        'Total volunteers should be a whole number or to one decimal place'
+    }),
+
   city: string()
-    .max(30, { message: 'Program name too long' })
-    .min(1, { message: 'test' }),
+    .min(1, { message: 'You must write your city!' })
+    .max(40, { message: 'City name should not exceed 40 characters!' }),
+
   category: string()
-    .max(30, { message: 'Program name too long' })
-    .min(1, { message: 'test' }),
+    .min(1, { message: 'You must write a category!' })
+    .max(40, { message: 'Category name should not exceed 40 characters!' }),
+
   startDate: string()
     .max(10, { message: 'Invalid date' })
     .min(10, { message: 'Invalid date' }),
@@ -81,12 +91,18 @@ const newOpportunitySchema = object({
       },
       { message: 'You should enter an end date' }
     ),
+
   totalHours: string()
-    .max(30, { message: 'Program name too long' })
-    .min(1, { message: 'test' }),
+    .regex(/^(0*[1-9][0-9]*(\.[0-9]+)?|0+\.[0-9]*[1-9][0-9]*)$/, {
+      message: 'Total hours should be larger than zero'
+    })
+    .regex(/^\d+(?:\.\d{1})?$/, {
+      message: 'Total hours should be a whole number or to one decimal place'
+    }),
+
   description: string()
-    .max(30, { message: 'Program name too long' })
-    .min(1, { message: 'test' })
+    .min(1, { message: 'You must write a description!' })
+    .max(250, { message: 'Description should not exceed 250 characters' })
 })
 
 interface Props {
