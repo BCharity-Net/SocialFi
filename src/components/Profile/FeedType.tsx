@@ -136,7 +136,7 @@ const FeedType: FC<Props> = ({
           <FeedLink
             name="Opportunities"
             icon={<ClipboardListIcon className="w-4 h-4" />}
-            type="opportunities"
+            type="opp"
             testId="type-opportunities"
           />
         </>

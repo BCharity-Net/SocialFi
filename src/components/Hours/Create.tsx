@@ -506,6 +506,18 @@ const Hours: NextPage = () => {
                 {...form.register('category')}
               />
 
+              {/* <Autosuggest
+                lang={[
+                  'Education',
+                  'Environment',
+                  'Animals',
+                  'Social',
+                  'Healthcare',
+                  'Sports and Leisure',
+                  'Disaster Relief'
+                ]}
+              /> */}
+
               <TextArea
                 label={t('Activity Description')}
                 placeholder={t('Activity TextArea')}

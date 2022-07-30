@@ -96,7 +96,7 @@ const MoreNavItems: FC = () => {
                   >
                     <div className="flex items-center space-x-1.5">
                       <ClockIcon className="w-4 h-4" />
-                      <div>{t('Create Volunteer Opportunities')}</div>
+                      <div>{t('Create Volunteer Opportunity')}</div>
                     </div>
                   </Menu.Item>
 
