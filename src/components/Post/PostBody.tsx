@@ -13,7 +13,7 @@ import { useRouter } from 'next/router'
 import React, { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import Opportunities from './Opportunities'
+import Opportunity from './Opportunity'
 
 const Fundraise = dynamic(() => import('./Fundraise'), {
   loading: () => <FundraiseShimmer />
@@ -75,7 +75,7 @@ const PostBody: FC<Props> = ({ post }) => {
       ) : postType === 'hours' ? (
         <Hours post={post} />
       ) : postType === 'opportunities' ? (
-        <Opportunities post={post} />
+        <Opportunity post={post} />
       ) : (
         <>
           <div
