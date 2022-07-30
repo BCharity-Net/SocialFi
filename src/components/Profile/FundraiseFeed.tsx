@@ -4,20 +4,16 @@ import { Profile } from '@generated/types'
 import { CommentFields } from '@gql/CommentFields'
 import { MirrorFields } from '@gql/MirrorFields'
 import { PostFields } from '@gql/PostFields'
-import React, { FC, useMemo, useState } from 'react'
+import React, { FC, useMemo } from 'react'
 
-import VHRTable from './VHRTable'
-import { ProfileCell, StatusCell, TotalHoursCell } from './VHRTable/Cells'
+import FundraiseTable from './FundraiseTable'
+import { PostCell } from './FundraiseTable/Cells'
 import {
   DateSearch,
   FuzzySearch,
   fuzzyTextFilterFn,
-  getStatusFn,
-  greaterThanEqualToFn,
-  lessThanEqualToFn,
-  NoFilter,
-  SelectColumnFilter
-} from './VHRTable/Filters'
+  NoFilter
+} from './FundraiseTable/Filters'
 
 const PROFILE_FEED_QUERY = gql`
   query ProfileFeed(
@@ -52,84 +48,58 @@ interface Props {
   profile: Profile
 }
 
-const HourFeed: FC<Props> = ({ profile }) => {
-  const [addressData, setAddressData] = useState<string[]>([])
-
+const FundraiseFeed: FC<Props> = ({ profile }) => {
   const columns = useMemo(
     () => [
       {
-        Header: 'VHR Submissions',
+        Header: 'Fundraisers',
         columns: [
           {
-            Header: 'Organization',
-            accessor: 'orgName',
-            Cell: ProfileCell,
+            Header: 'Name',
+            accessor: 'name',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },
           {
-            Header: 'Program',
-            accessor: 'program',
+            Header: 'Description',
+            accessor: 'description',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },
           {
-            Header: 'City/Region',
-            accessor: 'city',
+            Header: 'Goal',
+            accessor: 'goal',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },
           {
-            Header: 'Category',
-            accessor: 'category',
-            Filter: FuzzySearch,
-            filter: fuzzyTextFilterFn
+            Header: 'Date',
+            accessor: 'date',
+            Filter: DateSearch
           },
           {
-            Header: 'Start Date',
-            accessor: 'startDate',
-            Filter: DateSearch,
-            filter: greaterThanEqualToFn
-          },
-          {
-            Header: 'End Date',
-            accessor: 'endDate',
-            Filter: DateSearch,
-            filter: lessThanEqualToFn
-          },
-          {
-            Header: 'Total Hours',
-            accessor: 'totalHours',
-            Cell: TotalHoursCell,
+            Header: 'Link to Post',
+            accessor: 'postID',
+            Cell: PostCell,
             Filter: NoFilter
-          },
-          {
-            Header: 'Status',
-            accessor: 'verified',
-            Cell: (props: {
-              value: { index: number; value: string; postID: string }
-            }) => StatusCell(props, addressData),
-            Filter: SelectColumnFilter,
-            filter: getStatusFn
           }
         ]
       }
     ],
-    [addressData]
+    []
   )
 
   const tableLimit = 10
 
   return (
-    <VHRTable
+    <FundraiseTable
       profile={profile}
       handleQueryComplete={(data: any) => {
         return data?.publications?.items.filter((i: any) => {
-          return i.metadata.attributes[0].value === 'hours'
+          return i.metadata.attributes[0].value === 'fundraise'
         })
       }}
-      getColumns={(add: string[]) => {
-        setAddressData(add)
+      getColumns={() => {
         return columns
       }}
       query={PROFILE_FEED_QUERY}
@@ -139,9 +109,8 @@ const HourFeed: FC<Props> = ({ profile }) => {
         limit: tableLimit
       }}
       tableLimit={tableLimit}
-      from={false}
     />
   )
 }
 
-export default HourFeed
+export default FundraiseFeed

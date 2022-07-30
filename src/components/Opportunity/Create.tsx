@@ -9,11 +9,10 @@ import { Button } from '@components/UI/Button'
 import { Card } from '@components/UI/Card'
 import { Form, useZodForm } from '@components/UI/Form'
 import { Input } from '@components/UI/Input'
-import { OrganizationNameInput } from '@components/UI/OrganizationNameInput'
 import { Spinner } from '@components/UI/Spinner'
 import { TextArea } from '@components/UI/TextArea'
 import SEO from '@components/utils/SEO'
-import { CreatePostBroadcastItemResult } from '@generated/types'
+import { CreatePostBroadcastItemResult, Profile } from '@generated/types'
 import { BROADCAST_MUTATION } from '@gql/BroadcastMutation'
 import { PlusIcon } from '@heroicons/react/outline'
 import imagekitURL from '@lib/imagekitURL'
@@ -24,7 +23,6 @@ import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
 import uploadToIPFS from '@lib/uploadToIPFS'
 import { NextPage } from 'next'
 import React, { ChangeEvent, FC, useState } from 'react'
-import { Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import {
@@ -41,6 +39,8 @@ import { v4 as uuid } from 'uuid'
 import { useContractWrite, useSignTypedData } from 'wagmi'
 import { object, string } from 'zod'
 
+import Autocomplete from '../UI/Autosuggest'
+
 export const PROFILE_QUERY = gql`
   query Profile($request: SingleProfileQueryRequest!) {
     profile(request: $request) {
@@ -50,13 +50,31 @@ export const PROFILE_QUERY = gql`
   }
 `
 
-const newHourSchema = object({
-  orgName: string()
-    .min(2, { message: 'Name should be at least 2 characters' })
-    .max(100, { message: 'Name should not exceed 100 characters' }),
-  orgWalletAddress: string()
-    .max(42, { message: 'Ethereum address should be within 42 characters' })
-    .regex(/^0x[a-fA-F0-9]{40}$/, { message: 'Invalid Ethereum address' }),
+const newOpportunitySchema = object({
+  program: string()
+    .min(1, { message: 'You must write a program name!' })
+    .max(40, { message: 'Program name should not exceed 40 characters!' }),
+
+  position: string()
+    .min(1, { message: 'You must write a position name!' })
+    .max(40, { message: 'Program name should not exceed 40 characters!' }),
+
+  volunteers: string()
+    .regex(/^(0*[1-9][0-9]*(\.[0-9]+)?|0+\.[0-9]*[1-9][0-9]*)$/, {
+      message: 'Total volunteers should be larger than zero'
+    })
+    .regex(/^\d+(?:\.\d{1})?$/, {
+      message:
+        'Total volunteers should be a whole number or to one decimal place'
+    }),
+
+  city: string()
+    .min(1, { message: 'You must write your city!' })
+    .max(40, { message: 'City name should not exceed 40 characters!' }),
+
+  category: string()
+    .min(1, { message: 'You must write a category!' })
+    .max(40, { message: 'Category name should not exceed 40 characters!' }),
 
   startDate: string()
     .max(10, { message: 'Invalid date' })
@@ -81,18 +99,6 @@ const newHourSchema = object({
     .regex(/^\d+(?:\.\d{1})?$/, {
       message: 'Total hours should be a whole number or to one decimal place'
     }),
-
-  program: string()
-    .min(1, { message: 'You must write a program name!' })
-    .max(40, { message: 'Program name should not exceed 40 characters!' }),
-
-  city: string()
-    .min(1, { message: 'You must write your city!' })
-    .max(40, { message: 'City name should not exceed 40 characters!' }),
-
-  category: string()
-    .min(1, { message: 'You must write a category!' })
-    .max(40, { message: 'Category name should not exceed 40 characters!' }),
 
   description: string()
     .min(1, { message: 'You must write a description!' })
@@ -122,7 +128,7 @@ const Media: FC<Props> = ({ media }) => {
   )
 }
 
-const Hours: NextPage = () => {
+const Opportunity: NextPage = () => {
   const { t } = useTranslation('common')
   const [cover, setCover] = useState<string>()
   const [singleDay, setSingleDay] = useState<boolean>(true)
@@ -166,7 +172,7 @@ const Hours: NextPage = () => {
   })
 
   const form = useZodForm({
-    schema: newHourSchema
+    schema: newOpportunitySchema
   })
 
   const handleUpload = async (evt: ChangeEvent<HTMLInputElement>) => {
@@ -251,40 +257,60 @@ const Hours: NextPage = () => {
     }
   )
 
-  const createHours = async (
-    orgName: string,
-    orgWalletAddress: string,
+  const createOpportunities = async (
+    program: string,
+    position: string,
+    volunteers: string,
+    city: string,
+    category: string,
     startDate: string,
     endDate: string | undefined,
     totalHours: string,
-    program: string,
-    city: string,
-    category: string,
-    description: string
+    description: string,
+    currentUser: Profile | null
   ) => {
     if (!isAuthenticated) return toast.error(CONNECT_WALLET)
-
     setIsUploading(true)
     const { path } = await uploadToIPFS({
       version: '1.0.0',
       metadata_id: uuid(),
       description: description,
-      content: `@${orgName} VHR submission`,
+      content: `@${currentUser?.handle} Volunteer opportunities`,
       external_url: null,
       image: cover ? cover : `https://avatar.tobi.sh/${uuid()}.png`,
       imageMimeType: coverType,
-      name: orgName,
+      name: currentUser?.handle,
       contentWarning: null, // TODO
       attributes: [
         {
           traitType: 'string',
           key: 'type',
-          value: 'hours'
+          value: 'opportunities'
         },
         {
           traitType: 'string',
-          key: 'orgWalletAddress',
-          value: orgWalletAddress
+          key: 'program',
+          value: program
+        },
+        {
+          traitType: 'string',
+          key: 'position',
+          value: position
+        },
+        {
+          traitType: 'number',
+          key: 'volunteers',
+          value: volunteers
+        },
+        {
+          traitType: 'string',
+          key: 'city',
+          value: city
+        },
+        {
+          traitType: 'string',
+          key: 'category',
+          value: category
         },
         {
           traitType: 'string',
@@ -300,21 +326,6 @@ const Hours: NextPage = () => {
           traitType: 'number',
           key: 'totalHours',
           value: totalHours
-        },
-        {
-          traitType: 'string',
-          key: 'program',
-          value: program
-        },
-        {
-          traitType: 'string',
-          key: 'city',
-          value: city
-        },
-        {
-          traitType: 'string',
-          key: 'category',
-          value: category
         },
         {
           traitType: 'string',
@@ -349,11 +360,13 @@ const Hours: NextPage = () => {
 
   return (
     <GridLayout>
-      <SEO title={`Verify Hours • ${APP_NAME}`} />
+      <SEO title={`Create Volunteering Opportunities • ${APP_NAME}`} />
       <GridItemFour>
         <SettingsHelper
-          heading={t('Verify Hours')}
-          description={t('Hours Description')}
+          heading={t('Create Volunteering Opportunities')}
+          description={t(
+            'Organizations can create volunteering opportunities for volunteers to apply!'
+          )}
         />
       </GridItemFour>
       <GridItemEight>
@@ -373,30 +386,31 @@ const Hours: NextPage = () => {
               form={form}
               className="p-5 space-y-4"
               onSubmit={({
-                orgName,
-                orgWalletAddress,
+                program,
+                position,
+                volunteers,
+                city,
+                category,
                 startDate,
                 endDate,
                 totalHours,
-                program,
-                city,
-                category,
                 description
               }) => {
-                createHours(
-                  orgName,
-                  orgWalletAddress,
+                createOpportunities(
+                  program,
+                  position,
+                  volunteers,
+                  city,
+                  category,
                   startDate,
                   endDate,
                   totalHours,
-                  program,
-                  city,
-                  category,
-                  description
+                  description,
+                  currentUser
                 )
               }}
             >
-              <Controller
+              {/* <Controller
                 control={form.control}
                 name="orgName"
                 render={({
@@ -417,13 +431,71 @@ const Hours: NextPage = () => {
                     }}
                   />
                 )}
-              />
-              <Input
+              /> */}
+              {/* <Input
                 label={t('Organization Wallet Address')}
                 type="text"
                 placeholder={'0x3A5bd...5e3'}
                 {...form.register('orgWalletAddress')}
+              /> */}
+
+              <Input
+                label={t('Program')}
+                type="text"
+                placeholder={t('Volunteer program name(s)')}
+                {...form.register('program')}
               />
+
+              <Input
+                label={t('Position')}
+                type="text"
+                placeholder={t('Volunteer Position')}
+                {...form.register('position')}
+              />
+
+              <Input
+                label={t('Number of Volunteers')}
+                type="number"
+                step="1"
+                min="1"
+                placeholder="20"
+                {...form.register('volunteers')}
+              />
+
+              <Input
+                label={t('City/Region')}
+                type="text"
+                placeholder={t('Calgary, AB')}
+                {...form.register('city')}
+              />
+              <Autocomplete
+                label="Category"
+                lang={[
+                  'Education',
+                  'Environment',
+                  'Animals',
+                  'Social',
+                  'Healthcare',
+                  'Sports and Leisure',
+                  'Disaster Relief',
+                  'Reduce Poverty',
+                  'Reduce Hunger',
+                  'Health',
+                  'Clean Water',
+                  'Gender Equality',
+                  'Affordable and Clean Energy',
+                  'Work Experience',
+                  'Technology',
+                  'Infrastructure',
+                  'Peace and Justice'
+                ]}
+                type="text"
+                placeholder={t('Education')}
+                onAdd={(e: string) => {
+                  form.setValue('category', e)
+                }}
+              />
+
               <Input
                 label={singleDay ? `${t('Date')}` : `${t('Start Date')}`}
                 type="startDate"
@@ -455,6 +527,7 @@ const Hours: NextPage = () => {
                   {...form.register('endDate')}
                 />
               )}
+
               <Input
                 label={t('Total Hours')}
                 type="number"
@@ -463,40 +536,6 @@ const Hours: NextPage = () => {
                 placeholder="5"
                 {...form.register('totalHours')}
               />
-
-              <Input
-                label={t('Program')}
-                type="text"
-                placeholder={t('Volunteer program name(s)')}
-                {...form.register('program')}
-              />
-
-              <Input
-                label={t('City/Region')}
-                type="text"
-                placeholder={t('Calgary, AB')}
-                {...form.register('city')}
-              />
-
-              <Input
-                label={t('Category')}
-                type="text"
-                placeholder={t('Education')}
-                {...form.register('category')}
-              />
-
-              {/* <Autosuggest
-                lang={[
-                  'Education',
-                  'Environment',
-                  'Animals',
-                  'Social',
-                  'Healthcare',
-                  'Sports and Leisure',
-                  'Disaster Relief'
-                ]}
-              /> */}
-
               <TextArea
                 label={t('Activity Description')}
                 placeholder={t('Activity TextArea')}
@@ -539,7 +578,7 @@ const Hours: NextPage = () => {
                   )
                 }
               >
-                {t('Hours')}
+                {t('Submit')}
               </Button>
             </Form>
           )}
@@ -549,4 +588,4 @@ const Hours: NextPage = () => {
   )
 }
 
-export default Hours
+export default Opportunity

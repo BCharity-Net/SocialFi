@@ -127,6 +127,7 @@ const CollectModule: FC<Props> = ({ count, setCount, post }) => {
   const [revenue, setRevenue] = useState<number>(0)
   const [showCollectorsModal, setShowCollectorsModal] = useState<boolean>(false)
   const [allowed, setAllowed] = useState<boolean>(true)
+  const [hoursAddressDisable, setHoursAddressDisable] = useState<boolean>(false)
 
   const { address } = useAccount()
   const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
@@ -160,6 +161,12 @@ const CollectModule: FC<Props> = ({ count, setCount, post }) => {
   const { data, loading } = useQuery(COLLECT_QUERY, {
     variables: { request: { publicationId: post?.pubId ?? post?.id } },
     onCompleted() {
+      if (
+        post?.metadata.attributes[0].value === 'hours' &&
+        post?.metadata.attributes[1].value !== currentUser?.ownedBy
+      ) {
+        setHoursAddressDisable(true)
+      }
       Logger.log(
         '[Query]',
         `Fetched collect module details Publication:${post?.pubId ?? post?.id}`
@@ -517,7 +524,8 @@ const CollectModule: FC<Props> = ({ count, setCount, post }) => {
                   typedDataLoading ||
                   signLoading ||
                   writeLoading ||
-                  broadcastLoading
+                  broadcastLoading ||
+                  hoursAddressDisable
                 }
                 icon={
                   typedDataLoading ||

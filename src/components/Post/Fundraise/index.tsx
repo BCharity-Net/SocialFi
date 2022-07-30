@@ -1,13 +1,18 @@
-import { gql, useQuery } from '@apollo/client'
+import { LensHubProxy } from '@abis/LensHubProxy'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import { GridItemSix, GridLayout } from '@components/GridLayout'
 import Collectors from '@components/Shared/Collectors'
 import Markup from '@components/Shared/Markup'
 import ReferralAlert from '@components/Shared/ReferralAlert'
 import FundraiseShimmer from '@components/Shared/Shimmer/FundraiseShimmer'
+import { Button } from '@components/UI/Button'
 import { Card } from '@components/UI/Card'
 import { Modal } from '@components/UI/Modal'
+import { Spinner } from '@components/UI/Spinner'
 import { Tooltip } from '@components/UI/Tooltip'
 import { BCharityPost } from '@generated/bcharitytypes'
+import { CreatePostBroadcastItemResult } from '@generated/types'
+import { BROADCAST_MUTATION } from '@gql/BroadcastMutation'
 import {
   CashIcon,
   CurrencyDollarIcon,
@@ -16,15 +21,29 @@ import {
 import getTokenImage from '@lib/getTokenImage'
 import imagekitURL from '@lib/imagekitURL'
 import Logger from '@lib/logger'
+import omit from '@lib/omit'
+import uploadToIPFS from '@lib/uploadToIPFS'
 import clsx from 'clsx'
+import { splitSignature } from 'ethers/lib/utils'
 import React, { FC, ReactNode, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { STATIC_ASSETS } from 'src/constants'
-import { useAppPersistStore } from 'src/store/app'
+import {
+  APP_NAME,
+  CONNECT_WALLET,
+  ERROR_MESSAGE,
+  ERRORS,
+  LENSHUB_PROXY,
+  RELAY_ON,
+  STATIC_ASSETS
+} from 'src/constants'
+import { useAppPersistStore, useAppStore } from 'src/store/app'
+import { v4 as uuid } from 'uuid'
+import { useContractWrite, useSignTypedData } from 'wagmi'
 
 import { COLLECT_QUERY } from '../Actions/Collect/CollectModule'
+import { CREATE_POST_TYPED_DATA_MUTATION } from '../NewPost'
 import Fund from './Fund'
-
 export const PUBLICATION_REVENUE_QUERY = gql`
   query PublicationRevenue($request: PublicationRevenueQueryRequest!) {
     publicationRevenue(request: $request) {
@@ -57,9 +76,12 @@ interface Props {
 
 const Fundraise: FC<Props> = ({ fund }) => {
   const { t } = useTranslation('common')
-  const { currentUser } = useAppPersistStore()
   const [showFundersModal, setShowFundersModal] = useState<boolean>(false)
   const [revenue, setRevenue] = useState<number>(0)
+  const { userSigNonce, setUserSigNonce } = useAppStore()
+  const [isUploading, setIsUploading] = useState<boolean>(false)
+  const { isAuthenticated, currentUser } = useAppPersistStore()
+  const [newAmount, setNewAmount] = useState<string>()
   const { data, loading } = useQuery(COLLECT_QUERY, {
     variables: { request: { publicationId: fund?.pubId ?? fund?.id } },
     onCompleted() {
@@ -90,7 +112,6 @@ const Fundraise: FC<Props> = ({ fund }) => {
             fund?.pubId ?? fund?.id
           }`
         )
-        // console.log('This is the fund', fund)
       }
     }
   )
@@ -101,13 +122,157 @@ const Fundraise: FC<Props> = ({ fund }) => {
     )
   }, [revenueData])
 
-  // console.log('revenue', revenue)
+  const {
+    data: postData,
+    isLoading: writeLoading,
+    write
+  } = useContractWrite({
+    addressOrName: LENSHUB_PROXY,
+    contractInterface: LensHubProxy,
+    functionName: 'postWithSig',
+    onError(error: any) {
+      toast.error(error?.postData?.message ?? error?.message)
+    }
+  })
+
+  const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
+    onError(error) {
+      toast.error(error?.message)
+    }
+  })
+  const [broadcast, { data: broadcastData, loading: broadcastLoading }] =
+    useMutation(BROADCAST_MUTATION, {
+      onError(error) {
+        if (error.message === ERRORS.notMined) {
+          toast.error(error.message)
+        }
+        Logger.error('[Relay Error]', error.message)
+      }
+    })
+  const [createPostTypedData, { loading: typedDataLoading }] = useMutation(
+    CREATE_POST_TYPED_DATA_MUTATION,
+    {
+      async onCompleted({
+        createPostTypedData
+      }: {
+        createPostTypedData: CreatePostBroadcastItemResult
+      }) {
+        Logger.log('[Mutation]', 'Generated createPostTypedData')
+        const { id, typedData } = createPostTypedData
+        const {
+          profileId,
+          contentURI,
+          collectModule,
+          collectModuleInitData,
+          referenceModule,
+          referenceModuleInitData,
+          deadline
+        } = typedData?.value
+
+        try {
+          const signature = await signTypedDataAsync({
+            domain: omit(typedData?.domain, '__typename'),
+            types: omit(typedData?.types, '__typename'),
+            value: omit(typedData?.value, '__typename')
+          })
+          setUserSigNonce(userSigNonce + 1)
+          const { v, r, s } = splitSignature(signature)
+          const sig = { v, r, s, deadline }
+          const inputStruct = {
+            profileId,
+            contentURI,
+            collectModule,
+            collectModuleInitData,
+            referenceModule,
+            referenceModuleInitData,
+            sig
+          }
+          if (RELAY_ON) {
+            const {
+              data: { broadcast: result }
+            } = await broadcast({ variables: { request: { id, signature } } })
+
+            if ('reason' in result) write({ args: inputStruct })
+          } else {
+            write({ args: inputStruct })
+          }
+        } catch (error) {
+          Logger.warn('[Sign Error]', error)
+        }
+      },
+      onError(error) {
+        toast.error(error.message ?? ERROR_MESSAGE)
+      }
+    }
+  )
+  const createFundraise = async (
+    title: string,
+    amount: string,
+    goal: string,
+    recipient: string,
+    referralFee: string,
+    description: string | null
+  ) => {
+    if (!isAuthenticated) return toast.error(CONNECT_WALLET)
+
+    setIsUploading(true)
+    const { path } = await uploadToIPFS({
+      version: '1.0.0',
+      metadata_id: uuid(),
+      description: description,
+      content: description,
+      external_url: null,
+      image: `https://avatar.tobi.sh/${uuid()}.png`,
+      imageMimeType: 'image',
+      name: title,
+      contentWarning: null, // TODO
+      attributes: [
+        {
+          traitType: 'string',
+          key: 'type',
+          value: 'fundraise'
+        },
+        {
+          traitType: 'string',
+          key: 'goal',
+          value: goal
+        }
+      ],
+      media: [],
+      createdOn: new Date(),
+      appId: `${APP_NAME} Fundraise`
+    }).finally(() => setIsUploading(false))
+
+    createPostTypedData({
+      variables: {
+        options: { overrideSigNonce: userSigNonce },
+        request: {
+          profileId: currentUser?.id,
+          contentURI: `https://ipfs.infura.io/ipfs/${path}`,
+          collectModule: {
+            feeCollectModule: {
+              amount: {
+                currency: collectModule?.amount?.asset?.address,
+                value: amount
+              },
+              recipient,
+              referralFee: parseInt(referralFee),
+              followerOnly: false
+            }
+          },
+          referenceModule: {
+            followerOnlyReferenceModule: false
+          }
+        }
+      }
+    })
+  }
+
   const goalAmount = fund?.metadata?.attributes[1]?.value
   const percentageReached = revenue
     ? (revenue / parseInt(goalAmount as string)) * 100
     : 0
   const cover = fund?.metadata?.cover?.original?.url
-
   if (loading) return <FundraiseShimmer />
 
   return (
@@ -158,6 +323,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
                       value={fund?.stats?.totalAmountOfCollects}
                     />
                   </button>
+
                   <Modal
                     title="Funders"
                     icon={<CashIcon className="w-5 h-5 text-brand" />}
@@ -177,6 +343,56 @@ const Fundraise: FC<Props> = ({ fund }) => {
                 }
                 value={`${collectModule?.amount?.value} ${collectModule?.amount?.asset?.symbol}`}
               />
+              <input
+                type="number"
+                className="w-fit border-0 p-0 text-neutral-500 dark:bg-gray-900"
+                value={newAmount}
+                placeholder={collectModule?.amount?.value}
+                step={0.1}
+                min={0.1}
+                onChange={(e) => {
+                  setNewAmount(e.target.value)
+                }}
+              />
+              <Button
+                className="pr-3 pl-2 font-bold py-[0.3px]"
+                disabled={
+                  typedDataLoading ||
+                  isUploading ||
+                  signLoading ||
+                  writeLoading ||
+                  broadcastLoading
+                }
+                icon={
+                  typedDataLoading ||
+                  isUploading ||
+                  signLoading ||
+                  writeLoading ||
+                  broadcastLoading ? (
+                    <Spinner size="xs" />
+                  ) : (
+                    <div />
+                  )
+                }
+                onClick={() => {
+                  if (
+                    fund?.metadata?.name &&
+                    fund?.metadata?.attributes[1]?.value &&
+                    newAmount
+                  ) {
+                    createFundraise(
+                      fund?.metadata?.name,
+                      newAmount,
+                      fund?.metadata?.attributes[1]?.value,
+                      collectModule?.recipient,
+                      collectModule?.referralFee,
+                      fund?.metadata?.description
+                    )
+                  }
+                }}
+              >
+                Confirm
+              </Button>
             </div>
             <ReferralAlert
               mirror={fund}

@@ -6,13 +6,9 @@ import { EmptyState } from '@components/UI/EmptyState'
 import { ErrorMessage } from '@components/UI/ErrorMessage'
 import { Profile } from '@generated/types'
 import { CollectionIcon } from '@heroicons/react/outline'
-import { ethers } from 'ethers'
 import React, { FC, useState } from 'react'
-import { Row, useFilters, useTable } from 'react-table'
+import { useFilters, useTable } from 'react-table'
 import { useAppPersistStore } from 'src/store/app'
-
-import NFTDetails from './NFTDetails'
-import VHRToken from './VHRToken'
 
 interface Props {
   profile: Profile
@@ -21,35 +17,23 @@ interface Props {
   query: DocumentNode
   request: any
   tableLimit: number
-  from: boolean
 }
 
 export interface Data {
-  orgName: string
-  program: string
-  city: string
-  category: string
-  startDate: string
-  endDate: string
-  totalHours: {
-    index: number
-    value: number
-  }
-  verified: {
-    index: number
-    value: string
-    postID: string
-  }
+  name: string
+  description: string
+  goal: string
+  date: string
+  postID: string
 }
 
-const VHRTable: FC<Props> = ({
+const FundraiseTable: FC<Props> = ({
   profile,
   handleQueryComplete,
   getColumns,
   query,
   request,
-  tableLimit,
-  from
+  tableLimit
 }) => {
   const { currentUser } = useAppPersistStore()
   const [onEnter, setOnEnter] = useState<boolean>(false)
@@ -60,55 +44,17 @@ const VHRTable: FC<Props> = ({
 
   const handleTableData = async (data: any) => {
     return Promise.all(
-      data.map(async (i: any, index: number) => {
-        let verified = false
-        if (i.collectNftAddress) verified = true
+      data.map(async (i: any) => {
         return {
-          orgName: from ? i.profile.handle : i.metadata.name,
-          program: i.metadata.attributes[5].value,
-          city: i.metadata.attributes[6].value,
-          category: i.metadata.attributes[7].value,
-          startDate: i.metadata.attributes[2].value,
-          endDate: i.metadata.attributes[3].value,
-          totalHours: {
-            index: index,
-            value: i.metadata.attributes[4].value
-          },
-          verified: {
-            index: index,
-            value: verified ? 'Verified' : 'Unverified',
-            postID: i.id
-          }
+          name: i.metadata.name,
+          description: i.metadata.description,
+          goal: i.metadata.attributes[1].value,
+          date: i.createdAt.split('T')[0],
+          postID: i.id
         }
       })
     )
   }
-
-  const handleNFTData = (data: any, index: number, id: string, name = '') =>
-    fetch(data)
-      .then((i) => i)
-      .then((result) => {
-        result.json().then((metadata) => {
-          tableData[index] = {
-            orgName: from ? name : metadata.name,
-            program: metadata.attributes[5].value,
-            city: metadata.attributes[6].value,
-            category: metadata.attributes[7].value,
-            startDate: metadata.attributes[2].value,
-            endDate: metadata.attributes[3].value,
-            totalHours: {
-              index: index,
-              value: metadata.attributes[4].value
-            },
-            verified: {
-              index: index,
-              value: 'Verified',
-              postID: id
-            }
-          }
-          setTableData(tableData)
-        })
-      })
 
   const { data, loading, error, fetchMore } = useQuery(query, {
     variables: {
@@ -124,8 +70,8 @@ const VHRTable: FC<Props> = ({
         setTableData(tableData)
         setOnEnter(false)
       }
-      const hours = handleQueryComplete(data)
-      handleTableData(hours).then((result: Data[]) => {
+      const opportunities = handleQueryComplete(data)
+      handleTableData(opportunities).then((result: Data[]) => {
         setTableData([...tableData, ...result])
         if (tableData.length != tableLimit) {
           fetchMore({
@@ -138,7 +84,7 @@ const VHRTable: FC<Props> = ({
       const pubId: string[] = [],
         vhrTxn: string[] = [],
         addresses: string[] = []
-      hours.map((i: any) => {
+      opportunities.map((i: any) => {
         pubId.push(i.id)
         vhrTxn.push('')
         addresses.push(i.collectNftAddress)
@@ -151,14 +97,6 @@ const VHRTable: FC<Props> = ({
   })
 
   const columns = getColumns(addressData)
-
-  const computeHours = (rows: Row<Data>[]) => {
-    let result = 0
-    rows.forEach((row) => {
-      result += row.values.totalHours.value * 1
-    })
-    return result
-  }
 
   const Table = () => {
     const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
@@ -185,7 +123,6 @@ const VHRTable: FC<Props> = ({
                 >
                   {headerGroup.headers[0] &&
                     headerGroup.headers[0].render('Header')}
-                  <p>Total Hours: {computeHours(rows)}</p>
                 </th>
               </tr>
             ) : (
@@ -203,48 +140,18 @@ const VHRTable: FC<Props> = ({
           })}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {rows.map((row, index) => {
+          {rows.map((row) => {
             prepareRow(row)
             return (
-              <>
-                <tr {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
-                    return (
-                      <td className="p-4" {...cell.getCellProps()}>
-                        {cell.render('Cell', { vhr: vhrTxnData })}
-                      </td>
-                    )
-                  })}
-                </tr>
-                <VHRToken
-                  pubId={pubIdData[index]}
-                  callback={(data: any) => {
-                    const publications = data.publications.items.filter(
-                      (i: any) => ethers.utils.isHexString(i.metadata.content)
-                    )
-                    if (publications.length !== 0) {
-                      if (
-                        vhrTxnData[index] != publications[0].metadata.content
-                      ) {
-                        vhrTxnData[index] = publications[0].metadata.content
-                        setVhrTxnData(vhrTxnData)
-                        setTableData([...tableData])
-                      }
-                    }
-                  }}
-                />
-                <NFTDetails
-                  address={addressData[index]}
-                  callback={(data: any) => {
-                    handleNFTData(
-                      data,
-                      index,
-                      tableData[index].verified.postID,
-                      tableData[index].orgName
-                    )
-                  }}
-                />
-              </>
+              <tr {...row.getRowProps()}>
+                {row.cells.map((cell) => {
+                  return (
+                    <td className="p-4" {...cell.getCellProps()}>
+                      {cell.render('Cell', { vhr: vhrTxnData })}
+                    </td>
+                  )
+                })}
+              </tr>
             )
           })}
         </tbody>
@@ -266,7 +173,7 @@ const VHRTable: FC<Props> = ({
           icon={<CollectionIcon className="w-8 h-8 text-brand" />}
         />
       )}
-      <ErrorMessage title="Failed to load hours" error={error} />
+      <ErrorMessage title="Failed to load opportunities" error={error} />
       {!error && !loading && data?.publications?.items?.length !== 0 && (
         <Card>
           <Table />
@@ -276,4 +183,4 @@ const VHRTable: FC<Props> = ({
   )
 }
 
-export default VHRTable
+export default FundraiseTable
