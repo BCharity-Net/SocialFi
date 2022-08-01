@@ -1168,10 +1168,10 @@
     react-use "17.4.0"
     throttle-debounce "^3.0.1"
 
-"@graphql-codegen/cli@^2.11.2":
-  version "2.11.2"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/cli/-/cli-2.11.2.tgz#f502d0e9e19305acffca5f07789dde8d4e0fa656"
-  integrity sha512-dt70+et0QFmhL3krrlYWcsp7T6pvChEQ1vEGoNn46Rn53velGDwP546DtSPpHJmajY/eJ11CueoI0J/3o0/BTA==
+"@graphql-codegen/cli@^2.11.3":
+  version "2.11.3"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/cli/-/cli-2.11.3.tgz#6cb0fd6da0773957b531cccf7459303a23ee1c05"
+  integrity sha512-C1d88Kx0a0PF1tOR00UIZjHq5aWNNcw5fM2k08rOY9O5b4sU7kEb+YbGKP6EExTtJnYb49fePLKVvrIv1ejDFg==
   dependencies:
     "@graphql-codegen/core" "2.6.0"
     "@graphql-codegen/plugin-helpers" "^2.6.1"
@@ -3293,7 +3293,7 @@ browserify-aes@^1.2.0:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-browserslist@^4.20.2, browserslist@^4.21.2, browserslist@^4.21.3:
+browserslist@^4.20.2, browserslist@^4.21.3:
   version "4.21.3"
   resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.21.3.tgz#5df277694eb3c48bc5c4b05af3e8b7e09c5a6d1a"
   integrity sha512-898rgRXLAyRkM1GryrrBHGkqA5hlpkV5MhtZwg9QXeiyLUYs2k00Un05aX5l2/yJIOObYKOpS2JNo8nJDE7fWQ==
