@@ -82,10 +82,13 @@ const COMMENT_FEED_QUERY = gql`
 interface BadgeProps {
   title: ReactNode
   value: ReactNode
+  className?: string
 }
 
-const Badge: FC<BadgeProps> = ({ title, value }) => (
-  <div className="flex bg-gray-200 rounded-full border border-gray-300 dark:bg-gray-800 dark:border-gray-700 text-[12px] w-fit">
+const Badge: FC<BadgeProps> = ({ title, value, className }) => (
+  <div
+    className={`flex bg-gray-200 rounded-full border border-gray-300 dark:bg-gray-800 dark:border-gray-700 text-[12px] w-fit ${className}`}
+  >
     <div className="px-3 bg-gray-300 rounded-full dark:bg-gray-700 py-[0.3px]">
       {title}
     </div>
@@ -147,10 +150,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
         reactionRequest: currentUser ? { profileId: currentUser?.id } : null,
         profileId: currentUser?.id ?? null
       },
-      fetchPolicy: 'no-cache',
-      onCompleted(data) {
-        console.log(data)
-      }
+      fetchPolicy: 'no-cache'
     }
   )
 
@@ -365,7 +365,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
       />
       <div className="p-5">
         <div className="block justify-between items-center sm:flex">
-          <div className="mr-0 space-y-1 sm:mr-16">
+          <div className="mr-0 space-y-1 sm:mr-3">
             <div className="text-xl font-bold">{fund?.metadata?.name}</div>
             <div className="text-sm leading-7 whitespace-pre-wrap break-words">
               <Markup>
@@ -414,10 +414,11 @@ const Fundraise: FC<Props> = ({ fund }) => {
                   </div>
                 }
                 value={`${collectModule?.amount?.value} ${collectModule?.amount?.asset?.symbol}`}
+                className="min-w-fit"
               />
               <input
                 type="number"
-                className="w-fit border-0 p-0 text-neutral-500 dark:bg-gray-900"
+                className="w-full border-0 p-0 text-neutral-500 dark:bg-gray-900"
                 value={newAmount}
                 placeholder={collectModule?.amount?.value}
                 step={0.1}
