@@ -530,7 +530,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
                     <div />
                   ) : (
                     <div>
-                      {commentFeed.publications.items.map(
+                      {commentFeed?.publications.items.map(
                         (i: any, index: number) => (
                           <CommentValue
                             key={index}
