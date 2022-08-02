@@ -105,7 +105,7 @@ interface CommentProps {
   callback?: Function
 }
 
-const CommentValue: FC<CommentProps> = ({ id, callback }) => {
+export const CommentValue: FC<CommentProps> = ({ id, callback }) => {
   useQuery(PUBLICATION_REVENUE_QUERY, {
     variables: {
       request: {

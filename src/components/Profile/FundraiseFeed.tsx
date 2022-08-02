@@ -7,7 +7,7 @@ import { PostFields } from '@gql/PostFields'
 import React, { FC, useMemo } from 'react'
 
 import FundraiseTable from './FundraiseTable'
-import { PostCell } from './FundraiseTable/Cells'
+import { FundsCell, PostCell } from './FundraiseTable/Cells'
 import {
   DateSearch,
   FuzzySearch,
@@ -63,6 +63,13 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
           {
             Header: 'Description',
             accessor: 'description',
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
+          },
+          {
+            Header: 'Funds',
+            accessor: 'funds',
+            Cell: FundsCell,
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },

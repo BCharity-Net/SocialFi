@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import Collectors from '@components/Shared/Collectors'
 import ReferralAlert from '@components/Shared/ReferralAlert'
 import { Card } from '@components/UI/Card'
@@ -16,17 +16,6 @@ import { useAppPersistStore } from 'src/store/app'
 
 import { COLLECT_QUERY } from '../Actions/Collect/CollectModule'
 import Fund from './Fund'
-export const PUBLICATION_REVENUE_QUERY = gql`
-  query PublicationRevenue($request: PublicationRevenueQueryRequest!) {
-    publicationRevenue(request: $request) {
-      revenue {
-        total {
-          value
-        }
-      }
-    }
-  }
-`
 
 interface BadgeProps {
   title: ReactNode

@@ -14,3 +14,9 @@ export const PostCell = (props: { value: string }) => {
     </a>
   )
 }
+
+export const FundsCell = (props: { value: number; funds: number[] }) => {
+  const index = props.value
+  const value = props.funds[index]
+  return <a>{value}</a>
+}

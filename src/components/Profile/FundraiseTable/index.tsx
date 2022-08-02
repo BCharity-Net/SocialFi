@@ -10,6 +10,8 @@ import React, { FC, useState } from 'react'
 import { useFilters, useTable } from 'react-table'
 import { useAppPersistStore } from 'src/store/app'
 
+import PublicationRevenue from './PublicationRevenue'
+
 interface Props {
   profile: Profile
   handleQueryComplete: Function
@@ -22,6 +24,7 @@ interface Props {
 export interface Data {
   name: string
   description: string
+  funds: number
   goal: string
   date: string
   postID: string
@@ -39,15 +42,15 @@ const FundraiseTable: FC<Props> = ({
   const [onEnter, setOnEnter] = useState<boolean>(false)
   const [tableData, setTableData] = useState<Data[]>([])
   const [pubIdData, setPubIdData] = useState<string[]>([])
-  const [vhrTxnData, setVhrTxnData] = useState<string[]>([])
-  const [addressData, setAddressData] = useState<string[]>([])
+  const [fundsData, setFundsData] = useState<number[]>([])
 
   const handleTableData = async (data: any) => {
     return Promise.all(
-      data.map(async (i: any) => {
+      data.map(async (i: any, index: number) => {
         return {
           name: i.metadata.name,
           description: i.metadata.description,
+          funds: index,
           goal: i.metadata.attributes[1].value,
           date: i.createdAt.split('T')[0],
           postID: i.id
@@ -82,21 +85,18 @@ const FundraiseTable: FC<Props> = ({
         }
       })
       const pubId: string[] = [],
-        vhrTxn: string[] = [],
-        addresses: string[] = []
+        funds: number[] = []
       opportunities.map((i: any) => {
         pubId.push(i.id)
-        vhrTxn.push('')
-        addresses.push(i.collectNftAddress)
+        funds.push(0)
       })
       setPubIdData([...pubIdData, ...pubId])
-      setVhrTxnData([...vhrTxnData, ...vhrTxn])
-      setAddressData([...addressData, ...addresses])
+      setFundsData([...fundsData, ...funds])
       setOnEnter(true)
     }
   })
 
-  const columns = getColumns(addressData)
+  const columns = getColumns()
 
   const Table = () => {
     const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
@@ -140,18 +140,31 @@ const FundraiseTable: FC<Props> = ({
           })}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
+          {rows.map((row, index) => {
             prepareRow(row)
             return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <td className="p-4" {...cell.getCellProps()}>
-                      {cell.render('Cell', { vhr: vhrTxnData })}
-                    </td>
-                  )
-                })}
-              </tr>
+              <>
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <td className="p-4" {...cell.getCellProps()}>
+                        {cell.render('Cell', { funds: fundsData })}
+                      </td>
+                    )
+                  })}
+                </tr>
+                <PublicationRevenue
+                  pubId={pubIdData[index]}
+                  callback={(data: any) => {
+                    console.log(fundsData[index], data)
+                    if (fundsData[index] != data) {
+                      fundsData[index] = data
+                      setFundsData(fundsData)
+                      setTableData([...tableData])
+                    }
+                  }}
+                />
+              </>
             )
           })}
         </tbody>

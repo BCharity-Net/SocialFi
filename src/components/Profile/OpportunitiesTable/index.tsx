@@ -42,8 +42,6 @@ const OpportunitiesTable: FC<Props> = ({
   const [onEnter, setOnEnter] = useState<boolean>(false)
   const [tableData, setTableData] = useState<Data[]>([])
   const [pubIdData, setPubIdData] = useState<string[]>([])
-  const [vhrTxnData, setVhrTxnData] = useState<string[]>([])
-  const [addressData, setAddressData] = useState<string[]>([])
 
   const handleTableData = async (data: any) => {
     return Promise.all(
@@ -87,22 +85,16 @@ const OpportunitiesTable: FC<Props> = ({
           })
         }
       })
-      const pubId: string[] = [],
-        vhrTxn: string[] = [],
-        addresses: string[] = []
+      const pubId: string[] = []
       opportunities.map((i: any) => {
         pubId.push(i.id)
-        vhrTxn.push('')
-        addresses.push(i.collectNftAddress)
       })
       setPubIdData([...pubIdData, ...pubId])
-      setVhrTxnData([...vhrTxnData, ...vhrTxn])
-      setAddressData([...addressData, ...addresses])
       setOnEnter(true)
     }
   })
 
-  const columns = getColumns(addressData)
+  const columns = getColumns()
 
   const Table = () => {
     const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
@@ -153,7 +145,7 @@ const OpportunitiesTable: FC<Props> = ({
                 {row.cells.map((cell) => {
                   return (
                     <td className="p-4" {...cell.getCellProps()}>
-                      {cell.render('Cell', { vhr: vhrTxnData })}
+                      {cell.render('Cell')}
                     </td>
                   )
                 })}
