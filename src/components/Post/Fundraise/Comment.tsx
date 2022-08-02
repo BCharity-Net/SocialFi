@@ -1,23 +1,18 @@
-import { gql, useMutation, useQuery } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import Collectors from '@components/Shared/Collectors'
 import ReferralAlert from '@components/Shared/ReferralAlert'
-import FundraiseShimmer from '@components/Shared/Shimmer/FundraiseShimmer'
 import { Card } from '@components/UI/Card'
 import { Modal } from '@components/UI/Modal'
 import { BCharityPost } from '@generated/bcharitytypes'
-import { BROADCAST_MUTATION } from '@gql/BroadcastMutation'
 import {
   CashIcon,
   CurrencyDollarIcon,
   UsersIcon
 } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
-import React, { FC, ReactNode, useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
+import React, { FC, ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ERRORS } from 'src/constants'
-import { useAppPersistStore, useAppStore } from 'src/store/app'
-import { useSignTypedData } from 'wagmi'
+import { useAppPersistStore } from 'src/store/app'
 
 import { COLLECT_QUERY } from '../Actions/Collect/CollectModule'
 import Fund from './Fund'
@@ -55,11 +50,8 @@ const FundraiseComment: FC<Props> = ({ fund }) => {
   const { t } = useTranslation('common')
   const [showFundersModal, setShowFundersModal] = useState<boolean>(false)
   const [revenue, setRevenue] = useState<number>(0)
-  const { userSigNonce, setUserSigNonce } = useAppStore()
-  const [isUploading, setIsUploading] = useState<boolean>(false)
-  const { isAuthenticated, currentUser } = useAppPersistStore()
-  const [newAmount, setNewAmount] = useState<string>()
-  const { data, loading } = useQuery(COLLECT_QUERY, {
+  const { currentUser } = useAppPersistStore()
+  const { data } = useQuery(COLLECT_QUERY, {
     variables: { request: { publicationId: fund?.pubId ?? fund?.id } },
     onCompleted() {
       Logger.log(
@@ -70,58 +62,6 @@ const FundraiseComment: FC<Props> = ({ fund }) => {
   })
 
   const collectModule: any = data?.publication?.collectModule
-
-  const { data: revenueData, loading: revenueLoading } = useQuery(
-    PUBLICATION_REVENUE_QUERY,
-    {
-      variables: {
-        request: {
-          publicationId:
-            fund?.__typename === 'Mirror'
-              ? fund?.mirrorOf?.id
-              : fund?.pubId ?? fund?.id
-        }
-      },
-      onCompleted() {
-        Logger.log(
-          '[Query]',
-          `Fetched fundraise revenue details Fundraise:${
-            fund?.pubId ?? fund?.id
-          }`
-        )
-      }
-    }
-  )
-
-  useEffect(() => {
-    setRevenue(
-      parseFloat(revenueData?.publicationRevenue?.revenue?.total?.value ?? 0)
-    )
-  }, [revenueData])
-
-  const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
-    onError(error) {
-      toast.error(error?.message)
-    }
-  })
-  const [broadcast, { loading: broadcastLoading }] = useMutation(
-    BROADCAST_MUTATION,
-    {
-      onError(error) {
-        if (error.message === ERRORS.notMined) {
-          toast.error(error.message)
-        }
-        Logger.error('[Relay Error]', error.message)
-      }
-    }
-  )
-
-  const goalAmount = fund?.metadata?.attributes[1]?.value
-  const percentageReached = revenue
-    ? (revenue / parseInt(goalAmount as string)) * 100
-    : 0
-  const cover = fund?.metadata?.cover?.original?.url
-  if (loading) return <FundraiseShimmer />
 
   return (
     <Card forceRounded testId="fundraise">
