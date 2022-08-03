@@ -112,12 +112,6 @@ const FeedType: FC<Props> = ({
         type="NFT"
         testId="type-nfts"
       />
-      <FeedLink
-        name="Fundraisers"
-        icon={<CashIcon className="w-4 h-4" />}
-        type="fundraise"
-        testId="type-fundraise"
-      />
       {isVerified(id) ? (
         <>
           <OrgVerifiedHours
@@ -125,6 +119,12 @@ const FeedType: FC<Props> = ({
             callback={(hours: number) => {
               setOrgVerifiedHours(hours)
             }}
+          />
+          <FeedLink
+            name="FundsOrg"
+            icon={<CashIcon className="w-4 h-4" />}
+            type="funds-org"
+            testId="type-fundraise-org"
           />
           <FeedLink
             name="OrgVHR"
@@ -141,13 +141,21 @@ const FeedType: FC<Props> = ({
           />
         </>
       ) : (
-        <FeedLink
-          name="VHR"
-          icon={<ClockIcon className="w-4 h-4" />}
-          type="vhr"
-          count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
-          testId="type-vhr"
-        />
+        <>
+          <FeedLink
+            name="Funds"
+            icon={<CashIcon className="w-4 h-4" />}
+            type="funds"
+            testId="type-fundraise"
+          />
+          <FeedLink
+            name="VHR"
+            icon={<ClockIcon className="w-4 h-4" />}
+            type="vhr"
+            count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
+            testId="type-vhr"
+          />
+        </>
       )}
     </div>
   )

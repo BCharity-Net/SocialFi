@@ -24,6 +24,7 @@ import Cover from './Cover'
 import Details from './Details'
 import FeedType from './FeedType'
 import FundraiseFeed from './FundraiseFeed'
+import FundraiseOrgFeed from './FundraiseOrgFeed'
 import HourFeed from './HourFeed'
 import OpportunitiesFeed from './OpportunitiesFeed'
 import OrganizationFeed from './OrganizationFeed'
@@ -124,9 +125,7 @@ const ViewProfile: NextPage = () => {
       )}
       <Cover cover={profile?.coverPicture?.original?.url} />
       <GridLayout className="pt-6">
-        {feedType === 'org' ||
-        feedType === 'vhr' ||
-        feedType === 'opportunities' ? (
+        {feedType === 'org' || feedType === 'vhr' || feedType === 'opp' ? (
           <GridItemTwelve className="space-y-5">
             <FeedType
               stats={profile?.stats}
@@ -140,9 +139,7 @@ const ViewProfile: NextPage = () => {
               feedType === 'org' ? (
                 <OrganizationFeed profile={profile} />
               ) : (
-                feedType === 'opportunities' && (
-                  <OpportunitiesFeed profile={profile} />
-                )
+                feedType === 'opp' && <OpportunitiesFeed profile={profile} />
               )
             ) : (
               feedType === 'vhr' && <HourFeed profile={profile} />
@@ -168,7 +165,10 @@ const ViewProfile: NextPage = () => {
                 <Feed profile={profile} type={feedType} />
               )}
               {feedType === 'NFT' && <NFTFeed profile={profile} />}
-              {feedType === 'fundraise' && <FundraiseFeed profile={profile} />}
+              {feedType === 'funds' && <FundraiseFeed profile={profile} />}
+              {feedType === 'funds-org' && (
+                <FundraiseOrgFeed profile={profile} />
+              )}
             </GridItemEight>
           </>
         )}
