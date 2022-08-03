@@ -23,7 +23,7 @@ interface Props {
 
 export interface Data {
   name: string
-  description: string
+  orgName: string
   funds: number
   goal: string
   date: string
@@ -49,7 +49,7 @@ const FundraiseTable: FC<Props> = ({
       data.map(async (i: any, index: number) => {
         return {
           name: i.metadata.name,
-          description: i.metadata.description,
+          orgName: i.profile.handle,
           funds: index,
           goal: i.metadata.attributes[1].value,
           date: i.createdAt.split('T')[0],
