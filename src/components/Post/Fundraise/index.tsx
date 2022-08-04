@@ -277,6 +277,8 @@ const Fundraise: FC<Props> = ({ fund }) => {
     title: string,
     amount: string,
     goal: string,
+    creator: string,
+    _uuid: string,
     recipient: string,
     referralFee: string,
     description: string | null
@@ -304,6 +306,16 @@ const Fundraise: FC<Props> = ({ fund }) => {
           traitType: 'string',
           key: 'goal',
           value: goal
+        },
+        {
+          traitType: 'string',
+          key: 'creator',
+          value: creator
+        },
+        {
+          traitType: 'string',
+          key: 'uuid',
+          value: _uuid
         }
       ],
       media: [],
@@ -451,12 +463,16 @@ const Fundraise: FC<Props> = ({ fund }) => {
                   if (
                     fund?.metadata?.name &&
                     fund?.metadata?.attributes[1]?.value &&
+                    fund?.metadata?.attributes[2]?.value &&
+                    fund?.metadata?.attributes[3]?.value &&
                     newAmount
                   ) {
                     createComment(
                       fund?.metadata?.name,
                       newAmount,
                       fund?.metadata?.attributes[1]?.value,
+                      fund?.metadata?.attributes[2]?.value,
+                      fund?.metadata?.attributes[3]?.value,
                       collectModule?.recipient,
                       collectModule?.referralFee,
                       fund?.metadata?.description
@@ -537,8 +553,8 @@ const Fundraise: FC<Props> = ({ fund }) => {
                             id={i.id}
                             callback={(data: any) => {
                               const value =
-                                data.publicationRevenue.revenue.total.value
-                              commentValue += Number(value)
+                                data.publicationRevenue?.revenue.total.value
+                              if (value) commentValue += Number(value)
                               setRevenue(revenue + commentValue)
                             }}
                           />

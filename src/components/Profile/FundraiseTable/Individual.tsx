@@ -6,11 +6,11 @@ import { EmptyState } from '@components/UI/EmptyState'
 import { ErrorMessage } from '@components/UI/ErrorMessage'
 import { Profile } from '@generated/types'
 import { CollectionIcon } from '@heroicons/react/outline'
+import Logger from '@lib/logger'
 import React, { FC, useState } from 'react'
 import { useFilters, useTable } from 'react-table'
-import { useAppPersistStore } from 'src/store/app'
 
-import PublicationRevenue from './PublicationRevenue'
+import NFT from './NFT'
 
 interface Props {
   profile: Profile
@@ -22,48 +22,33 @@ interface Props {
 }
 
 export interface Data {
-  name: string
   orgName: string
-  funds: number
-  goal: string
+  uuid: string
+  fundName: string
   date: string
   postID: string
 }
 
-const FundraiseTable: FC<Props> = ({
-  profile,
-  handleQueryComplete,
-  getColumns,
-  query,
-  request,
-  tableLimit
-}) => {
-  const { currentUser } = useAppPersistStore()
+const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
   const [onEnter, setOnEnter] = useState<boolean>(false)
   const [tableData, setTableData] = useState<Data[]>([])
-  const [pubIdData, setPubIdData] = useState<string[]>([])
-  const [fundsData, setFundsData] = useState<number[]>([])
 
-  const handleTableData = async (data: any) => {
-    return Promise.all(
-      data.map(async (i: any, index: number) => {
-        return {
-          name: i.metadata.name,
-          funds: index,
-          goal: i.metadata.attributes[1].value,
-          vhr: Math.floor(i.metadata.attributes[1].value / 3),
-          date: i.createdAt.split('T')[0],
-          postID: i.id
-        }
+  const fetchMetadata = async (contentURI: string) => {
+    return fetch(contentURI)
+      .then((response) => {
+        return response.json()
       })
-    )
+      .then((responseJson) => {
+        return responseJson
+      })
+      .catch((error) => {
+        Logger.error(error)
+      })
   }
 
-  const { data, loading, error, fetchMore } = useQuery(query, {
+  const { data, loading, error } = useQuery(query, {
     variables: {
-      request: request,
-      reactionRequest: currentUser ? { profileId: currentUser?.id } : null,
-      profileId: currentUser?.id ?? null
+      request: request
     },
     skip: !profile?.id,
     fetchPolicy: 'no-cache',
@@ -73,25 +58,30 @@ const FundraiseTable: FC<Props> = ({
         setTableData(tableData)
         setOnEnter(false)
       }
-      const opportunities = handleQueryComplete(data)
-      handleTableData(opportunities).then((result: Data[]) => {
-        setTableData([...tableData, ...result])
-        if (tableData.length != tableLimit) {
-          fetchMore({
-            variables: {
-              offset: tableLimit - tableData.length
-            }
-          })
-        }
+
+      const nft: Data[] = []
+      data.nfts.items.forEach((i: any) => {
+        fetchMetadata(i.contentURI).then((result) => {
+          if (
+            result &&
+            result.attributes[0].value === 'fundraise' &&
+            new Date(result.createdOn) >=
+              new Date(
+                'Thu Aug 03 2022 10:24:54 GMT-0600 (Mountain Daylight Saving Time)'
+              )
+          ) {
+            nft.push({
+              orgName: result.attributes[2].value,
+              uuid: result.attributes[3].value,
+              fundName: '',
+              date: result.createdOn.split('T')[0],
+              postID: ''
+            })
+            setTableData([...tableData, ...nft])
+          }
+        })
       })
-      const pubId: string[] = [],
-        funds: number[] = []
-      opportunities.map((i: any) => {
-        pubId.push(i.id)
-        funds.push(0)
-      })
-      setPubIdData([...pubIdData, ...pubId])
-      setFundsData([...fundsData, ...funds])
+
       setOnEnter(true)
     }
   })
@@ -148,18 +138,16 @@ const FundraiseTable: FC<Props> = ({
                   {row.cells.map((cell) => {
                     return (
                       <td className="p-4" {...cell.getCellProps()}>
-                        {cell.render('Cell', { funds: fundsData })}
+                        {cell.render('Cell')}
                       </td>
                     )
                   })}
                 </tr>
-                <PublicationRevenue
-                  pubId={pubIdData[index]}
+                <NFT
+                  nft={tableData[index]}
                   callback={(data: any) => {
-                    console.log(fundsData[index], data)
-                    if (fundsData[index] != data) {
-                      fundsData[index] = data
-                      setFundsData(fundsData)
+                    if (tableData[index].postID !== data.id) {
+                      tableData[index].postID = data.id
                       setTableData([...tableData])
                     }
                   }}
@@ -186,7 +174,7 @@ const FundraiseTable: FC<Props> = ({
           icon={<CollectionIcon className="w-8 h-8 text-brand" />}
         />
       )}
-      <ErrorMessage title="Failed to load fundraisers" error={error} />
+      <ErrorMessage title="Failed to load funds" error={error} />
       {!error && !loading && data?.publications?.items?.length !== 0 && (
         <Card>
           <Table />
