@@ -186,7 +186,7 @@ const FundraiseTable: FC<Props> = ({
           icon={<CollectionIcon className="w-8 h-8 text-brand" />}
         />
       )}
-      <ErrorMessage title="Failed to load opportunities" error={error} />
+      <ErrorMessage title="Failed to load fundraisers" error={error} />
       {!error && !loading && data?.publications?.items?.length !== 0 && (
         <Card>
           <Table />
