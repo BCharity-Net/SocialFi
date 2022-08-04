@@ -537,9 +537,8 @@ const Fundraise: FC<Props> = ({ fund }) => {
                             id={i.id}
                             callback={(data: any) => {
                               const value =
-                                data.publicationRevenue.revenue.total.value
-                              commentValue += Number(value)
-                              setRevenue(revenue + commentValue)
+                                data.publicationRevenue?.revenue.total.value
+                              if (value) commentValue += Number(value)
                             }}
                           />
                         )
