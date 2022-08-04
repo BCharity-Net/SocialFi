@@ -2,6 +2,8 @@
 import { gql } from '@apollo/client'
 import { Profile } from '@generated/types'
 import React, { FC, useMemo } from 'react'
+import { CHAIN_ID, IS_MAINNET } from 'src/constants'
+import { chain } from 'wagmi'
 
 import { PostCell } from './FundraiseTable/Cells'
 import {
@@ -69,7 +71,11 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
         return columns
       }}
       query={PROFILE_NFT_FEED_QUERY}
-      request={{}}
+      request={{
+        chainIds: [CHAIN_ID, IS_MAINNET ? chain.mainnet.id : chain.kovan.id],
+        ownerAddress: profile?.ownedBy,
+        limit: tableLimit
+      }}
       tableLimit={tableLimit}
     />
   )
