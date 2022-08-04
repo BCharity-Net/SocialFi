@@ -539,6 +539,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
                               const value =
                                 data.publicationRevenue?.revenue.total.value
                               if (value) commentValue += Number(value)
+                              setRevenue(revenue + commentValue)
                             }}
                           />
                         )
