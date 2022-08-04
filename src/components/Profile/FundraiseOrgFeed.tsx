@@ -61,12 +61,6 @@ const FundraiseOrgFeed: FC<Props> = ({ profile }) => {
             filter: fuzzyTextFilterFn
           },
           {
-            Header: 'Organization Name',
-            accessor: 'orgName',
-            Filter: FuzzySearch,
-            filter: fuzzyTextFilterFn
-          },
-          {
             Header: 'Funds',
             accessor: 'funds',
             Cell: FundsCell,
@@ -74,8 +68,14 @@ const FundraiseOrgFeed: FC<Props> = ({ profile }) => {
             filter: fuzzyTextFilterFn
           },
           {
-            Header: 'Goal',
+            Header: 'Funding Goal',
             accessor: 'goal',
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
+          },
+          {
+            Header: 'VHR Goal',
+            accessor: 'vhr',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },

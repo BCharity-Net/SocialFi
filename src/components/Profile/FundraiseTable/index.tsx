@@ -49,9 +49,9 @@ const FundraiseTable: FC<Props> = ({
       data.map(async (i: any, index: number) => {
         return {
           name: i.metadata.name,
-          orgName: i.profile.handle,
           funds: index,
           goal: i.metadata.attributes[1].value,
+          vhr: Math.floor(i.metadata.attributes[1].value / 3),
           date: i.createdAt.split('T')[0],
           postID: i.id
         }
