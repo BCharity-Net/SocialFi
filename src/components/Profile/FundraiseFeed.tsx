@@ -36,7 +36,7 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
   const columns = useMemo(
     () => [
       {
-        Header: 'Fundraisers',
+        Header: 'Funds',
         columns: [
           {
             Header: 'Organization Name',
