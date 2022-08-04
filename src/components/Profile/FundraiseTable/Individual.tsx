@@ -6,9 +6,11 @@ import { EmptyState } from '@components/UI/EmptyState'
 import { ErrorMessage } from '@components/UI/ErrorMessage'
 import { Profile } from '@generated/types'
 import { CollectionIcon } from '@heroicons/react/outline'
+import Logger from '@lib/logger'
 import React, { FC, useState } from 'react'
 import { useFilters, useTable } from 'react-table'
-import { useAppPersistStore } from 'src/store/app'
+
+import NFT from './NFT'
 
 interface Props {
   profile: Profile
@@ -20,51 +22,34 @@ interface Props {
 }
 
 export interface Data {
-  program: string
-  position: string
-  volunteers: number
-  city: string
-  category: string
-  startDate: string
-  endDate: string
-  totalHours: number
+  orgName: string
+  uuid: string
+  fundName: string
+  date: string
+  amount: string
+  postID: string
 }
 
-const OpportunitiesTable: FC<Props> = ({
-  profile,
-  handleQueryComplete,
-  getColumns,
-  query,
-  request,
-  tableLimit
-}) => {
-  const { currentUser } = useAppPersistStore()
+const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
   const [onEnter, setOnEnter] = useState<boolean>(false)
   const [tableData, setTableData] = useState<Data[]>([])
-  const [pubIdData, setPubIdData] = useState<string[]>([])
 
-  const handleTableData = async (data: any) => {
-    return Promise.all(
-      data.map(async (i: any) => {
-        return {
-          program: i.metadata.attributes[1].value,
-          position: i.metadata.attributes[2].value,
-          volunteers: i.metadata.attributes[3].value,
-          city: i.metadata.attributes[4].value,
-          category: i.metadata.attributes[5].value,
-          startDate: i.metadata.attributes[6].value,
-          endDate: i.metadata.attributes[7].value,
-          totalHours: i.metadata.attributes[8].value
-        }
+  const fetchMetadata = async (contentURI: string) => {
+    return fetch(contentURI)
+      .then((response) => {
+        return response.json()
       })
-    )
+      .then((responseJson) => {
+        return responseJson
+      })
+      .catch((error) => {
+        Logger.error(error)
+      })
   }
 
-  const { data, loading, error, fetchMore } = useQuery(query, {
+  const { data, loading, error } = useQuery(query, {
     variables: {
-      request: request,
-      reactionRequest: currentUser ? { profileId: currentUser?.id } : null,
-      profileId: currentUser?.id ?? null
+      request: request
     },
     skip: !profile?.id,
     fetchPolicy: 'no-cache',
@@ -74,22 +59,33 @@ const OpportunitiesTable: FC<Props> = ({
         setTableData(tableData)
         setOnEnter(false)
       }
-      const opportunities = handleQueryComplete(data)
-      handleTableData(opportunities).then((result: Data[]) => {
-        setTableData([...tableData, ...result])
-        if (tableData.length != tableLimit) {
-          fetchMore({
-            variables: {
-              offset: tableLimit - tableData.length
-            }
-          })
-        }
+
+      const nft: Data[] = []
+      data.nfts.items.forEach((i: any) => {
+        fetchMetadata(i.contentURI).then((result) => {
+          if (
+            result &&
+            result.attributes &&
+            (result.attributes[0].value === 'fundraise' ||
+              result.attributes[0].value === 'fundraise-comment') &&
+            new Date(result.createdOn) >=
+              new Date(
+                'Thu Aug 04 2022 13:45:31 GMT-0600 (Mountain Daylight Saving Time)'
+              )
+          ) {
+            nft.push({
+              orgName: result.attributes[2].value,
+              uuid: result.attributes[3].value,
+              fundName: '',
+              date: result.createdOn.split('T')[0],
+              amount: result.attributes[4] ? result.attributes[4].value : '',
+              postID: ''
+            })
+            setTableData([...tableData, ...nft])
+          }
+        })
       })
-      const pubId: string[] = []
-      opportunities.map((i: any) => {
-        pubId.push(i.id)
-      })
-      setPubIdData([...pubIdData, ...pubId])
+
       setOnEnter(true)
     }
   })
@@ -138,18 +134,33 @@ const OpportunitiesTable: FC<Props> = ({
           })}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
+          {rows.map((row, index) => {
             prepareRow(row)
             return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <td className="p-4" {...cell.getCellProps()}>
-                      {cell.render('Cell')}
-                    </td>
-                  )
-                })}
-              </tr>
+              <>
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <td className="p-4" {...cell.getCellProps()}>
+                        {cell.render('Cell')}
+                      </td>
+                    )
+                  })}
+                </tr>
+                <NFT
+                  nft={tableData[index]}
+                  callback={(data: any) => {
+                    if (tableData[index].amount === '') {
+                      tableData[index].amount = data.collectModule.amount.value
+                      setTableData([...tableData])
+                    }
+                    if (tableData[index].postID !== data.id) {
+                      tableData[index].postID = data.id
+                      setTableData([...tableData])
+                    }
+                  }}
+                />
+              </>
             )
           })}
         </tbody>
@@ -171,7 +182,7 @@ const OpportunitiesTable: FC<Props> = ({
           icon={<CollectionIcon className="w-8 h-8 text-brand" />}
         />
       )}
-      <ErrorMessage title="Failed to load opportunities" error={error} />
+      <ErrorMessage title="Failed to load funds" error={error} />
       {!error && !loading && data?.publications?.items?.length !== 0 && (
         <Card>
           <Table />
@@ -181,4 +192,4 @@ const OpportunitiesTable: FC<Props> = ({
   )
 }
 
-export default OpportunitiesTable
+export default FundraiseTable

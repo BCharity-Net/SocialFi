@@ -85,6 +85,7 @@ export const MinimalCollectModuleFields = gql`
         asset {
           address
         }
+        value
       }
     }
     ... on LimitedFeeCollectModuleSettings {

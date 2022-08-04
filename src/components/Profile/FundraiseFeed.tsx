@@ -1,12 +1,10 @@
 /* eslint-disable react/jsx-key */
 import { gql } from '@apollo/client'
 import { Profile } from '@generated/types'
-import { CommentFields } from '@gql/CommentFields'
-import { MirrorFields } from '@gql/MirrorFields'
-import { PostFields } from '@gql/PostFields'
 import React, { FC, useMemo } from 'react'
+import { CHAIN_ID, IS_MAINNET } from 'src/constants'
+import { chain } from 'wagmi'
 
-import FundraiseTable from './FundraiseTable'
 import { PostCell } from './FundraiseTable/Cells'
 import {
   DateSearch,
@@ -14,34 +12,20 @@ import {
   fuzzyTextFilterFn,
   NoFilter
 } from './FundraiseTable/Filters'
+import FundraiseTable from './FundraiseTable/Individual'
 
-const PROFILE_FEED_QUERY = gql`
-  query ProfileFeed(
-    $request: PublicationsQueryRequest!
-    $reactionRequest: ReactionFieldResolverRequest
-    $profileId: ProfileId
-  ) {
-    publications(request: $request) {
+const PROFILE_NFT_FEED_QUERY = gql`
+  query ProfileNFTFeed($request: NFTsRequest!) {
+    nfts(request: $request) {
       items {
-        ... on Post {
-          ...PostFields
-        }
-        ... on Comment {
-          ...CommentFields
-        }
-        ... on Mirror {
-          ...MirrorFields
-        }
+        contentURI
       }
       pageInfo {
-        totalCount
         next
+        totalCount
       }
     }
   }
-  ${PostFields}
-  ${CommentFields}
-  ${MirrorFields}
 `
 
 interface Props {
@@ -52,23 +36,17 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
   const columns = useMemo(
     () => [
       {
-        Header: 'Fundraisers',
+        Header: 'Funds',
         columns: [
           {
-            Header: 'Name',
-            accessor: 'name',
+            Header: 'Organization Name',
+            accessor: 'orgName',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },
           {
-            Header: 'Description',
-            accessor: 'description',
-            Filter: FuzzySearch,
-            filter: fuzzyTextFilterFn
-          },
-          {
-            Header: 'Goal',
-            accessor: 'goal',
+            Header: 'Fund amount',
+            accessor: 'amount',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },
@@ -89,23 +67,19 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
     []
   )
 
-  const tableLimit = 10
+  const tableLimit = 50
 
   return (
     <FundraiseTable
       profile={profile}
-      handleQueryComplete={(data: any) => {
-        return data?.publications?.items.filter((i: any) => {
-          return i.metadata.attributes[0].value === 'fundraise'
-        })
-      }}
+      handleQueryComplete={() => {}}
       getColumns={() => {
         return columns
       }}
-      query={PROFILE_FEED_QUERY}
+      query={PROFILE_NFT_FEED_QUERY}
       request={{
-        publicationTypes: 'POST',
-        profileId: profile?.id,
+        chainIds: [CHAIN_ID, IS_MAINNET ? chain.mainnet.id : chain.kovan.id],
+        ownerAddress: profile?.ownedBy,
         limit: tableLimit
       }}
       tableLimit={tableLimit}

@@ -14,6 +14,11 @@ body {
   @apply dark:bg-black;
 }
 
+table {
+  @apply bg-white;
+  @apply dark:bg-gray-900;
+}
+
 .shimmer {
   @apply animate-pulse;
   @apply bg-gray-300;

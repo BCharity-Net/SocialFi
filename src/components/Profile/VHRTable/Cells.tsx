@@ -12,7 +12,7 @@ export const ProfileCell = (props: { value: string }) => {
 
 export const TotalHoursCell = (props: {
   value: { index: number; value: number }
-  vhr: string
+  vhr: string[]
 }) => {
   const index = props.value.index
   const value = props.value.value

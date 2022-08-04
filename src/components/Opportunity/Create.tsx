@@ -1,5 +1,5 @@
 import { LensHubProxy } from '@abis/LensHubProxy'
-import { gql, useLazyQuery, useMutation } from '@apollo/client'
+import { gql, useMutation } from '@apollo/client'
 import { GridItemEight, GridItemFour, GridLayout } from '@components/GridLayout'
 import { CREATE_POST_TYPED_DATA_MUTATION } from '@components/Post/NewPost'
 import ChooseFiles from '@components/Shared/ChooseFiles'
@@ -39,7 +39,7 @@ import { v4 as uuid } from 'uuid'
 import { useContractWrite, useSignTypedData } from 'wagmi'
 import { object, string } from 'zod'
 
-import Autocomplete from '../UI/Autosuggest'
+import Autosuggest from '../UI/Autosuggest'
 
 export const PROFILE_QUERY = gql`
   query Profile($request: SingleProfileQueryRequest!) {
@@ -143,20 +143,6 @@ const Opportunity: NextPage = () => {
       toast.error(error?.message)
     }
   })
-
-  const [getWalletAddress] = useLazyQuery(PROFILE_QUERY, {
-    onCompleted(data) {
-      Logger.log('Lazy Query =>', `Fetched ${data?.id} profile result`)
-    }
-  })
-  const fetchWalletAddress = (username: string) =>
-    getWalletAddress({
-      variables: {
-        request: { handle: username }
-      }
-    }).then(({ data }) => {
-      return data.profile.ownedBy
-    })
 
   const {
     data,
@@ -468,7 +454,7 @@ const Opportunity: NextPage = () => {
                 placeholder={t('Calgary, AB')}
                 {...form.register('city')}
               />
-              <Autocomplete
+              <Autosuggest
                 label="Category"
                 lang={[
                   'Education',
