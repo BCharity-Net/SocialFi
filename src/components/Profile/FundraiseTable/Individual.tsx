@@ -146,8 +146,10 @@ const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
                 <NFT
                   nft={tableData[index]}
                   callback={(data: any) => {
-                    tableData[index].postID = data.id
-                    setTableData([...tableData])
+                    if (tableData[index].postID !== data.id) {
+                      tableData[index].postID = data.id
+                      setTableData([...tableData])
+                    }
                   }}
                 />
               </>
