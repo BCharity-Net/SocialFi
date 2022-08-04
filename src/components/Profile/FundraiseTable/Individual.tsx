@@ -26,6 +26,7 @@ export interface Data {
   uuid: string
   fundName: string
   date: string
+  amount: string
   postID: string
 }
 
@@ -64,10 +65,12 @@ const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
         fetchMetadata(i.contentURI).then((result) => {
           if (
             result &&
-            result.attributes[0].value === 'fundraise' &&
+            result.attributes &&
+            (result.attributes[0].value === 'fundraise' ||
+              result.attributes[0].value === 'fundraise-comment') &&
             new Date(result.createdOn) >=
               new Date(
-                'Thu Aug 03 2022 10:24:54 GMT-0600 (Mountain Daylight Saving Time)'
+                'Thu Aug 04 2022 13:45:31 GMT-0600 (Mountain Daylight Saving Time)'
               )
           ) {
             nft.push({
@@ -75,6 +78,7 @@ const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
               uuid: result.attributes[3].value,
               fundName: '',
               date: result.createdOn.split('T')[0],
+              amount: result.attributes[4] ? result.attributes[4].value : '',
               postID: ''
             })
             setTableData([...tableData, ...nft])
@@ -146,6 +150,10 @@ const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
                 <NFT
                   nft={tableData[index]}
                   callback={(data: any) => {
+                    if (tableData[index].amount === '') {
+                      tableData[index].amount = data.collectModule.amount.value
+                      setTableData([...tableData])
+                    }
                     if (tableData[index].postID !== data.id) {
                       tableData[index].postID = data.id
                       setTableData([...tableData])

@@ -45,6 +45,12 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
             filter: fuzzyTextFilterFn
           },
           {
+            Header: 'Fund amount',
+            accessor: 'amount',
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
+          },
+          {
             Header: 'Date',
             accessor: 'date',
             Filter: DateSearch
@@ -61,7 +67,7 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
     []
   )
 
-  const tableLimit = 10
+  const tableLimit = 50
 
   return (
     <FundraiseTable
