@@ -1,7 +1,10 @@
 import Attachments from '@components/Shared/Attachments'
+import Collectors from '@components/Shared/Collectors'
 import IFramely from '@components/Shared/IFramely'
 import Markup from '@components/Shared/Markup'
 import FundraiseShimmer from '@components/Shared/Shimmer/FundraiseShimmer'
+import { Button } from '@components/UI/Button'
+import { Modal } from '@components/UI/Modal'
 import { BCharityPost } from '@generated/bcharitytypes'
 import { UserAddIcon, UsersIcon } from '@heroicons/react/outline'
 import getURLs from '@lib/getURLs'
@@ -12,7 +15,9 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useAppPersistStore } from 'src/store/app'
 
+import Approve from './Approve'
 import FundraiseComment from './Fundraise/Comment'
 import Opportunity from './Opportunity'
 
@@ -27,6 +32,8 @@ interface Props {
 }
 
 const PostBody: FC<Props> = ({ post }) => {
+  const [showVerifyModal, setShowVerifyModal] = useState<boolean>(false)
+  const { currentUser } = useAppPersistStore()
   const { t } = useTranslation('common')
   const { pathname } = useRouter()
   const postType = post?.metadata?.attributes[0]?.value
@@ -109,10 +116,40 @@ const PostBody: FC<Props> = ({ post }) => {
         postType !== 'fundraise' &&
         postType !== 'group' &&
         postType !== 'hours' &&
+        postType != 'opportunity' &&
         getURLs(post?.metadata?.content)?.length > 0 && (
           <IFramely url={getURLs(post?.metadata?.content)[0]} />
         )
       )}
+
+      {postType === 'comment' &&
+        post.commentOn &&
+        post?.commentOn?.metadata?.attributes[0]?.value === 'opportunities' && (
+          <div>
+            {currentUser &&
+              (post?.stats?.totalAmountOfCollects < 1 ? (
+                <div className="pt-3 sm:pt-0">
+                  <Approve post={post} />
+                </div>
+              ) : (
+                <div className="p-3">
+                  <Button
+                    className="sm:mt-0 sm:ml-auto"
+                    onClick={() => setShowVerifyModal(!showVerifyModal)}
+                  >
+                    Accepted
+                  </Button>
+                  <Modal
+                    title="Accepted By:"
+                    show={showVerifyModal}
+                    onClose={() => setShowVerifyModal(false)}
+                  >
+                    <Collectors pubId={post?.pubId ?? post?.id} />
+                  </Modal>
+                </div>
+              ))}
+          </div>
+        )}
     </div>
   )
 }

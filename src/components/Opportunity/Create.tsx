@@ -523,7 +523,7 @@ const Opportunity: NextPage = () => {
                 {...form.register('totalHours')}
               />
               <TextArea
-                label={t('Activity Description')}
+                label={t('Activity Description and Requirements')}
                 placeholder={t('Activity TextArea')}
                 {...form.register('description')}
               />
