@@ -6,6 +6,7 @@ import { MirrorFields } from '@gql/MirrorFields'
 import { PostFields } from '@gql/PostFields'
 import React, { FC, useMemo } from 'react'
 
+import OpportunitiesTable from './OpportunitiesTable'
 import {
   DateSearch,
   FuzzySearch,
@@ -14,7 +15,6 @@ import {
   lessThanEqualToFn,
   NoFilter
 } from './OpportunitiesTable/Filters'
-import OpportunitiesTable from './OpportunitiesTable/Individual'
 
 const PROFILE_FEED_QUERY = gql`
   query ProfileFeed(
@@ -49,7 +49,7 @@ interface Props {
   profile: Profile
 }
 
-const OpportunitiesFeed: FC<Props> = ({ profile }) => {
+const OpportunitiesOrgFeed: FC<Props> = ({ profile }) => {
   const columns = useMemo(
     () => [
       {
@@ -132,4 +132,4 @@ const OpportunitiesFeed: FC<Props> = ({ profile }) => {
   )
 }
 
-export default OpportunitiesFeed
+export default OpportunitiesOrgFeed

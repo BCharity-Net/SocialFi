@@ -27,6 +27,7 @@ import FundraiseFeed from './FundraiseFeed'
 import FundraiseOrgFeed from './FundraiseOrgFeed'
 import HourFeed from './HourFeed'
 import OpportunitiesFeed from './OpportunitiesFeed'
+import OpportunitiesOrgFeed from './OpportunitiesOrgFeed'
 import OrganizationFeed from './OrganizationFeed'
 import ProfilePageShimmer from './Shimmer'
 
@@ -125,7 +126,10 @@ const ViewProfile: NextPage = () => {
       )}
       <Cover cover={profile?.coverPicture?.original?.url} />
       <GridLayout className="pt-6">
-        {feedType === 'org' || feedType === 'vhr' || feedType === 'opp' ? (
+        {feedType === 'org' ||
+        feedType === 'vhr' ||
+        feedType === 'opp' ||
+        feedType === 'org-opp' ? (
           <GridItemTwelve className="space-y-5">
             <FeedType
               stats={profile?.stats}
@@ -139,10 +143,14 @@ const ViewProfile: NextPage = () => {
               feedType === 'org' ? (
                 <OrganizationFeed profile={profile} />
               ) : (
-                feedType === 'opp' && <OpportunitiesFeed profile={profile} />
+                feedType === 'org-opp' && (
+                  <OpportunitiesOrgFeed profile={profile} />
+                )
               )
+            ) : feedType === 'vhr' ? (
+              <HourFeed profile={profile} />
             ) : (
-              feedType === 'vhr' && <HourFeed profile={profile} />
+              feedType === 'opp' && <OpportunitiesFeed profile={profile} />
             )}
           </GridItemTwelve>
         ) : (

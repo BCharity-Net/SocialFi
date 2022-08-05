@@ -134,10 +134,10 @@ const FeedType: FC<Props> = ({
             testId="type-org"
           />
           <FeedLink
-            name="Opportunities"
+            name="OrgOpp"
             icon={<ClipboardListIcon className="w-4 h-4" />}
-            type="opp"
-            testId="type-opportunities"
+            type="org-opp"
+            testId="type-opp"
           />
         </>
       ) : (
@@ -154,6 +154,12 @@ const FeedType: FC<Props> = ({
             type="vhr"
             count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
             testId="type-vhr"
+          />
+          <FeedLink
+            name="Opportunities"
+            icon={<ClipboardListIcon className="w-4 h-4" />}
+            type="opp"
+            testId="type-opp"
           />
         </>
       )}
