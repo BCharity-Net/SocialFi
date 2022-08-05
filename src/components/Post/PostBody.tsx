@@ -132,20 +132,23 @@ const PostBody: FC<Props> = ({ post }) => {
                   <Approve post={post} />
                 </div>
               ) : (
-                <div className="p-3">
-                  <Button
-                    className="sm:mt-0 sm:ml-auto"
-                    onClick={() => setShowVerifyModal(!showVerifyModal)}
-                  >
-                    Accepted
-                  </Button>
-                  <Modal
-                    title="Accepted By:"
-                    show={showVerifyModal}
-                    onClose={() => setShowVerifyModal(false)}
-                  >
-                    <Collectors pubId={post?.pubId ?? post?.id} />
-                  </Modal>
+                <div className="pt-3">
+                  <div className="flex items-center mt-3 space-y-0 space-x-3 sm:block sm:mt-0 sm:space-y-2">
+                    <Button
+                      className="sm:mt-0 sm:ml-auto"
+                      onClick={() => setShowVerifyModal(!showVerifyModal)}
+                      icon={<div />}
+                    >
+                      Approved
+                    </Button>
+                    <Modal
+                      title="Accepted By:"
+                      show={showVerifyModal}
+                      onClose={() => setShowVerifyModal(false)}
+                    >
+                      <Collectors pubId={post?.pubId ?? post?.id} />
+                    </Modal>
+                  </div>
                 </div>
               ))}
           </div>
