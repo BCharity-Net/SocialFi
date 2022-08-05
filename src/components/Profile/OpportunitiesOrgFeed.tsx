@@ -115,7 +115,7 @@ const OpportunitiesOrgFeed: FC<Props> = ({ profile }) => {
       profile={profile}
       handleQueryComplete={(data: any) => {
         return data?.publications?.items.filter((i: any) => {
-          return i.metadata.attributes[0].value == 'opportunities'
+          return i.metadata.attributes[0].value === 'opportunities'
         })
       }}
       getColumns={() => {
