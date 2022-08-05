@@ -7,6 +7,7 @@ import { PostFields } from '@gql/PostFields'
 import React, { FC, useMemo } from 'react'
 
 import OpportunitiesTable from './OpportunitiesTable'
+import { PostCell } from './OpportunitiesTable/Cells'
 import {
   DateSearch,
   FuzzySearch,
@@ -70,7 +71,8 @@ const OpportunitiesOrgFeed: FC<Props> = ({ profile }) => {
           {
             Header: 'Number of Volunteers',
             accessor: 'volunteers',
-            Filter: NoFilter
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
           },
           {
             Header: 'City/Region',
@@ -101,6 +103,12 @@ const OpportunitiesOrgFeed: FC<Props> = ({ profile }) => {
             accessor: 'totalHours',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
+          },
+          {
+            Header: 'Link to Post',
+            accessor: 'postID',
+            Cell: PostCell,
+            Filter: NoFilter
           }
         ]
       }
