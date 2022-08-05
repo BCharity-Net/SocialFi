@@ -134,6 +134,7 @@ const PostBody: FC<Props> = ({ post }) => {
               ) : (
                 <div className="p-3">
                   <Button
+                    variant="success"
                     className="sm:mt-0 sm:ml-auto"
                     onClick={() => setShowVerifyModal(!showVerifyModal)}
                   >

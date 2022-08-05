@@ -179,7 +179,7 @@ const Approve: FC<Props> = ({ post }) => {
               collectWriteLoading ||
               collectBroadcastLoading
             }
-            variant="success"
+            variant="danger"
             icon={
               typedDataLoading ||
               signLoading ||
