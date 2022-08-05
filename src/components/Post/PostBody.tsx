@@ -17,7 +17,9 @@ import React, { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppPersistStore } from 'src/store/app'
 
-import Opportunities from './Opportunities'
+import Approve from './Approve'
+import FundraiseComment from './Fundraise/Comment'
+import Opportunity from './Opportunity'
 
 const Fundraise = dynamic(() => import('./Fundraise'), {
   loading: () => <FundraiseShimmer />
