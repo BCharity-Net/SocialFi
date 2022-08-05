@@ -18,6 +18,7 @@ import { BROADCAST_MUTATION } from '@gql/BroadcastMutation'
 import { PlusIcon } from '@heroicons/react/outline'
 import getTokenImage from '@lib/getTokenImage'
 import imagekitURL from '@lib/imagekitURL'
+import isVerified from '@lib/isVerified'
 import Logger from '@lib/logger'
 import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
@@ -225,6 +226,16 @@ const Create: NextPage = () => {
           traitType: 'string',
           key: 'goal',
           value: goal
+        },
+        {
+          traitType: 'string',
+          key: 'creator',
+          value: currentUser?.handle
+        },
+        {
+          traitType: 'string',
+          key: 'uuid',
+          value: uuid()
         }
       ],
       media: [],
@@ -408,10 +419,16 @@ const Create: NextPage = () => {
                   </div>
                 </div>
               </div>
+              {!isVerified(currentUser?.id) && (
+                <a className="ml-auto text-red-500">
+                  You need to be verified to create a fundraiser
+                </a>
+              )}
               <Button
                 className="ml-auto"
                 type="submit"
                 disabled={
+                  !isVerified(currentUser?.id) ||
                   typedDataLoading ||
                   isUploading ||
                   signLoading ||

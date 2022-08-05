@@ -13,6 +13,7 @@ export const CommentFields = gql`
     }
     reaction(request: $reactionRequest)
     mirrors(by: $profileId)
+    collectNftAddress
     collectedBy {
       address
       defaultProfile {

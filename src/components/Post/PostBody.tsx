@@ -17,7 +17,6 @@ import React, { FC, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAppPersistStore } from 'src/store/app'
 
-import Approve from './Approve'
 import Opportunities from './Opportunities'
 
 const Fundraise = dynamic(() => import('./Fundraise'), {
@@ -79,10 +78,12 @@ const PostBody: FC<Props> = ({ post }) => {
         </div>
       ) : postType === 'fundraise' ? (
         <Fundraise fund={post} />
+      ) : postType === 'fundraise-comment' ? (
+        <FundraiseComment fund={post} />
       ) : postType === 'hours' ? (
         <Hours post={post} />
       ) : postType === 'opportunities' ? (
-        <Opportunities post={post} />
+        <Opportunity post={post} />
       ) : (
         <>
           <div

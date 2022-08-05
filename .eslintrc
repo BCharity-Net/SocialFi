@@ -21,10 +21,12 @@
     "@next/next/no-html-link-for-pages": "off",
     "@typescript-eslint/ban-ts-comment": "off", // turn warn
     "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-use-before-define": ["off"],
     "@next/next/no-img-element": "off",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
-    "jsx-a11y/role-supports-aria-props": "off"
+    "jsx-a11y/role-supports-aria-props": "off",
+    "no-use-before-define" :"off"
   },
   "ignorePatterns": ["/src/generated/types.ts"]
 }
