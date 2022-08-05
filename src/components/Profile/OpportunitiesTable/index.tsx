@@ -28,6 +28,7 @@ export interface Data {
   startDate: string
   endDate: string
   totalHours: number
+  postID: string
 }
 
 const OpportunitiesTable: FC<Props> = ({
@@ -54,7 +55,8 @@ const OpportunitiesTable: FC<Props> = ({
           category: i.metadata.attributes[5].value,
           startDate: i.metadata.attributes[6].value,
           endDate: i.metadata.attributes[7].value,
-          totalHours: i.metadata.attributes[8].value
+          totalHours: i.metadata.attributes[8].value,
+          postID: i.id
         }
       })
     )

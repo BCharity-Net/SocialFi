@@ -9,7 +9,7 @@ import { CheckCircleIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
-import React, { FC, useState } from 'react'
+import React, { FC } from 'react'
 import toast from 'react-hot-toast'
 import IndexStatus from 'src/components/Shared/IndexStatus'
 import {
@@ -64,7 +64,6 @@ const Approve: FC<Props> = ({ post }) => {
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
   const { address } = useAccount()
-  const [hoursAddressDisable, setHoursAddressDisable] = useState<boolean>(false)
   const { isLoading: signLoading, signTypedDataAsync } = useSignTypedData({
     onError(error) {
       toast.error(error?.message)
@@ -74,6 +73,7 @@ const Approve: FC<Props> = ({ post }) => {
   const onCompleted = () => {
     toast.success('Transaction submitted successfully!')
   }
+
   const {
     data: collectWriteData,
     isLoading: collectWriteLoading,
@@ -90,6 +90,7 @@ const Approve: FC<Props> = ({ post }) => {
       toast.error(error?.data?.message ?? error?.message)
     }
   })
+
   const [
     collectBroadcast,
     { data: collectBroadcastData, loading: collectBroadcastLoading }
@@ -166,46 +167,48 @@ const Approve: FC<Props> = ({ post }) => {
 
   return (
     <div className="flex items-center mt-3 space-y-0 space-x-3 sm:block sm:mt-0 sm:space-y-2">
-      {!hoursAddressDisable && (
-        <>
-          <Button
-            className="sm:mt-0 sm:ml-auto"
-            onClick={() => {
-              createCollect()
-            }}
-            disabled={
-              typedDataLoading ||
-              signLoading ||
-              collectWriteLoading ||
-              collectBroadcastLoading
-            }
-            variant="danger"
-            icon={
-              typedDataLoading ||
-              signLoading ||
-              collectWriteLoading ||
-              collectBroadcastLoading ? (
-                <Spinner variant="success" size="xs" />
-              ) : (
-                <CheckCircleIcon className="w-4 h-4" />
-              )
-            }
-          >
-            Approve
-          </Button>
-          {collectWriteData?.hash ?? collectBroadcastData?.broadcast?.txHash ? (
-            <div className="mt-2">
-              <IndexStatus
-                txHash={
-                  collectWriteData?.hash
-                    ? collectWriteData?.hash
-                    : collectBroadcastData?.broadcast?.txHash
-                }
-              />
-            </div>
-          ) : null}
-        </>
-      )}
+      {post?.commentOn?.profile.ownedBy === currentUser?.ownedBy &&
+        post?.commentOn?.profile.handle === currentUser?.handle && (
+          <>
+            <Button
+              className="sm:mt-0 sm:ml-auto"
+              onClick={() => {
+                createCollect()
+              }}
+              disabled={
+                typedDataLoading ||
+                signLoading ||
+                collectWriteLoading ||
+                collectBroadcastLoading
+              }
+              variant="success"
+              icon={
+                typedDataLoading ||
+                signLoading ||
+                collectWriteLoading ||
+                collectBroadcastLoading ? (
+                  <Spinner variant="success" size="xs" />
+                ) : (
+                  <CheckCircleIcon className="w-4 h-4" />
+                )
+              }
+            >
+              Approve
+            </Button>
+            {collectWriteData?.hash ??
+            collectBroadcastData?.broadcast?.txHash ? (
+              <div className="mt-2">
+                <IndexStatus
+                  txHash={
+                    collectWriteData?.hash
+                      ? collectWriteData?.hash
+                      : collectBroadcastData?.broadcast?.txHash
+                  }
+                />
+              </div>
+            ) : null}
+          </>
+        )}
     </div>
   )
 }

@@ -10,6 +10,21 @@ export const ProfileCell = (props: { value: string }) => {
   )
 }
 
+export const PostCell = (props: { value: string }) => {
+  const postID = props.value
+  const url = `/posts/${postID}`
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-brand-500"
+    >
+      {<ExternalLinkIcon className="w-4 h-4 inline-flex" />}
+    </a>
+  )
+}
+
 export const StatusCell = (
   props: {
     value: { index: number; value: string; postID: string }

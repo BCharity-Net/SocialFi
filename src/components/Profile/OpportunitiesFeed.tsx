@@ -6,7 +6,7 @@ import { MirrorFields } from '@gql/MirrorFields'
 import { PostFields } from '@gql/PostFields'
 import React, { FC, useMemo, useState } from 'react'
 
-import { StatusCell } from './OpportunitiesTable/Cells'
+import { ProfileCell, StatusCell } from './OpportunitiesTable/Cells'
 import {
   DateSearch,
   FuzzySearch,
@@ -62,6 +62,7 @@ const OpportunitiesFeed: FC<Props> = ({ profile }) => {
           {
             Header: 'Organization Name',
             accessor: 'orgName',
+            Cell: ProfileCell,
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },
