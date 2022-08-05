@@ -84,7 +84,7 @@ const PublicationRevenue: FC<Props> = ({ pubId, callback }) => {
                 key={index}
                 id={i.id}
                 callback={(data: any) => {
-                  const value = data.publicationRevenue.revenue.total.value
+                  const value = data?.publicationRevenue.revenue.total.value
                   commentValue += Number(value)
                   setRevenue(revenue + commentValue)
                   if (callback && index === length - 1)
