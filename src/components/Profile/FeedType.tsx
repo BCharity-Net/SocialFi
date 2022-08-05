@@ -121,7 +121,7 @@ const FeedType: FC<Props> = ({
             }}
           />
           <FeedLink
-            name="FundsOrg"
+            name="OrgFunds"
             icon={<CashIcon className="w-4 h-4" />}
             type="funds-org"
             testId="type-fundraise-org"
