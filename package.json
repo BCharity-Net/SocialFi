@@ -44,6 +44,7 @@
     "interweave-autolink": "^5.1.0",
     "ipfs-http-client": "^57.0.3",
     "js-cookie": "^3.0.1",
+    "jssoup": "^0.0.15",
     "jwt-decode": "^3.1.2",
     "match-sorter": "^6.3.1",
     "next": "^12.2.4",

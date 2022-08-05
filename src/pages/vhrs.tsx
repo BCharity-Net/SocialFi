@@ -1,3 +1,3 @@
-import vhrs from '@components/vhrs'
+import Vhrs from '@components/Vhrs'
 
-export default vhrs
+export default Vhrs
