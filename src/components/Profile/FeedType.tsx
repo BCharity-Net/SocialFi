@@ -1,6 +1,8 @@
-import { ProfileStats } from '@generated/types'
+import { Profile, ProfileStats } from '@generated/types'
 import {
+  CashIcon,
   ChatAlt2Icon,
+  ClipboardListIcon,
   ClockIcon,
   PencilAltIcon,
   PhotographIcon,
@@ -9,10 +11,12 @@ import {
 import isVerified from '@lib/isVerified'
 import nFormatter from '@lib/nFormatter'
 import clsx from 'clsx'
-import React, { Dispatch, FC, ReactNode } from 'react'
+import React, { Dispatch, FC, ReactNode, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { VHR_TOKEN } from 'src/constants'
 import { useBalance } from 'wagmi'
+
+import OrgVerifiedHours from './OrgVerifiedHours'
 
 interface Props {
   stats: ProfileStats
@@ -20,10 +24,19 @@ interface Props {
   id: string
   setFeedType: Dispatch<string>
   feedType: string
+  profile: Profile
 }
 
-const FeedType: FC<Props> = ({ stats, address, id, setFeedType, feedType }) => {
+const FeedType: FC<Props> = ({
+  stats,
+  address,
+  id,
+  setFeedType,
+  feedType,
+  profile
+}) => {
   const { t } = useTranslation('common')
+  const [orgVerifiedHours, setOrgVerifiedHours] = useState<number>()
   const { data: vhrBalance } = useBalance({
     addressOrName: address,
     token: VHR_TOKEN,
@@ -100,20 +113,55 @@ const FeedType: FC<Props> = ({ stats, address, id, setFeedType, feedType }) => {
         testId="type-nfts"
       />
       {isVerified(id) ? (
-        <FeedLink
-          name="OrgVHR"
-          icon={<ClockIcon className="w-4 h-4" />}
-          type="org"
-          testId="type-org"
-        />
+        <>
+          <OrgVerifiedHours
+            profile={profile}
+            callback={(hours: number) => {
+              setOrgVerifiedHours(hours)
+            }}
+          />
+          <FeedLink
+            name="OrgFunds"
+            icon={<CashIcon className="w-4 h-4" />}
+            type="funds-org"
+            testId="type-fundraise-org"
+          />
+          <FeedLink
+            name="OrgVHR"
+            icon={<ClockIcon className="w-4 h-4" />}
+            type="org"
+            count={orgVerifiedHours}
+            testId="type-org"
+          />
+          <FeedLink
+            name="OrgOpp"
+            icon={<ClipboardListIcon className="w-4 h-4" />}
+            type="org-opp"
+            testId="type-opp"
+          />
+        </>
       ) : (
-        <FeedLink
-          name="VHR"
-          icon={<ClockIcon className="w-4 h-4" />}
-          type="vhr"
-          count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
-          testId="type-vhr"
-        />
+        <>
+          <FeedLink
+            name="Funds"
+            icon={<CashIcon className="w-4 h-4" />}
+            type="funds"
+            testId="type-fundraise"
+          />
+          <FeedLink
+            name="VHR"
+            icon={<ClockIcon className="w-4 h-4" />}
+            type="vhr"
+            count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
+            testId="type-vhr"
+          />
+          <FeedLink
+            name="Opportunities"
+            icon={<ClipboardListIcon className="w-4 h-4" />}
+            type="opp"
+            testId="type-opp"
+          />
+        </>
       )}
     </div>
   )

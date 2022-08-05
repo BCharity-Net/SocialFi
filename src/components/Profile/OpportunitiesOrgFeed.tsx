@@ -4,20 +4,17 @@ import { Profile } from '@generated/types'
 import { CommentFields } from '@gql/CommentFields'
 import { MirrorFields } from '@gql/MirrorFields'
 import { PostFields } from '@gql/PostFields'
-import React, { FC, useMemo, useState } from 'react'
+import React, { FC, useMemo } from 'react'
 
-import VHRTable from './VHRTable'
-import { ProfileCell, StatusCell, TotalHoursCell } from './VHRTable/Cells'
+import OpportunitiesTable from './OpportunitiesTable'
 import {
   DateSearch,
   FuzzySearch,
   fuzzyTextFilterFn,
-  getStatusFn,
   greaterThanEqualToFn,
   lessThanEqualToFn,
-  NoFilter,
-  SelectColumnFilter
-} from './VHRTable/Filters'
+  NoFilter
+} from './OpportunitiesTable/Filters'
 
 const PROFILE_FEED_QUERY = gql`
   query ProfileFeed(
@@ -52,26 +49,28 @@ interface Props {
   profile: Profile
 }
 
-const HourFeed: FC<Props> = ({ profile }) => {
-  const [addressData, setAddressData] = useState<string[]>([])
-
+const OpportunitiesOrgFeed: FC<Props> = ({ profile }) => {
   const columns = useMemo(
     () => [
       {
-        Header: 'VHR Submissions',
+        Header: 'Volunteer Opportunities',
         columns: [
-          {
-            Header: 'Organization',
-            accessor: 'orgName',
-            Cell: ProfileCell,
-            Filter: FuzzySearch,
-            filter: fuzzyTextFilterFn
-          },
           {
             Header: 'Program',
             accessor: 'program',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
+          },
+          {
+            Header: 'Position',
+            accessor: 'position',
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
+          },
+          {
+            Header: 'Number of Volunteers',
+            accessor: 'volunteers',
+            Filter: NoFilter
           },
           {
             Header: 'City/Region',
@@ -100,36 +99,26 @@ const HourFeed: FC<Props> = ({ profile }) => {
           {
             Header: 'Total Hours',
             accessor: 'totalHours',
-            Cell: TotalHoursCell,
-            Filter: NoFilter
-          },
-          {
-            Header: 'Status',
-            accessor: 'verified',
-            Cell: (props: {
-              value: { index: number; value: string; postID: string }
-            }) => StatusCell(props, addressData),
-            Filter: SelectColumnFilter,
-            filter: getStatusFn
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
           }
         ]
       }
     ],
-    [addressData]
+    []
   )
 
   const tableLimit = 10
 
   return (
-    <VHRTable
+    <OpportunitiesTable
       profile={profile}
       handleQueryComplete={(data: any) => {
         return data?.publications?.items.filter((i: any) => {
-          return i.metadata.attributes[0].value === 'hours'
+          return i.metadata.attributes[0].value === 'opportunities'
         })
       }}
-      getColumns={(add: string[]) => {
-        setAddressData(add)
+      getColumns={() => {
         return columns
       }}
       query={PROFILE_FEED_QUERY}
@@ -139,9 +128,8 @@ const HourFeed: FC<Props> = ({ profile }) => {
         limit: tableLimit
       }}
       tableLimit={tableLimit}
-      from={false}
     />
   )
 }
 
-export default HourFeed
+export default OpportunitiesOrgFeed

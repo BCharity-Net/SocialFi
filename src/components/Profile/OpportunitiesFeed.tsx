@@ -6,8 +6,7 @@ import { MirrorFields } from '@gql/MirrorFields'
 import { PostFields } from '@gql/PostFields'
 import React, { FC, useMemo, useState } from 'react'
 
-import VHRTable from './VHRTable'
-import { ProfileCell, StatusCell, TotalHoursCell } from './VHRTable/Cells'
+import { StatusCell } from './OpportunitiesTable/Cells'
 import {
   DateSearch,
   FuzzySearch,
@@ -15,9 +14,9 @@ import {
   getStatusFn,
   greaterThanEqualToFn,
   lessThanEqualToFn,
-  NoFilter,
   SelectColumnFilter
-} from './VHRTable/Filters'
+} from './OpportunitiesTable/Filters'
+import OpportunitiesTable from './OpportunitiesTable/Individual'
 
 const PROFILE_FEED_QUERY = gql`
   query ProfileFeed(
@@ -52,24 +51,29 @@ interface Props {
   profile: Profile
 }
 
-const HourFeed: FC<Props> = ({ profile }) => {
+const OpportunitiesFeed: FC<Props> = ({ profile }) => {
   const [addressData, setAddressData] = useState<string[]>([])
 
   const columns = useMemo(
     () => [
       {
-        Header: 'VHR Submissions',
+        Header: 'Volunteer Opportunities',
         columns: [
           {
-            Header: 'Organization',
+            Header: 'Organization Name',
             accessor: 'orgName',
-            Cell: ProfileCell,
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },
           {
             Header: 'Program',
             accessor: 'program',
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
+          },
+          {
+            Header: 'Position',
+            accessor: 'position',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },
@@ -98,12 +102,6 @@ const HourFeed: FC<Props> = ({ profile }) => {
             filter: lessThanEqualToFn
           },
           {
-            Header: 'Total Hours',
-            accessor: 'totalHours',
-            Cell: TotalHoursCell,
-            Filter: NoFilter
-          },
-          {
             Header: 'Status',
             accessor: 'verified',
             Cell: (props: {
@@ -121,11 +119,14 @@ const HourFeed: FC<Props> = ({ profile }) => {
   const tableLimit = 10
 
   return (
-    <VHRTable
+    <OpportunitiesTable
       profile={profile}
       handleQueryComplete={(data: any) => {
         return data?.publications?.items.filter((i: any) => {
-          return i.metadata.attributes[0].value === 'hours'
+          return (
+            i.metadata.attributes[0].value === 'comment' &&
+            i.commentOn.metadata.attributes[0].value === 'opportunities'
+          )
         })
       }}
       getColumns={(add: string[]) => {
@@ -134,14 +135,13 @@ const HourFeed: FC<Props> = ({ profile }) => {
       }}
       query={PROFILE_FEED_QUERY}
       request={{
-        publicationTypes: 'POST',
+        publicationTypes: 'COMMENT',
         profileId: profile?.id,
         limit: tableLimit
       }}
       tableLimit={tableLimit}
-      from={false}
     />
   )
 }
 
-export default HourFeed
+export default OpportunitiesFeed

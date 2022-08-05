@@ -30,7 +30,7 @@ const Explore: NextPage = () => {
   return (
     <GridLayout>
       <SEO title={t('Explore web')} description={t('Web description')} />
-      <GridItemEight className="space-y-5">
+      <GridItemEight className="space-y-5" data-test="explore-feed">
         <FeedType setFeedType={setFeedType} feedType={feedType} />
         <Feed feedType={feedType} />
       </GridItemEight>

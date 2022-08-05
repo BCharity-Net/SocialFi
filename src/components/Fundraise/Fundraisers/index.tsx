@@ -1,14 +1,17 @@
 import { gql, useQuery } from '@apollo/client'
 import { GridItemSix, GridLayout } from '@components/GridLayout'
+import Like from '@components/Post/Actions/Like'
 import Markup from '@components/Shared/Markup'
 import { Card } from '@components/UI/Card'
 import { Spinner } from '@components/UI/Spinner'
+import { Tooltip } from '@components/UI/Tooltip'
 import SEO from '@components/utils/SEO'
 import { BCharityPost } from '@generated/bcharitytypes'
 import { PaginatedResultInfo } from '@generated/types'
 import { CommentFields } from '@gql/CommentFields'
 import { MirrorFields } from '@gql/MirrorFields'
 import { PostFields } from '@gql/PostFields'
+import getTokenImage from '@lib/getTokenImage'
 import imagekitURL from '@lib/imagekitURL'
 import Logger from '@lib/logger'
 import React, { FC, useState } from 'react'
@@ -58,10 +61,7 @@ const Fundraisers: FC<Props> = ({}) => {
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
   const [publications, setPublications] = useState<BCharityPost[]>([])
   const [revenueData, setRevenueData] = useState<number[]>([])
-
-  const [showFundersModal, setShowFundersModal] = useState<boolean>(false)
   const { currentUser } = useAppPersistStore()
-  var fund: any = []
   const { data, loading, error, fetchMore } = useQuery(EXPLORE_FEED_QUERY, {
     variables: {
       request: {
@@ -74,23 +74,26 @@ const Fundraisers: FC<Props> = ({}) => {
     },
     onCompleted(data) {
       const fundraise = data?.explorePublications?.items.filter((i: any) => {
-        return i.metadata.attributes[0].value == 'fundraise'
+        return i?.metadata?.attributes[0]?.value == 'fundraise'
       })
-
-      setPageInfo(data?.explorePublications?.pageInfo)
-      setPublications(fundraise)
       fundraise.map((i: any) => {
         // if (!fundraise) {
         revenueData.push(0)
         // }
       })
+
+      setPageInfo(data?.explorePublications?.pageInfo)
+      setPublications(fundraise)
+
       setRevenueData([...revenueData])
       Logger.log(
         '[Query]',
-        `Fetched first 10 explore publications FeedType:${feedType}`
+        `Fetched first 50 explore publications FeedType:${feedType}`
       )
     }
   })
+  console.log(revenueData)
+
   const { observe } = useInView({
     onEnter: async () => {
       const { data } = await fetchMore({
@@ -105,21 +108,35 @@ const Fundraisers: FC<Props> = ({}) => {
           profileId: currentUser?.id ?? null
         }
       })
-      const fundraise = data?.publications?.items.filter((i: any) => {
-        return i.metadata.attributes[0].value == 'fundraise'
+      const fundraise = data?.explorePublications?.items.filter((i: any) => {
+        return i?.metadata?.attributes[0]?.value == 'fundraise'
       })
-      setPageInfo(fundraise)
-      setPublications([...publications, fundraise]) //data?.explorePublications?.items
+      // console.log('publication', publications.length)
+      const nextValues = data?.explorePublications?.items
+      let count = 0
+      // console.log('next 15', nextValues)
+      nextValues.forEach((i: any) => {
+        if (i?.metadata?.attributes[0]?.value == 'fundraise') {
+          count++
+        }
+      })
 
+      console.log('page info', pageInfo?.next)
+      console.log(
+        'explore publications',
+        data?.explorePublications?.pageInfo?.next
+      )
+      setPageInfo(data?.explorePublications?.pageInfo)
+      setPublications([...publications, ...fundraise])
+      console.log('count', count)
       Logger.log(
         '[Query]',
-        `Fetched next 10 explore publications FeedType:${feedType} Next:${pageInfo?.next}`
+        `Fetched next 50 explore publications FeedType:${feedType} Next:${pageInfo?.next}`
       )
     }
   })
 
   var cover
-
   return (
     <GridLayout>
       <SEO title={`Fundraisers • ${APP_NAME}`} />
@@ -128,22 +145,28 @@ const Fundraisers: FC<Props> = ({}) => {
           (cover = post?.metadata?.cover?.original?.url),
           (
             <GridItemSix key={`${post?.id}_${index}`}>
-              <Card forceRounded testId="fundraise">
+              <Card>
                 {/* <SinglePost post={post} /> */}
-                <div
-                  className="h-40 rounded-t-xl border-b sm:h-52 sm:w-30 dark:border-b-gray-700/80"
-                  style={{
-                    backgroundImage: `url(${
-                      cover
-                        ? imagekitURL(cover, 'attachment')
-                        : `${STATIC_ASSETS}/patterns/2.svg`
-                    })`,
-                    backgroundColor: '#8b5cf6',
-                    backgroundSize: cover ? 'cover' : '30%',
-                    backgroundPosition: 'center center',
-                    backgroundRepeat: cover ? 'no-repeat' : 'repeat'
-                  }}
-                />
+                <a
+                  href={`/posts/${post?.id}`}
+                  key={post?.id}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <div
+                    className="h-40 rounded-t-xl border-b sm:h-52 dark:border-b-gray-700/80"
+                    style={{
+                      backgroundImage: `url(${
+                        cover
+                          ? imagekitURL(cover, 'attachment')
+                          : `${STATIC_ASSETS}/patterns/2.svg`
+                      })`,
+                      backgroundColor: '#8b5cf6',
+                      backgroundSize: cover ? 'cover' : '30%',
+                      backgroundPosition: 'center center',
+                      backgroundRepeat: cover ? 'no-repeat' : 'repeat'
+                    }}
+                  />
+                </a>
                 <div className="p-5">
                   <div className="block justify-between items-center sm:flex">
                     <div className="mr-0 space-y-1 sm:mr-16">
@@ -165,13 +188,19 @@ const Fundraisers: FC<Props> = ({}) => {
                   </div>
                   <GridLayout className="!p-0 mt-5">
                     <GridItemSix className="!mb-4 space-y-1 sm:mb-0">
-                      <div className="text-sm font-bold text-gray-500">
-                        {t('Funds raised')}
-                      </div>
                       {loading ? (
                         <div className="w-16 h-5 !mt-2 rounded-md shimmer" />
                       ) : (
                         <span className="flex items-center space-x-1.5">
+                          <Tooltip content={'WMATIC'}>
+                            <img
+                              className="w-7 h-7"
+                              height={28}
+                              width={28}
+                              src={getTokenImage('WMATIC')}
+                              alt={'WMATIC'}
+                            />
+                          </Tooltip>
                           <span className="space-x-1">
                             <RevenueDetails
                               fund={post}
@@ -190,6 +219,7 @@ const Fundraisers: FC<Props> = ({}) => {
                           </span>
                         </span>
                       )}
+                      <Like post={post} />
                     </GridItemSix>
                   </GridLayout>
                 </div>
@@ -206,4 +236,5 @@ const Fundraisers: FC<Props> = ({}) => {
     </GridLayout>
   )
 }
+
 export default Fundraisers

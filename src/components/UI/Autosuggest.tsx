@@ -14,7 +14,7 @@ interface Props {
   onAdd?: Function
 }
 
-const Autocomplete: FC<Props> = ({
+const Autosuggest: FC<Props> = ({
   lang,
   label,
   prefix,
@@ -103,4 +103,4 @@ const Autocomplete: FC<Props> = ({
   )
 }
 
-export default Autocomplete
+export default Autosuggest
