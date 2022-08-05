@@ -316,6 +316,11 @@ const Fundraise: FC<Props> = ({ fund }) => {
           traitType: 'string',
           key: 'uuid',
           value: _uuid
+        },
+        {
+          traitType: 'number',
+          key: 'newAmount',
+          value: amount
         }
       ],
       media: [],
@@ -553,7 +558,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
                             id={i.id}
                             callback={(data: any) => {
                               const value =
-                                data.publicationRevenue?.revenue.total.value
+                                data?.publicationRevenue?.revenue.total.value
                               if (value) commentValue += Number(value)
                               setRevenue(revenue + commentValue)
                             }}

@@ -159,7 +159,9 @@ const Opportunities: FC<Props> = ({ post }) => {
             </tr>
 
             <tr className="text-center font-bold bg-violet-200">
-              <th className="border border-violet-500 px-6 py-2">Outcome</th>
+              <th className="border border-violet-500 px-6 py-2">
+                Description and Requirements
+              </th>
               <th className="border border-violet-500 px-6 py-2">
                 {post.metadata.description}
               </th>

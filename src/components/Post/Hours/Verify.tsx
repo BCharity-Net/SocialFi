@@ -11,7 +11,6 @@ import {
   EnabledModule
 } from '@generated/types'
 import { BROADCAST_MUTATION } from '@gql/BroadcastMutation'
-import { CollectModuleFields } from '@gql/CollectModuleFields'
 import { CommentFields } from '@gql/CommentFields'
 import { CheckCircleIcon } from '@heroicons/react/outline'
 import {
@@ -41,32 +40,6 @@ import { v4 as uuid } from 'uuid'
 import { useAccount, useContractWrite, useSignTypedData } from 'wagmi'
 
 import IndexStatus from '../../Shared/IndexStatus'
-
-export const COLLECT_QUERY = gql`
-  query CollectModule($request: PublicationQueryRequest!) {
-    publication(request: $request) {
-      ... on Post {
-        collectNftAddress
-        collectModule {
-          ...CollectModuleFields
-        }
-      }
-      ... on Comment {
-        collectNftAddress
-        collectModule {
-          ...CollectModuleFields
-        }
-      }
-      ... on Mirror {
-        collectNftAddress
-        collectModule {
-          ...CollectModuleFields
-        }
-      }
-    }
-  }
-  ${CollectModuleFields}
-`
 
 const CREATE_COLLECT_TYPED_DATA_MUTATION = gql`
   mutation CreateCollectTypedData(
@@ -131,7 +104,6 @@ const Verify: FC<Props> = ({ post }) => {
   const { userSigNonce, setUserSigNonce } = useAppStore()
   const { isAuthenticated, currentUser } = useAppPersistStore()
   const { address } = useAccount()
-  const [hoursAddressDisable, setHoursAddressDisable] = useState<boolean>(false)
   const [selectedModule, setSelectedModule] =
     useState<EnabledModule>(defaultModuleData)
   const [feeData, setFeeData] = useState<FEE_DATA_TYPE>(defaultFeeData)
@@ -157,22 +129,6 @@ const Verify: FC<Props> = ({ post }) => {
       if (publications.length !== 0) {
         setHasVrhTxn(true)
       }
-    }
-  })
-
-  useQuery(COLLECT_QUERY, {
-    variables: { request: { publicationId: post?.pubId ?? post?.id } },
-    onCompleted() {
-      if (
-        post?.metadata.attributes[0].value === 'hours' &&
-        post?.metadata.attributes[1].value !== currentUser?.ownedBy
-      ) {
-        setHoursAddressDisable(true)
-      }
-      Logger.log(
-        '[Query]',
-        `Fetched collect module details Publication:${post?.pubId ?? post?.id}`
-      )
     }
   })
 
@@ -420,53 +376,55 @@ const Verify: FC<Props> = ({ post }) => {
 
   return (
     <div className="flex items-center mt-3 space-y-0 space-x-3 sm:block sm:mt-0 sm:space-y-2">
-      {!hoursAddressDisable && (
-        <>
-          <Button
-            className="sm:mt-0 sm:ml-auto"
-            onClick={() => {
-              if (!hasVhrTxn) writeVhrTransfer()
-              createCollect()
-            }}
-            disabled={
-              typedDataLoading ||
-              signLoading ||
-              vhrWriteLoading ||
-              commentWriteLoading ||
-              collectWriteLoading ||
-              commentBroadcastLoading ||
-              collectBroadcastLoading
-            }
-            variant="success"
-            icon={
-              typedDataLoading ||
-              signLoading ||
-              vhrWriteLoading ||
-              commentWriteLoading ||
-              collectWriteLoading ||
-              commentBroadcastLoading ||
-              collectBroadcastLoading ? (
-                <Spinner variant="success" size="xs" />
-              ) : (
-                <CheckCircleIcon className="w-4 h-4" />
-              )
-            }
-          >
-            Verify
-          </Button>
-          {collectWriteData?.hash ?? collectBroadcastData?.broadcast?.txHash ? (
-            <div className="mt-2">
-              <IndexStatus
-                txHash={
-                  collectWriteData?.hash
-                    ? collectWriteData?.hash
-                    : collectBroadcastData?.broadcast?.txHash
-                }
-              />
-            </div>
-          ) : null}
-        </>
-      )}
+      {post?.metadata.attributes[1].value === currentUser?.ownedBy &&
+        post?.metadata.name === currentUser?.handle && (
+          <>
+            <Button
+              className="sm:mt-0 sm:ml-auto"
+              onClick={() => {
+                if (!hasVhrTxn) writeVhrTransfer()
+                createCollect()
+              }}
+              disabled={
+                typedDataLoading ||
+                signLoading ||
+                vhrWriteLoading ||
+                commentWriteLoading ||
+                collectWriteLoading ||
+                commentBroadcastLoading ||
+                collectBroadcastLoading
+              }
+              variant="success"
+              icon={
+                typedDataLoading ||
+                signLoading ||
+                vhrWriteLoading ||
+                commentWriteLoading ||
+                collectWriteLoading ||
+                commentBroadcastLoading ||
+                collectBroadcastLoading ? (
+                  <Spinner variant="success" size="xs" />
+                ) : (
+                  <CheckCircleIcon className="w-4 h-4" />
+                )
+              }
+            >
+              Verify
+            </Button>
+            {collectWriteData?.hash ??
+            collectBroadcastData?.broadcast?.txHash ? (
+              <div className="mt-2">
+                <IndexStatus
+                  txHash={
+                    collectWriteData?.hash
+                      ? collectWriteData?.hash
+                      : collectBroadcastData?.broadcast?.txHash
+                  }
+                />
+              </div>
+            ) : null}
+          </>
+        )}
     </div>
   )
 }

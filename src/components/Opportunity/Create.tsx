@@ -362,9 +362,9 @@ const Opportunity: NextPage = () => {
               txHash={
                 data?.hash ? data?.hash : broadcastData?.broadcast?.txHash
               }
-              indexing="Hour Submission creation in progress, please wait!"
-              indexed="Hour Submission created successfully"
-              type="hours"
+              indexing="Volunteer Opportunity creation in progress, please wait!"
+              indexed="Volunteer Opportunity created successfully"
+              type="opportunity"
               urlPrefix="posts"
             />
           ) : (
@@ -523,7 +523,7 @@ const Opportunity: NextPage = () => {
                 {...form.register('totalHours')}
               />
               <TextArea
-                label={t('Activity Description')}
+                label={t('Activity Description and Requirements')}
                 placeholder={t('Activity TextArea')}
                 {...form.register('description')}
               />

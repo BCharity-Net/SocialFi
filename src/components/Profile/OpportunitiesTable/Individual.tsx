@@ -20,15 +20,18 @@ interface Props {
 }
 
 export interface Data {
+  orgName: string
   program: string
   position: string
-  volunteers: number
   city: string
   category: string
   startDate: string
   endDate: string
-  totalHours: number
-  postID: string
+  verified: {
+    index: number
+    value: string
+    postID: string
+  }
 }
 
 const OpportunitiesTable: FC<Props> = ({
@@ -43,20 +46,26 @@ const OpportunitiesTable: FC<Props> = ({
   const [onEnter, setOnEnter] = useState<boolean>(false)
   const [tableData, setTableData] = useState<Data[]>([])
   const [pubIdData, setPubIdData] = useState<string[]>([])
+  const [addressData, setAddressData] = useState<string[]>([])
 
   const handleTableData = async (data: any) => {
     return Promise.all(
-      data.map(async (i: any) => {
+      data.map(async (i: any, index: number) => {
+        let verified = false
+        if (i.collectNftAddress) verified = true
         return {
-          program: i.metadata.attributes[1].value,
-          position: i.metadata.attributes[2].value,
-          volunteers: i.metadata.attributes[3].value,
-          city: i.metadata.attributes[4].value,
-          category: i.metadata.attributes[5].value,
-          startDate: i.metadata.attributes[6].value,
-          endDate: i.metadata.attributes[7].value,
-          totalHours: i.metadata.attributes[8].value,
-          postID: i.id
+          orgName: i.commentOn.profile.handle,
+          program: i.commentOn.metadata.attributes[1].value,
+          position: i.commentOn.metadata.attributes[2].value,
+          city: i.commentOn.metadata.attributes[4].value,
+          category: i.commentOn.metadata.attributes[5].value,
+          startDate: i.commentOn.metadata.attributes[6].value,
+          endDate: i.commentOn.metadata.attributes[7].value,
+          verified: {
+            index: index,
+            value: verified ? 'Verified' : 'Unverified',
+            postID: i.id
+          }
         }
       })
     )
@@ -87,16 +96,20 @@ const OpportunitiesTable: FC<Props> = ({
           })
         }
       })
-      const pubId: string[] = []
+      const pubId: string[] = [],
+        addresses: string[] = []
       opportunities.map((i: any) => {
         pubId.push(i.id)
+        addresses.push(i.collectNftAddress)
       })
       setPubIdData([...pubIdData, ...pubId])
+
+      setAddressData([...addressData, ...addresses])
       setOnEnter(true)
     }
   })
 
-  const columns = getColumns()
+  const columns = getColumns(addressData)
 
   const Table = () => {
     const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =

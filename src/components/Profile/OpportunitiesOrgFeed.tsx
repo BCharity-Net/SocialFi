@@ -4,19 +4,18 @@ import { Profile } from '@generated/types'
 import { CommentFields } from '@gql/CommentFields'
 import { MirrorFields } from '@gql/MirrorFields'
 import { PostFields } from '@gql/PostFields'
-import React, { FC, useMemo, useState } from 'react'
+import React, { FC, useMemo } from 'react'
 
-import { ProfileCell, StatusCell } from './OpportunitiesTable/Cells'
+import OpportunitiesTable from './OpportunitiesTable'
+import { PostCell } from './OpportunitiesTable/Cells'
 import {
   DateSearch,
   FuzzySearch,
   fuzzyTextFilterFn,
-  getStatusFn,
   greaterThanEqualToFn,
   lessThanEqualToFn,
-  SelectColumnFilter
+  NoFilter
 } from './OpportunitiesTable/Filters'
-import OpportunitiesTable from './OpportunitiesTable/Individual'
 
 const PROFILE_FEED_QUERY = gql`
   query ProfileFeed(
@@ -51,21 +50,12 @@ interface Props {
   profile: Profile
 }
 
-const OpportunitiesFeed: FC<Props> = ({ profile }) => {
-  const [addressData, setAddressData] = useState<string[]>([])
-
+const OpportunitiesOrgFeed: FC<Props> = ({ profile }) => {
   const columns = useMemo(
     () => [
       {
         Header: 'Volunteer Opportunities',
         columns: [
-          {
-            Header: 'Organization Name',
-            accessor: 'orgName',
-            Cell: ProfileCell,
-            Filter: FuzzySearch,
-            filter: fuzzyTextFilterFn
-          },
           {
             Header: 'Program',
             accessor: 'program',
@@ -75,6 +65,12 @@ const OpportunitiesFeed: FC<Props> = ({ profile }) => {
           {
             Header: 'Position',
             accessor: 'position',
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
+          },
+          {
+            Header: 'Number of Volunteers',
+            accessor: 'volunteers',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },
@@ -103,18 +99,21 @@ const OpportunitiesFeed: FC<Props> = ({ profile }) => {
             filter: lessThanEqualToFn
           },
           {
-            Header: 'Status',
-            accessor: 'verified',
-            Cell: (props: {
-              value: { index: number; value: string; postID: string }
-            }) => StatusCell(props, addressData),
-            Filter: SelectColumnFilter,
-            filter: getStatusFn
+            Header: 'Total Hours',
+            accessor: 'totalHours',
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
+          },
+          {
+            Header: 'Link to Post',
+            accessor: 'postID',
+            Cell: PostCell,
+            Filter: NoFilter
           }
         ]
       }
     ],
-    [addressData]
+    []
   )
 
   const tableLimit = 10
@@ -124,19 +123,15 @@ const OpportunitiesFeed: FC<Props> = ({ profile }) => {
       profile={profile}
       handleQueryComplete={(data: any) => {
         return data?.publications?.items.filter((i: any) => {
-          return (
-            i.metadata.attributes[0].value === 'comment' &&
-            i.commentOn.metadata.attributes[0].value === 'opportunities'
-          )
+          return i.metadata.attributes[0].value === 'opportunities'
         })
       }}
-      getColumns={(add: string[]) => {
-        setAddressData(add)
+      getColumns={() => {
         return columns
       }}
       query={PROFILE_FEED_QUERY}
       request={{
-        publicationTypes: 'COMMENT',
+        publicationTypes: 'POST',
         profileId: profile?.id,
         limit: tableLimit
       }}
@@ -145,4 +140,4 @@ const OpportunitiesFeed: FC<Props> = ({ profile }) => {
   )
 }
 
-export default OpportunitiesFeed
+export default OpportunitiesOrgFeed
