@@ -275,6 +275,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
 
   const createComment = async (
     title: string,
+    category: string,
     amount: string,
     goal: string,
     creator: string,
@@ -321,6 +322,11 @@ const Fundraise: FC<Props> = ({ fund }) => {
           traitType: 'number',
           key: 'newAmount',
           value: amount
+        },
+        {
+          traitType: 'string',
+          key: 'category',
+          value: category
         }
       ],
       media: [],
@@ -474,6 +480,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
                   ) {
                     createComment(
                       fund?.metadata?.name,
+                      fund?.metadata?.attributes[4]?.value ?? '',
                       newAmount,
                       fund?.metadata?.attributes[1]?.value,
                       fund?.metadata?.attributes[2]?.value,
