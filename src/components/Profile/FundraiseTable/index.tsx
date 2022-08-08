@@ -23,7 +23,7 @@ interface Props {
 
 export interface Data {
   name: string
-  orgName: string
+  category: string
   funds: number
   goal: string
   date: string
@@ -49,6 +49,7 @@ const FundraiseTable: FC<Props> = ({
       data.map(async (i: any, index: number) => {
         return {
           name: i.metadata.name,
+          category: i.metadata.attributes[4]?.value ?? '',
           funds: index,
           goal: i.metadata.attributes[1].value,
           vhr: Math.floor(i.metadata.attributes[1].value / 3),
@@ -156,7 +157,6 @@ const FundraiseTable: FC<Props> = ({
                 <PublicationRevenue
                   pubId={pubIdData[index]}
                   callback={(data: any) => {
-                    console.log(fundsData[index], data)
                     if (fundsData[index] != data) {
                       fundsData[index] = data
                       setFundsData(fundsData)

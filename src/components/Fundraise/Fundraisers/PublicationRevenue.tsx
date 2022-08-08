@@ -40,11 +40,4 @@ const RevenueDetails: FC<Props> = ({ fund, callback }) => {
   return <div />
 }
 
-// console.log('revenueData before', revenueData)
-// useEffect(() => {
-//   setRevenue(
-//     parseFloat(revenueData?.publicationRevenue?.revenue?.total?.value ?? 0)
-//   )
-// }, [revenueData])
-// console.log(revenueData?.publicationRevenue?.revenue?.total?.value)
 export default RevenueDetails

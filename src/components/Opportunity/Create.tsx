@@ -5,6 +5,7 @@ import { CREATE_POST_TYPED_DATA_MUTATION } from '@components/Post/NewPost'
 import ChooseFiles from '@components/Shared/ChooseFiles'
 import Pending from '@components/Shared/Pending'
 import SettingsHelper from '@components/Shared/SettingsHelper'
+import Autosuggest from '@components/UI/Autosuggest'
 import { Button } from '@components/UI/Button'
 import { Card } from '@components/UI/Card'
 import { Form, useZodForm } from '@components/UI/Form'
@@ -23,10 +24,12 @@ import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
 import uploadToIPFS from '@lib/uploadToIPFS'
 import { NextPage } from 'next'
 import React, { ChangeEvent, FC, useState } from 'react'
+import { Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import {
   APP_NAME,
+  CATEGORIES,
   CONNECT_WALLET,
   ERROR_MESSAGE,
   ERRORS,
@@ -38,8 +41,6 @@ import { useAppPersistStore, useAppStore } from 'src/store/app'
 import { v4 as uuid } from 'uuid'
 import { useContractWrite, useSignTypedData } from 'wagmi'
 import { object, string } from 'zod'
-
-import Autosuggest from '../UI/Autosuggest'
 
 export const PROFILE_QUERY = gql`
   query Profile($request: SingleProfileQueryRequest!) {
@@ -396,35 +397,6 @@ const Opportunity: NextPage = () => {
                 )
               }}
             >
-              {/* <Controller
-                control={form.control}
-                name="orgName"
-                render={({
-                  field: { value, onChange },
-                  fieldState: { error }
-                }) => (
-                  <OrganizationNameInput
-                    label={t('Organization Name')}
-                    error={error?.message}
-                    placeholder={'BCharity'}
-                    value={value}
-                    onChange={onChange}
-                    onAdd={async (e: string) => {
-                      form.setValue(
-                        'orgWalletAddress',
-                        await fetchWalletAddress(e)
-                      )
-                    }}
-                  />
-                )}
-              /> */}
-              {/* <Input
-                label={t('Organization Wallet Address')}
-                type="text"
-                placeholder={'0x3A5bd...5e3'}
-                {...form.register('orgWalletAddress')}
-              /> */}
-
               <Input
                 label={t('Program')}
                 type="text"
@@ -454,32 +426,22 @@ const Opportunity: NextPage = () => {
                 placeholder={t('Calgary, AB')}
                 {...form.register('city')}
               />
-              <Autosuggest
-                label="Category"
-                lang={[
-                  'Education',
-                  'Environment',
-                  'Animals',
-                  'Social',
-                  'Healthcare',
-                  'Sports and Leisure',
-                  'Disaster Relief',
-                  'Reduce Poverty',
-                  'Reduce Hunger',
-                  'Health',
-                  'Clean Water',
-                  'Gender Equality',
-                  'Affordable and Clean Energy',
-                  'Work Experience',
-                  'Technology',
-                  'Infrastructure',
-                  'Peace and Justice'
-                ]}
-                type="text"
-                placeholder={t('Education')}
-                onAdd={(e: string) => {
-                  form.setValue('category', e)
-                }}
+              <Controller
+                control={form.control}
+                name="category"
+                render={({ field: { onChange }, fieldState: { error } }) => (
+                  <Autosuggest
+                    label="Category"
+                    lang={CATEGORIES}
+                    type="text"
+                    placeholder={t('Education')}
+                    error={error?.message}
+                    onChange={onChange}
+                    onAdd={(e: string) => {
+                      form.setValue('category', e)
+                    }}
+                  />
+                )}
               />
 
               <Input
@@ -495,7 +457,6 @@ const Opportunity: NextPage = () => {
                   const startDate = form.getValues('startDate')
                   const endDate = form.getValues('endDate')
                   if (endDate === '') form.setValue('endDate', startDate)
-                  console.log('1')
                 }}
                 {...form.register('startDate')}
               />
@@ -506,9 +467,7 @@ const Opportunity: NextPage = () => {
                   placeholder={'Enter your end date'}
                   change={() => {
                     const startDate = form.getValues('startDate')
-                    // const endDate = form.getValues('endDate')
                     form.setValue('endDate', startDate)
-                    console.log('2')
                   }}
                   {...form.register('endDate')}
                 />

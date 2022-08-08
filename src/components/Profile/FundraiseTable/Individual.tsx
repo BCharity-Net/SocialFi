@@ -23,6 +23,7 @@ interface Props {
 
 export interface Data {
   orgName: string
+  category: string
   uuid: string
   fundName: string
   date: string
@@ -75,8 +76,9 @@ const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
           ) {
             nft.push({
               orgName: result.attributes[2].value,
+              category: result.attributes[5]?.value ?? '',
               uuid: result.attributes[3].value,
-              fundName: '',
+              fundName: result.name,
               date: result.createdOn.split('T')[0],
               amount: result.attributes[4] ? result.attributes[4].value : '',
               postID: ''

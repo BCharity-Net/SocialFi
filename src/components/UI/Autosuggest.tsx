@@ -7,8 +7,8 @@ interface Props {
   prefix?: string | ReactNode
   className?: string
   helper?: ReactNode
-  error?: boolean
-  change?: Function
+  error: string | undefined
+  onChange?: Function
   placeholder?: string
   type?: string
   onAdd?: Function
@@ -21,7 +21,7 @@ const Autosuggest: FC<Props> = ({
   className,
   helper,
   error,
-  change,
+  onChange,
   placeholder,
   type,
   onAdd
@@ -30,6 +30,7 @@ const Autosuggest: FC<Props> = ({
   const [suggest, setSuggest] = useState<string[]>([])
   const handleChange = (e: { target: { value: any } }) => {
     if (onAdd) onAdd(e.target.value)
+    if (onChange) onChange(e)
     let searchval = e.target.value
     let suggestion: string[] = []
     if (searchval.length > 0) {
@@ -49,6 +50,7 @@ const Autosuggest: FC<Props> = ({
 
   const suggestedText = (value: React.SetStateAction<string>) => {
     setSearchtext(value)
+    if (onAdd) onAdd(value)
     setSuggest([])
   }
   const getSuggestion = () => {
@@ -89,7 +91,6 @@ const Autosuggest: FC<Props> = ({
         type={type}
         placeholder={placeholder}
         className={clsx(
-          { '!border-red-500 placeholder-red-500': error },
           { 'rounded-r-xl': prefix },
           { 'rounded-xl': !prefix },
           'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700/80 focus:border-brand-500 focus:ring-brand-400 disabled:opacity-60 disabled:bg-gray-500 disabled:bg-opacity-20 outline-none w-full',
@@ -99,6 +100,9 @@ const Autosuggest: FC<Props> = ({
         onChange={handleChange}
       />
       {getSuggestion()}
+      {error && (
+        <div className="mt-1 text-sm font-bold text-red-500">{error}</div>
+      )}
     </label>
   )
 }
