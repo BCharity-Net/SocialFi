@@ -55,7 +55,7 @@ const FundraiseOrgFeed: FC<Props> = ({ profile }) => {
         Header: 'Fundraisers',
         columns: [
           {
-            Header: 'Name',
+            Header: 'Cause',
             accessor: 'name',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn

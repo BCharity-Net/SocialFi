@@ -45,6 +45,12 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
             filter: fuzzyTextFilterFn
           },
           {
+            Header: 'Cause',
+            accessor: 'fundName',
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
+          },
+          {
             Header: 'Fund amount',
             accessor: 'amount',
             Filter: FuzzySearch,

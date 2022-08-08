@@ -315,7 +315,7 @@ const Create: NextPage = () => {
               }}
             >
               <Input
-                label={t('Fundraise title')}
+                label={t('Cause')}
                 type="text"
                 placeholder={`${APP_NAME} DAO`}
                 {...form.register('title')}
