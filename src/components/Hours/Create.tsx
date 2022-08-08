@@ -5,6 +5,7 @@ import { CREATE_POST_TYPED_DATA_MUTATION } from '@components/Post/NewPost'
 import ChooseFiles from '@components/Shared/ChooseFiles'
 import Pending from '@components/Shared/Pending'
 import SettingsHelper from '@components/Shared/SettingsHelper'
+import Autosuggest from '@components/UI/Autosuggest'
 import { Button } from '@components/UI/Button'
 import { Card } from '@components/UI/Card'
 import { Form, useZodForm } from '@components/UI/Form'
@@ -29,6 +30,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import {
   APP_NAME,
+  CATEGORIES,
   CONNECT_WALLET,
   ERROR_MESSAGE,
   ERRORS,
@@ -40,8 +42,6 @@ import { useAppPersistStore, useAppStore } from 'src/store/app'
 import { v4 as uuid } from 'uuid'
 import { useContractWrite, useSignTypedData } from 'wagmi'
 import { object, string } from 'zod'
-
-import Autosuggest from '../UI/Autosuggest'
 
 export const PROFILE_QUERY = gql`
   query Profile($request: SingleProfileQueryRequest!) {
@@ -486,25 +486,7 @@ const Hours: NextPage = () => {
                 render={({ field: { onChange }, fieldState: { error } }) => (
                   <Autosuggest
                     label="Category"
-                    lang={[
-                      'Education',
-                      'Environment',
-                      'Animals',
-                      'Social',
-                      'Healthcare',
-                      'Sports and Leisure',
-                      'Disaster Relief',
-                      'Reduce Poverty',
-                      'Reduce Hunger',
-                      'Health',
-                      'Clean Water',
-                      'Gender Equality',
-                      'Affordable and Clean Energy',
-                      'Work Experience',
-                      'Technology',
-                      'Infrastructure',
-                      'Peace and Justice'
-                    ]}
+                    lang={CATEGORIES}
                     type="text"
                     placeholder={t('Education')}
                     // value={value}
@@ -516,18 +498,6 @@ const Hours: NextPage = () => {
                   />
                 )}
               />
-
-              {/* <Autosuggest
-                lang={[
-                  'Education',
-                  'Environment',
-                  'Animals',
-                  'Social',
-                  'Healthcare',
-                  'Sports and Leisure',
-                  'Disaster Relief'
-                ]}
-              /> */}
 
               <TextArea
                 label={t('Activity Description')}
