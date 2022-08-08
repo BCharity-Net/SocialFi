@@ -39,7 +39,7 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
         Header: 'Funds',
         columns: [
           {
-            Header: 'Organization Name',
+            Header: 'Organization',
             accessor: 'orgName',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
@@ -57,7 +57,7 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
             filter: fuzzyTextFilterFn
           },
           {
-            Header: 'Fund amount',
+            Header: 'Donated',
             accessor: 'amount',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
