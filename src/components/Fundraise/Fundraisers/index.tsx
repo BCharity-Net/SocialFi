@@ -1,7 +1,9 @@
 import { gql, useQuery } from '@apollo/client'
 import { GridItemSix, GridLayout } from '@components/GridLayout'
 import Like from '@components/Post/Actions/Like'
+import Share from '@components/Post/Actions/Share'
 import Markup from '@components/Shared/Markup'
+import { Button } from '@components/UI/Button'
 import { Card } from '@components/UI/Card'
 import { Spinner } from '@components/UI/Spinner'
 import { Tooltip } from '@components/UI/Tooltip'
@@ -62,6 +64,7 @@ const Fundraisers: FC<Props> = ({}) => {
   const [publications, setPublications] = useState<BCharityPost[]>([])
   const [revenueData, setRevenueData] = useState<number[]>([])
   const { currentUser } = useAppPersistStore()
+
   const { data, loading, error, fetchMore } = useQuery(EXPLORE_FEED_QUERY, {
     variables: {
       request: {
@@ -137,6 +140,7 @@ const Fundraisers: FC<Props> = ({}) => {
   })
 
   var cover
+
   return (
     <GridLayout>
       <SEO title={`Fundraisers • ${APP_NAME}`} />
@@ -147,26 +151,22 @@ const Fundraisers: FC<Props> = ({}) => {
             <GridItemSix key={`${post?.id}_${index}`}>
               <Card>
                 {/* <SinglePost post={post} /> */}
-                <a
-                  href={`/posts/${post?.id}`}
-                  key={post?.id}
-                  style={{ textDecoration: 'none' }}
-                >
-                  <div
-                    className="h-40 rounded-t-xl border-b sm:h-52 dark:border-b-gray-700/80"
-                    style={{
-                      backgroundImage: `url(${
-                        cover
-                          ? imagekitURL(cover, 'attachment')
-                          : `${STATIC_ASSETS}/patterns/2.svg`
-                      })`,
-                      backgroundColor: '#8b5cf6',
-                      backgroundSize: cover ? 'cover' : '30%',
-                      backgroundPosition: 'center center',
-                      backgroundRepeat: cover ? 'no-repeat' : 'repeat'
-                    }}
-                  />
-                </a>
+
+                <div
+                  className="h-40 rounded-t-xl border-b sm:h-52 dark:border-b-gray-700/80"
+                  style={{
+                    backgroundImage: `url(${
+                      cover
+                        ? imagekitURL(cover, 'attachment')
+                        : `${STATIC_ASSETS}/patterns/2.svg`
+                    })`,
+                    backgroundColor: '#8b5cf6',
+                    backgroundSize: cover ? 'cover' : '30%',
+                    backgroundPosition: 'center center',
+                    backgroundRepeat: cover ? 'no-repeat' : 'repeat'
+                  }}
+                />
+
                 <div className="p-5">
                   <div className="block justify-between items-center sm:flex">
                     <div className="mr-0 space-y-1 sm:mr-16">
@@ -220,6 +220,15 @@ const Fundraisers: FC<Props> = ({}) => {
                         </span>
                       )}
                       <Like post={post} />
+                      <Share post={post} />
+
+                      <a
+                        href={`/posts/${post?.id}`}
+                        key={post?.id}
+                        style={{ textDecoration: 'none' }}
+                      >
+                        <Button>Donate</Button>
+                      </a>
                     </GridItemSix>
                   </GridLayout>
                 </div>
