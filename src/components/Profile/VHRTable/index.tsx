@@ -180,7 +180,7 @@ const VHRTable: FC<Props> = ({
       }
       Logger.log(
         '[Query]',
-        `Fetched next 50 explore publications Next:${pageInfo?.next}`
+        `Fetched next 10 hours publications Next:${pageInfo?.next}`
       )
     }
   })
@@ -230,7 +230,7 @@ const VHRTable: FC<Props> = ({
                     headerGroup.headers[0].render('Header')}
                   <div className="flex items-stretch justify-center space-x-4">
                     <p>Total Hours: {computeHours(rows)}</p>
-                    <p>Total Volunteers: {computeVolunteers(rows)}</p>
+                    {from && <p>Total Volunteers: {computeVolunteers(rows)}</p>}
                   </div>
                 </th>
               </tr>

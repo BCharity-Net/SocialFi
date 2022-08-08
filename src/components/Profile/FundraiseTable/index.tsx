@@ -117,7 +117,7 @@ const FundraiseTable: FC<Props> = ({
       setPublications([...publications, ...data?.publications?.items])
       Logger.log(
         '[Query]',
-        `Fetched next 50 explore publications Next:${pageInfo?.next}`
+        `Fetched next 10 fundraise publications Next:${pageInfo?.next}`
       )
     }
   })

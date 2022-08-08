@@ -149,10 +149,7 @@ const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
       })
       setPageInfo(data?.nfts?.pageInfo)
       setPublications([...publications, ...data?.nfts?.items])
-      Logger.log(
-        '[Query]',
-        `Fetched next 50 explore publications Next:${pageInfo?.next}`
-      )
+      Logger.log('[Query]', `Fetched next 10 funds Next:${pageInfo?.next}`)
     }
   })
 
