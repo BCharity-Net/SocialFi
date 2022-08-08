@@ -22,6 +22,7 @@ import {
 import Logger from '@lib/logger'
 import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
+import trimify from '@lib/trimify'
 import uploadToIPFS from '@lib/uploadToIPFS'
 import { ethers } from 'ethers'
 import React, { FC, useState } from 'react'
@@ -377,7 +378,7 @@ const Verify: FC<Props> = ({ post }) => {
   return (
     <div className="flex items-center mt-3 space-y-0 space-x-3 sm:block sm:mt-0 sm:space-y-2">
       {post?.metadata.attributes[1].value === currentUser?.ownedBy &&
-        post?.metadata.name === currentUser?.handle && (
+        trimify(post?.metadata?.name ?? '') === currentUser?.handle && (
           <>
             <Button
               className="sm:mt-0 sm:ml-auto"
