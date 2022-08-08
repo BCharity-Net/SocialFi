@@ -4,10 +4,13 @@ import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
 import { Card } from '@components/UI/Card'
 import { EmptyState } from '@components/UI/EmptyState'
 import { ErrorMessage } from '@components/UI/ErrorMessage'
-import { Profile } from '@generated/types'
+import { Spinner } from '@components/UI/Spinner'
+import { BCharityPost } from '@generated/bcharitytypes'
+import { PaginatedResultInfo, Profile } from '@generated/types'
 import { CollectionIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
 import React, { FC, useState } from 'react'
+import { useInView } from 'react-cool-inview'
 import { useFilters, useTable } from 'react-table'
 
 import NFT from './NFT'
@@ -32,6 +35,8 @@ export interface Data {
 }
 
 const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
+  const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
+  const [publications, setPublications] = useState<BCharityPost[]>([])
   const [onEnter, setOnEnter] = useState<boolean>(false)
   const [tableData, setTableData] = useState<Data[]>([])
 
@@ -48,7 +53,7 @@ const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
       })
   }
 
-  const { data, loading, error } = useQuery(query, {
+  const { data, loading, error, fetchMore } = useQuery(query, {
     variables: {
       request: request
     },
@@ -60,7 +65,6 @@ const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
         setTableData(tableData)
         setOnEnter(false)
       }
-
       const nft: Data[] = []
       data.nfts.items.forEach((i: any) => {
         fetchMetadata(i.contentURI).then((result) => {
@@ -76,19 +80,80 @@ const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
           ) {
             nft.push({
               orgName: result.attributes[2].value,
-              category: result.attributes[5]?.value ?? '',
+              category: result.attributes[4]
+                ? result.attributes[4].key === 'category'
+                  ? result.attributes[4].value
+                  : result.attributes[5]?.value ?? ''
+                : '',
               uuid: result.attributes[3].value,
               fundName: result.name,
               date: result.createdOn.split('T')[0],
-              amount: result.attributes[4] ? result.attributes[4].value : '',
+              amount:
+                result.attributes[4] && result.attributes[4].key === 'newAmount'
+                  ? result.attributes[4].value
+                  : '',
               postID: ''
             })
             setTableData([...tableData, ...nft])
           }
         })
       })
-
+      setPageInfo(data?.nfts?.pageInfo)
+      setPublications(data?.nfts?.items)
       setOnEnter(true)
+    }
+  })
+
+  const { observe } = useInView({
+    onEnter: async () => {
+      const req = {
+        ...request,
+        cursor: pageInfo?.next
+      }
+      const { data } = await fetchMore({
+        variables: {
+          request: req
+        }
+      })
+      const nft: Data[] = []
+      data.nfts.items.forEach((i: any) => {
+        fetchMetadata(i.contentURI).then((result) => {
+          if (
+            result &&
+            result.attributes &&
+            (result.attributes[0].value === 'fundraise' ||
+              result.attributes[0].value === 'fundraise-comment') &&
+            new Date(result.createdOn) >=
+              new Date(
+                'Thu Aug 04 2022 13:45:31 GMT-0600 (Mountain Daylight Saving Time)'
+              )
+          ) {
+            nft.push({
+              orgName: result.attributes[2].value,
+              category: result.attributes[4]
+                ? result.attributes[4].key === 'category'
+                  ? result.attributes[4].value
+                  : result.attributes[5]?.value ?? ''
+                : '',
+              uuid: result.attributes[3].value,
+              fundName: result.name,
+              date: result.createdOn.split('T')[0],
+              amount:
+                result.attributes[4] && result.attributes[4].key === 'newAmount'
+                  ? result.attributes[4].value
+                  : '',
+              postID: ''
+            })
+            setTableData([...tableData, ...nft])
+          }
+        })
+      })
+      setPageInfo(data?.nfts?.pageInfo)
+      setPublications([...publications, ...data?.nfts?.items])
+      Logger.log(
+        '[Query]',
+        `Fetched next 50 explore publications Next:${pageInfo?.next}`
+      )
     }
   })
 
@@ -188,6 +253,11 @@ const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
       {!error && !loading && data?.publications?.items?.length !== 0 && (
         <Card>
           <Table />
+          {pageInfo?.next && publications.length !== pageInfo?.totalCount && (
+            <span ref={observe} className="flex justify-center p-5">
+              <Spinner size="sm" />
+            </span>
+          )}
         </Card>
       )}
     </>

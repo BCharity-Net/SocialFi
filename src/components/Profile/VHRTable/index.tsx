@@ -4,10 +4,14 @@ import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
 import { Card } from '@components/UI/Card'
 import { EmptyState } from '@components/UI/EmptyState'
 import { ErrorMessage } from '@components/UI/ErrorMessage'
-import { Profile } from '@generated/types'
+import { Spinner } from '@components/UI/Spinner'
+import { BCharityPost } from '@generated/bcharitytypes'
+import { PaginatedResultInfo, Profile } from '@generated/types'
 import { CollectionIcon } from '@heroicons/react/outline'
+import Logger from '@lib/logger'
 import { ethers } from 'ethers'
 import React, { FC, useState } from 'react'
+import { useInView } from 'react-cool-inview'
 import { Row, useFilters, useTable } from 'react-table'
 import { useAppPersistStore } from 'src/store/app'
 
@@ -52,6 +56,8 @@ const VHRTable: FC<Props> = ({
   from
 }) => {
   const { currentUser } = useAppPersistStore()
+  const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
+  const [publications, setPublications] = useState<BCharityPost[]>([])
   const [onEnter, setOnEnter] = useState<boolean>(false)
   const [tableData, setTableData] = useState<Data[]>([])
   const [pubIdData, setPubIdData] = useState<string[]>([])
@@ -135,6 +141,13 @@ const VHRTable: FC<Props> = ({
           })
         }
       })
+      if (from) {
+        setPageInfo(data?.notifications?.pageInfo)
+        setPublications(data?.notifications?.items)
+      } else {
+        setPageInfo(data?.publications?.pageInfo)
+        setPublications(data?.publications?.items)
+      }
       const pubId: string[] = [],
         vhrTxn: string[] = [],
         addresses: string[] = []
@@ -147,6 +160,37 @@ const VHRTable: FC<Props> = ({
       setVhrTxnData([...vhrTxnData, ...vhrTxn])
       setAddressData([...addressData, ...addresses])
       setOnEnter(true)
+    }
+  })
+
+  const { observe } = useInView({
+    onEnter: async () => {
+      const req = {
+        ...request,
+        cursor: pageInfo?.next
+      }
+      const { data } = await fetchMore({
+        variables: {
+          request: req,
+          reactionRequest: currentUser ? { profileId: currentUser?.id } : null,
+          profileId: currentUser?.id ?? null
+        }
+      })
+      const hours = handleQueryComplete(data)
+      handleTableData(hours).then((result: Data[]) => {
+        setTableData([...tableData, ...result])
+      })
+      if (from) {
+        setPageInfo(data?.notifications?.pageInfo)
+        setPublications([...publications, ...data?.notifications?.items])
+      } else {
+        setPageInfo(data?.publications?.pageInfo)
+        setPublications([...publications, ...data?.publications?.items])
+      }
+      Logger.log(
+        '[Query]',
+        `Fetched next 50 explore publications Next:${pageInfo?.next}`
+      )
     }
   })
 
@@ -281,6 +325,11 @@ const VHRTable: FC<Props> = ({
       {!error && !loading && data?.publications?.items?.length !== 0 && (
         <Card>
           <Table />
+          {pageInfo?.next && publications.length !== pageInfo?.totalCount && (
+            <span ref={observe} className="flex justify-center p-5">
+              <Spinner size="sm" />
+            </span>
+          )}
         </Card>
       )}
     </>
