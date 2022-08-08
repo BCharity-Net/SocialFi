@@ -160,6 +160,14 @@ const VHRTable: FC<Props> = ({
     return result
   }
 
+  const computeVolunteers = (rows: Row<Data>[]) => {
+    let result = new Set()
+    rows.forEach((row) => {
+      result.add(row.values.orgName)
+    })
+    return result.size
+  }
+
   const Table = () => {
     const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
       useTable(
@@ -185,7 +193,10 @@ const VHRTable: FC<Props> = ({
                 >
                   {headerGroup.headers[0] &&
                     headerGroup.headers[0].render('Header')}
-                  <p>Total Hours: {computeHours(rows)}</p>
+                  <div className="flex items-stretch justify-center space-x-4">
+                    <p>Total Hours: {computeHours(rows)}</p>
+                    <p>Total Volunteers: {computeVolunteers(rows)}</p>
+                  </div>
                 </th>
               </tr>
             ) : (
