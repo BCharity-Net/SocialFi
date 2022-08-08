@@ -457,7 +457,6 @@ const Opportunity: NextPage = () => {
                   const startDate = form.getValues('startDate')
                   const endDate = form.getValues('endDate')
                   if (endDate === '') form.setValue('endDate', startDate)
-                  console.log('1')
                 }}
                 {...form.register('startDate')}
               />
@@ -468,9 +467,7 @@ const Opportunity: NextPage = () => {
                   placeholder={'Enter your end date'}
                   change={() => {
                     const startDate = form.getValues('startDate')
-                    // const endDate = form.getValues('endDate')
                     form.setValue('endDate', startDate)
-                    console.log('2')
                   }}
                   {...form.register('endDate')}
                 />
