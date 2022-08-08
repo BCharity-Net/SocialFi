@@ -480,30 +480,41 @@ const Hours: NextPage = () => {
                 {...form.register('city')}
               />
 
-              <Autosuggest
-                label="Category"
-                lang={[
-                  'Education',
-                  'Environment',
-                  'Animals',
-                  'Social',
-                  'Healthcare',
-                  'Sports and Leisure',
-                  'Disaster Relief',
-                  'Reduce Poverty',
-                  'Reduce Hunger',
-                  'Health',
-                  'Clean Water',
-                  'Gender Equality',
-                  'Affordable and Clean Energy',
-                  'Work Experience',
-                  'Technology',
-                  'Infrastructure',
-                  'Peace and Justice'
-                ]}
-                type="text"
-                placeholder={t('Education')}
-                {...form.register('category')}
+              <Controller
+                control={form.control}
+                name="category"
+                render={({ field: { onChange }, fieldState: { error } }) => (
+                  <Autosuggest
+                    label="Category"
+                    lang={[
+                      'Education',
+                      'Environment',
+                      'Animals',
+                      'Social',
+                      'Healthcare',
+                      'Sports and Leisure',
+                      'Disaster Relief',
+                      'Reduce Poverty',
+                      'Reduce Hunger',
+                      'Health',
+                      'Clean Water',
+                      'Gender Equality',
+                      'Affordable and Clean Energy',
+                      'Work Experience',
+                      'Technology',
+                      'Infrastructure',
+                      'Peace and Justice'
+                    ]}
+                    type="text"
+                    placeholder={t('Education')}
+                    // value={value}
+                    error={error?.message}
+                    onChange={onChange}
+                    onAdd={async (e: string) => {
+                      form.setValue('category', e)
+                    }}
+                  />
+                )}
               />
 
               {/* <Autosuggest
