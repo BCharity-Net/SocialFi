@@ -5,7 +5,7 @@ import React, { FC, useMemo } from 'react'
 import { CHAIN_ID, IS_MAINNET } from 'src/constants'
 import { chain } from 'wagmi'
 
-import { PostCell } from './FundraiseTable/Cells'
+import { PostCell, ProfileCell } from './FundraiseTable/Cells'
 import {
   DateSearch,
   FuzzySearch,
@@ -41,6 +41,7 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
           {
             Header: 'Organization',
             accessor: 'orgName',
+            Cell: ProfileCell,
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },
