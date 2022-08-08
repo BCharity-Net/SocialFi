@@ -95,7 +95,6 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
         ownerAddress: profile?.ownedBy,
         limit: tableLimit
       }}
-      tableLimit={tableLimit}
     />
   )
 }

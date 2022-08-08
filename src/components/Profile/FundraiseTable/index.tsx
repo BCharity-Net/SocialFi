@@ -22,7 +22,6 @@ interface Props {
   getColumns: Function
   query: DocumentNode
   request: any
-  tableLimit: number
 }
 
 export interface Data {
@@ -39,8 +38,7 @@ const FundraiseTable: FC<Props> = ({
   handleQueryComplete,
   getColumns,
   query,
-  request,
-  tableLimit
+  request
 }) => {
   const { currentUser } = useAppPersistStore()
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()

@@ -24,7 +24,6 @@ interface Props {
   getColumns: Function
   query: DocumentNode
   request: any
-  tableLimit: number
   from: boolean
 }
 
@@ -52,7 +51,6 @@ const VHRTable: FC<Props> = ({
   getColumns,
   query,
   request,
-  tableLimit,
   from
 }) => {
   const { currentUser } = useAppPersistStore()
@@ -133,13 +131,6 @@ const VHRTable: FC<Props> = ({
       const hours = handleQueryComplete(data)
       handleTableData(hours).then((result: Data[]) => {
         setTableData([...tableData, ...result])
-        if (tableData.length != tableLimit) {
-          fetchMore({
-            variables: {
-              offset: tableLimit - tableData.length
-            }
-          })
-        }
       })
       if (from) {
         setPageInfo(data?.notifications?.pageInfo)

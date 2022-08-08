@@ -21,7 +21,6 @@ interface Props {
   getColumns: Function
   query: DocumentNode
   request: any
-  tableLimit: number
 }
 
 export interface Data {

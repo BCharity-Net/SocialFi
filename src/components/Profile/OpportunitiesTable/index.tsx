@@ -20,7 +20,6 @@ interface Props {
   getColumns: Function
   query: DocumentNode
   request: any
-  tableLimit: number
 }
 
 export interface Data {
@@ -40,8 +39,7 @@ const OpportunitiesTable: FC<Props> = ({
   handleQueryComplete,
   getColumns,
   query,
-  request,
-  tableLimit
+  request
 }) => {
   const { currentUser } = useAppPersistStore()
   const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
@@ -85,13 +83,6 @@ const OpportunitiesTable: FC<Props> = ({
       const opportunities = handleQueryComplete(data)
       handleTableData(opportunities).then((result: Data[]) => {
         setTableData([...tableData, ...result])
-        if (tableData.length != tableLimit) {
-          fetchMore({
-            variables: {
-              offset: tableLimit - tableData.length
-            }
-          })
-        }
       })
       const pubId: string[] = []
       opportunities.map((i: any) => {

@@ -138,7 +138,6 @@ const HourFeed: FC<Props> = ({ profile }) => {
         profileId: profile?.id,
         limit: tableLimit
       }}
-      tableLimit={tableLimit}
       from={false}
     />
   )
