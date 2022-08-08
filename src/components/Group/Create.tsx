@@ -259,6 +259,7 @@ const Create: NextPage = () => {
                   )}
                   <div className="flex items-center space-x-3">
                     <ChooseFile
+                      id="avatar"
                       onChange={(evt: ChangeEvent<HTMLInputElement>) =>
                         handleUpload(evt)
                       }

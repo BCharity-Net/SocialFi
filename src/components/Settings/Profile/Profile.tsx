@@ -348,6 +348,7 @@ const Profile: FC<Props> = ({ profile }) => {
               )}
               <div className="flex items-center space-x-3">
                 <ChooseFile
+                  id="cover"
                   onChange={(evt: ChangeEvent<HTMLInputElement>) =>
                     handleUpload(evt)
                   }
