@@ -4,9 +4,13 @@ import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
 import { Card } from '@components/UI/Card'
 import { EmptyState } from '@components/UI/EmptyState'
 import { ErrorMessage } from '@components/UI/ErrorMessage'
-import { Profile } from '@generated/types'
+import { Spinner } from '@components/UI/Spinner'
+import { BCharityPost } from '@generated/bcharitytypes'
+import { PaginatedResultInfo, Profile } from '@generated/types'
 import { CollectionIcon } from '@heroicons/react/outline'
+import Logger from '@lib/logger'
 import React, { FC, useState } from 'react'
+import { useInView } from 'react-cool-inview'
 import { useFilters, useTable } from 'react-table'
 import { useAppPersistStore } from 'src/store/app'
 
@@ -16,7 +20,6 @@ interface Props {
   getColumns: Function
   query: DocumentNode
   request: any
-  tableLimit: number
 }
 
 export interface Data {
@@ -39,10 +42,11 @@ const OpportunitiesTable: FC<Props> = ({
   handleQueryComplete,
   getColumns,
   query,
-  request,
-  tableLimit
+  request
 }) => {
   const { currentUser } = useAppPersistStore()
+  const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
+  const [publications, setPublications] = useState<BCharityPost[]>([])
   const [onEnter, setOnEnter] = useState<boolean>(false)
   const [tableData, setTableData] = useState<Data[]>([])
   const [pubIdData, setPubIdData] = useState<string[]>([])
@@ -88,13 +92,6 @@ const OpportunitiesTable: FC<Props> = ({
       const opportunities = handleQueryComplete(data)
       handleTableData(opportunities).then((result: Data[]) => {
         setTableData([...tableData, ...result])
-        if (tableData.length != tableLimit) {
-          fetchMore({
-            variables: {
-              offset: tableLimit - tableData.length
-            }
-          })
-        }
       })
       const pubId: string[] = [],
         addresses: string[] = []
@@ -102,10 +99,37 @@ const OpportunitiesTable: FC<Props> = ({
         pubId.push(i.id)
         addresses.push(i.collectNftAddress)
       })
+      setPageInfo(data?.publications?.pageInfo)
+      setPublications(data?.publications?.items)
       setPubIdData([...pubIdData, ...pubId])
-
       setAddressData([...addressData, ...addresses])
       setOnEnter(true)
+    }
+  })
+
+  const { observe } = useInView({
+    onEnter: async () => {
+      const req = {
+        ...request,
+        cursor: pageInfo?.next
+      }
+      const { data } = await fetchMore({
+        variables: {
+          request: req,
+          reactionRequest: currentUser ? { profileId: currentUser?.id } : null,
+          profileId: currentUser?.id ?? null
+        }
+      })
+      const opportunities = handleQueryComplete(data)
+      setPageInfo(data?.publications?.pageInfo)
+      setPublications([...publications, ...data?.publications?.items])
+      handleTableData(opportunities).then((result: Data[]) => {
+        setTableData([...tableData, ...result])
+      })
+      Logger.log(
+        '[Query]',
+        `Fetched next 10 opportunities publications Next:${pageInfo?.next}`
+      )
     }
   })
 
@@ -190,6 +214,11 @@ const OpportunitiesTable: FC<Props> = ({
       {!error && !loading && data?.publications?.items?.length !== 0 && (
         <Card>
           <Table />
+          {pageInfo?.next && publications.length !== pageInfo?.totalCount && (
+            <span ref={observe} className="flex justify-center p-5">
+              <Spinner size="sm" />
+            </span>
+          )}
         </Card>
       )}
     </>

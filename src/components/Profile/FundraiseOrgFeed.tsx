@@ -55,13 +55,19 @@ const FundraiseOrgFeed: FC<Props> = ({ profile }) => {
         Header: 'Fundraisers',
         columns: [
           {
-            Header: 'Name',
+            Header: 'Cause',
             accessor: 'name',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },
           {
-            Header: 'Funds',
+            Header: 'Category',
+            accessor: 'category',
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
+          },
+          {
+            Header: 'Funds raised',
             accessor: 'funds',
             Cell: FundsCell,
             Filter: FuzzySearch,
@@ -115,7 +121,6 @@ const FundraiseOrgFeed: FC<Props> = ({ profile }) => {
         profileId: profile?.id,
         limit: tableLimit
       }}
-      tableLimit={tableLimit}
     />
   )
 }

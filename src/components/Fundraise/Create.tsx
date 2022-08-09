@@ -5,6 +5,7 @@ import { CREATE_POST_TYPED_DATA_MUTATION } from '@components/Post/NewPost'
 import ChooseFile from '@components/Shared/ChooseFile'
 import Pending from '@components/Shared/Pending'
 import SettingsHelper from '@components/Shared/SettingsHelper'
+import Autosuggest from '@components/UI/Autosuggest'
 import { Button } from '@components/UI/Button'
 import { Card } from '@components/UI/Card'
 import { Form, useZodForm } from '@components/UI/Form'
@@ -26,10 +27,12 @@ import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
 import uploadToIPFS from '@lib/uploadToIPFS'
 import { NextPage } from 'next'
 import React, { ChangeEvent, useState } from 'react'
+import { Controller } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import {
   APP_NAME,
+  CATEGORIES,
   CONNECT_WALLET,
   DEFAULT_COLLECT_TOKEN,
   ERROR_MESSAGE,
@@ -82,6 +85,9 @@ const Create: NextPage = () => {
     title: string()
       .min(2, { message: 'Title should be atleast 2 characters' })
       .max(255, { message: 'Title should not exceed 255 characters' }),
+    category: string()
+      .min(1, { message: 'You must write a category!' })
+      .max(40, { message: 'Category name should not exceed 40 characters!' }),
     amount: string().min(1, { message: 'Invalid amount' }),
     goal: string(),
     recipient: string()
@@ -197,6 +203,7 @@ const Create: NextPage = () => {
 
   const createFundraise = async (
     title: string,
+    category: string,
     amount: string,
     goal: string,
     recipient: string,
@@ -236,6 +243,11 @@ const Create: NextPage = () => {
           traitType: 'string',
           key: 'uuid',
           value: uuid()
+        },
+        {
+          traitType: 'string',
+          key: 'category',
+          value: category
         }
       ],
       media: [],
@@ -298,6 +310,7 @@ const Create: NextPage = () => {
               className="p-5 space-y-4"
               onSubmit={({
                 title,
+                category,
                 amount,
                 goal,
                 recipient,
@@ -306,6 +319,7 @@ const Create: NextPage = () => {
               }) => {
                 createFundraise(
                   title,
+                  category,
                   amount,
                   goal,
                   recipient,
@@ -315,10 +329,27 @@ const Create: NextPage = () => {
               }}
             >
               <Input
-                label={t('Fundraise title')}
+                label={t('Cause')}
                 type="text"
                 placeholder={`${APP_NAME} DAO`}
                 {...form.register('title')}
+              />
+              <Controller
+                control={form.control}
+                name="category"
+                render={({ field: { onChange }, fieldState: { error } }) => (
+                  <Autosuggest
+                    label="Category"
+                    lang={CATEGORIES}
+                    type="text"
+                    placeholder={t('Education')}
+                    error={error?.message}
+                    onChange={onChange}
+                    onAdd={(e: string) => {
+                      form.setValue('category', e)
+                    }}
+                  />
+                )}
               />
               <div>
                 <div className="label">{t('Select currency')}</div>
@@ -411,6 +442,7 @@ const Create: NextPage = () => {
                   )}
                   <div className="flex items-center space-x-3">
                     <ChooseFile
+                      id="cover"
                       onChange={(evt: ChangeEvent<HTMLInputElement>) =>
                         handleUpload(evt)
                       }

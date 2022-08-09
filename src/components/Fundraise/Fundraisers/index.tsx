@@ -76,10 +76,8 @@ const Fundraisers: FC<Props> = ({}) => {
       const fundraise = data?.explorePublications?.items.filter((i: any) => {
         return i?.metadata?.attributes[0]?.value == 'fundraise'
       })
-      fundraise.map((i: any) => {
-        // if (!fundraise) {
+      fundraise.map(() => {
         revenueData.push(0)
-        // }
       })
 
       setPageInfo(data?.explorePublications?.pageInfo)
@@ -92,7 +90,6 @@ const Fundraisers: FC<Props> = ({}) => {
       )
     }
   })
-  console.log(revenueData)
 
   const { observe } = useInView({
     onEnter: async () => {
@@ -111,24 +108,8 @@ const Fundraisers: FC<Props> = ({}) => {
       const fundraise = data?.explorePublications?.items.filter((i: any) => {
         return i?.metadata?.attributes[0]?.value == 'fundraise'
       })
-      // console.log('publication', publications.length)
-      const nextValues = data?.explorePublications?.items
-      let count = 0
-      // console.log('next 15', nextValues)
-      nextValues.forEach((i: any) => {
-        if (i?.metadata?.attributes[0]?.value == 'fundraise') {
-          count++
-        }
-      })
-
-      console.log('page info', pageInfo?.next)
-      console.log(
-        'explore publications',
-        data?.explorePublications?.pageInfo?.next
-      )
       setPageInfo(data?.explorePublications?.pageInfo)
       setPublications([...publications, ...fundraise])
-      console.log('count', count)
       Logger.log(
         '[Query]',
         `Fetched next 50 explore publications FeedType:${feedType} Next:${pageInfo?.next}`
@@ -146,7 +127,6 @@ const Fundraisers: FC<Props> = ({}) => {
           (
             <GridItemSix key={`${post?.id}_${index}`}>
               <Card>
-                {/* <SinglePost post={post} /> */}
                 <a
                   href={`/posts/${post?.id}`}
                   key={post?.id}

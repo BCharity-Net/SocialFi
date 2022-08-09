@@ -4,10 +4,14 @@ import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
 import { Card } from '@components/UI/Card'
 import { EmptyState } from '@components/UI/EmptyState'
 import { ErrorMessage } from '@components/UI/ErrorMessage'
-import { Profile } from '@generated/types'
+import { Spinner } from '@components/UI/Spinner'
+import { BCharityPost } from '@generated/bcharitytypes'
+import { PaginatedResultInfo, Profile } from '@generated/types'
 import { CollectionIcon } from '@heroicons/react/outline'
+import Logger from '@lib/logger'
 import { ethers } from 'ethers'
 import React, { FC, useState } from 'react'
+import { useInView } from 'react-cool-inview'
 import { Row, useFilters, useTable } from 'react-table'
 import { useAppPersistStore } from 'src/store/app'
 
@@ -20,7 +24,6 @@ interface Props {
   getColumns: Function
   query: DocumentNode
   request: any
-  tableLimit: number
   from: boolean
 }
 
@@ -48,10 +51,11 @@ const VHRTable: FC<Props> = ({
   getColumns,
   query,
   request,
-  tableLimit,
   from
 }) => {
   const { currentUser } = useAppPersistStore()
+  const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
+  const [publications, setPublications] = useState<BCharityPost[]>([])
   const [onEnter, setOnEnter] = useState<boolean>(false)
   const [tableData, setTableData] = useState<Data[]>([])
   const [pubIdData, setPubIdData] = useState<string[]>([])
@@ -127,14 +131,14 @@ const VHRTable: FC<Props> = ({
       const hours = handleQueryComplete(data)
       handleTableData(hours).then((result: Data[]) => {
         setTableData([...tableData, ...result])
-        if (tableData.length != tableLimit) {
-          fetchMore({
-            variables: {
-              offset: tableLimit - tableData.length
-            }
-          })
-        }
       })
+      if (from) {
+        setPageInfo(data?.notifications?.pageInfo)
+        setPublications(data?.notifications?.items)
+      } else {
+        setPageInfo(data?.publications?.pageInfo)
+        setPublications(data?.publications?.items)
+      }
       const pubId: string[] = [],
         vhrTxn: string[] = [],
         addresses: string[] = []
@@ -150,6 +154,37 @@ const VHRTable: FC<Props> = ({
     }
   })
 
+  const { observe } = useInView({
+    onEnter: async () => {
+      const req = {
+        ...request,
+        cursor: pageInfo?.next
+      }
+      const { data } = await fetchMore({
+        variables: {
+          request: req,
+          reactionRequest: currentUser ? { profileId: currentUser?.id } : null,
+          profileId: currentUser?.id ?? null
+        }
+      })
+      const hours = handleQueryComplete(data)
+      handleTableData(hours).then((result: Data[]) => {
+        setTableData([...tableData, ...result])
+      })
+      if (from) {
+        setPageInfo(data?.notifications?.pageInfo)
+        setPublications([...publications, ...data?.notifications?.items])
+      } else {
+        setPageInfo(data?.publications?.pageInfo)
+        setPublications([...publications, ...data?.publications?.items])
+      }
+      Logger.log(
+        '[Query]',
+        `Fetched next 10 hours publications Next:${pageInfo?.next}`
+      )
+    }
+  })
+
   const columns = getColumns(addressData)
 
   const computeHours = (rows: Row<Data>[]) => {
@@ -158,6 +193,14 @@ const VHRTable: FC<Props> = ({
       result += row.values.totalHours.value * 1
     })
     return result
+  }
+
+  const computeVolunteers = (rows: Row<Data>[]) => {
+    let result = new Set()
+    rows.forEach((row) => {
+      result.add(row.values.orgName)
+    })
+    return result.size
   }
 
   const Table = () => {
@@ -185,7 +228,10 @@ const VHRTable: FC<Props> = ({
                 >
                   {headerGroup.headers[0] &&
                     headerGroup.headers[0].render('Header')}
-                  <p>Total Hours: {computeHours(rows)}</p>
+                  <div className="flex items-stretch justify-center space-x-4">
+                    <p>Total Hours: {computeHours(rows)}</p>
+                    {from && <p>Total Volunteers: {computeVolunteers(rows)}</p>}
+                  </div>
                 </th>
               </tr>
             ) : (
@@ -270,6 +316,11 @@ const VHRTable: FC<Props> = ({
       {!error && !loading && data?.publications?.items?.length !== 0 && (
         <Card>
           <Table />
+          {pageInfo?.next && publications.length !== pageInfo?.totalCount && (
+            <span ref={observe} className="flex justify-center p-5">
+              <Spinner size="sm" />
+            </span>
+          )}
         </Card>
       )}
     </>

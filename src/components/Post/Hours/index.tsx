@@ -26,13 +26,15 @@ const Media: FC<MediaProps> = ({ media }) => {
     <div>
       {attachments && (
         <>
-          <img
-            key="attachment"
-            className="object-cover w-full h-full rounded-lg border-[3px] border-black margin mb-[20px]"
-            // height={240}
-            src={imagekitURL(attachments[activeIndex].item, 'attachment')}
-            alt={attachments[activeIndex].item}
-          />
+          <div className="h-80 mb-[20px]">
+            <img
+              key="attachment"
+              className="object-cover h-full rounded-lg border-[3px] border-black margin"
+              // height={60}
+              src={imagekitURL(attachments[activeIndex].item, 'attachment')}
+              alt={attachments[activeIndex].item}
+            />
+          </div>
           <div className="w-full h-full overflow-x-scroll scroll whitespace-nowrap scroll-smooth">
             {attachments.map((i: any, index: any) =>
               index === activeIndex ? (

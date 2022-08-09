@@ -70,11 +70,6 @@ export const Input = forwardRef<HTMLInputElement, Props>(function Input(
           )}
           type={type === 'startDate' ? 'date' : type}
           ref={ref}
-          // onChange={(e) => {
-          //   console.log(e)
-          //   if(!props.inputChange) return;
-          //   props.inputChange()
-          // }}
           {...props}
         />
       </div>

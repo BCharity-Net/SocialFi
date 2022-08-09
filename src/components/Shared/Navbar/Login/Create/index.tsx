@@ -134,6 +134,7 @@ const Create: FC<Props> = ({ isModal = false }) => {
           <div>
             <div className="flex items-center space-x-3">
               <ChooseFile
+                id="file"
                 onChange={(evt: ChangeEvent<HTMLInputElement>) =>
                   handleUpload(evt)
                 }

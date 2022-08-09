@@ -4,9 +4,13 @@ import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
 import { Card } from '@components/UI/Card'
 import { EmptyState } from '@components/UI/EmptyState'
 import { ErrorMessage } from '@components/UI/ErrorMessage'
-import { Profile } from '@generated/types'
+import { Spinner } from '@components/UI/Spinner'
+import { BCharityPost } from '@generated/bcharitytypes'
+import { PaginatedResultInfo, Profile } from '@generated/types'
 import { CollectionIcon } from '@heroicons/react/outline'
+import Logger from '@lib/logger'
 import React, { FC, useState } from 'react'
+import { useInView } from 'react-cool-inview'
 import { useFilters, useTable } from 'react-table'
 import { useAppPersistStore } from 'src/store/app'
 
@@ -18,12 +22,11 @@ interface Props {
   getColumns: Function
   query: DocumentNode
   request: any
-  tableLimit: number
 }
 
 export interface Data {
   name: string
-  orgName: string
+  category: string
   funds: number
   goal: string
   date: string
@@ -35,10 +38,11 @@ const FundraiseTable: FC<Props> = ({
   handleQueryComplete,
   getColumns,
   query,
-  request,
-  tableLimit
+  request
 }) => {
   const { currentUser } = useAppPersistStore()
+  const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
+  const [publications, setPublications] = useState<BCharityPost[]>([])
   const [onEnter, setOnEnter] = useState<boolean>(false)
   const [tableData, setTableData] = useState<Data[]>([])
   const [pubIdData, setPubIdData] = useState<string[]>([])
@@ -49,6 +53,7 @@ const FundraiseTable: FC<Props> = ({
       data.map(async (i: any, index: number) => {
         return {
           name: i.metadata.name,
+          category: i.metadata.attributes[4]?.value ?? '',
           funds: index,
           goal: i.metadata.attributes[1].value,
           vhr: Math.floor(i.metadata.attributes[1].value / 3),
@@ -73,26 +78,47 @@ const FundraiseTable: FC<Props> = ({
         setTableData(tableData)
         setOnEnter(false)
       }
-      const opportunities = handleQueryComplete(data)
-      handleTableData(opportunities).then((result: Data[]) => {
+      const fundraisers = handleQueryComplete(data)
+      handleTableData(fundraisers).then((result: Data[]) => {
         setTableData([...tableData, ...result])
-        if (tableData.length != tableLimit) {
-          fetchMore({
-            variables: {
-              offset: tableLimit - tableData.length
-            }
-          })
-        }
       })
       const pubId: string[] = [],
         funds: number[] = []
-      opportunities.map((i: any) => {
+      fundraisers.map((i: any) => {
         pubId.push(i.id)
         funds.push(0)
       })
+      setPageInfo(data?.publications?.pageInfo)
+      setPublications(data?.publications?.items)
       setPubIdData([...pubIdData, ...pubId])
       setFundsData([...fundsData, ...funds])
       setOnEnter(true)
+    }
+  })
+
+  const { observe } = useInView({
+    onEnter: async () => {
+      const req = {
+        ...request,
+        cursor: pageInfo?.next
+      }
+      const { data } = await fetchMore({
+        variables: {
+          request: req,
+          reactionRequest: currentUser ? { profileId: currentUser?.id } : null,
+          profileId: currentUser?.id ?? null
+        }
+      })
+      const fundraisers = handleQueryComplete(data)
+      handleTableData(fundraisers).then((result: Data[]) => {
+        setTableData([...tableData, ...result])
+      })
+      setPageInfo(data?.publications?.pageInfo)
+      setPublications([...publications, ...data?.publications?.items])
+      Logger.log(
+        '[Query]',
+        `Fetched next 10 fundraise publications Next:${pageInfo?.next}`
+      )
     }
   })
 
@@ -156,7 +182,6 @@ const FundraiseTable: FC<Props> = ({
                 <PublicationRevenue
                   pubId={pubIdData[index]}
                   callback={(data: any) => {
-                    console.log(fundsData[index], data)
                     if (fundsData[index] != data) {
                       fundsData[index] = data
                       setFundsData(fundsData)
@@ -190,6 +215,11 @@ const FundraiseTable: FC<Props> = ({
       {!error && !loading && data?.publications?.items?.length !== 0 && (
         <Card>
           <Table />
+          {pageInfo?.next && publications.length !== pageInfo?.totalCount && (
+            <span ref={observe} className="flex justify-center p-5">
+              <Spinner size="sm" />
+            </span>
+          )}
         </Card>
       )}
     </>

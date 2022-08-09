@@ -1,5 +1,19 @@
 import { ExternalLinkIcon } from '@heroicons/react/outline'
 
+export const ProfileCell = (props: { value: string }) => {
+  const user = props.value
+  return (
+    <a
+      href={`/u/${user}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-brand-500"
+    >
+      {user} {<ExternalLinkIcon className="w-4 h-4 inline-flex" />}
+    </a>
+  )
+}
+
 export const PostCell = (props: { value: string }) => {
   const postID = props.value
   const url = `/posts/${postID}`

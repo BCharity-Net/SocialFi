@@ -23,6 +23,25 @@ export const RELAY_ON =
   PUBLIC_URL === 'http://localhost:4783'
     ? process.env.NEXT_PUBLIC_RELAY_ON === 'true'
     : false
+export const CATEGORIES = [
+  'Education',
+  'Environment',
+  'Animals',
+  'Social',
+  'Healthcare',
+  'Sports and Leisure',
+  'Disaster Relief',
+  'Reduce Poverty',
+  'Reduce Hunger',
+  'Health',
+  'Clean Water',
+  'Gender Equality',
+  'Affordable and Clean Energy',
+  'Work Experience',
+  'Technology',
+  'Infrastructure',
+  'Peace and Justice'
+]
 
 // Messages
 export const ERROR_MESSAGE = 'Something went wrong!'
