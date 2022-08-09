@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-key */
-import { gql } from '@apollo/client'
 import { GridItemTwelve, GridLayout } from '@components/GridLayout'
 import { ProfileCell } from '@components/Profile/OpportunitiesTable/Cells'
 import { Card } from '@components/UI/Card'
@@ -11,16 +10,6 @@ import { CORS_PROXY, VHR_TOP_HOLDERS_URL } from 'src/constants'
 
 import QueryHandle from './QueryHandle'
 
-const CURRENT_USER_QUERY = gql`
-  query CurrentUser($ownedBy: [EthereumAddress!]) {
-    profiles(request: { ownedBy: $ownedBy }) {
-      items {
-        handle
-      }
-    }
-  }
-`
-
 interface Item {
   index: number
   address: string
@@ -31,7 +20,6 @@ interface Item {
 
 const Vhrs: NextPage = () => {
   const [topHolders, setTopHolders] = useState<Item[]>([])
-  const [profileHandle, setProfileHandle] = useState<string>('')
 
   useEffect(() => {
     if (topHolders.length === 0)
