@@ -5,7 +5,7 @@ import React, { FC, useMemo } from 'react'
 import { CHAIN_ID, IS_MAINNET } from 'src/constants'
 import { chain } from 'wagmi'
 
-import { PostCell } from './FundraiseTable/Cells'
+import { PostCell, ProfileCell } from './FundraiseTable/Cells'
 import {
   DateSearch,
   FuzzySearch,
@@ -39,8 +39,9 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
         Header: 'Funds',
         columns: [
           {
-            Header: 'Organization Name',
+            Header: 'Organization',
             accessor: 'orgName',
+            Cell: ProfileCell,
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
           },
@@ -57,7 +58,7 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
             filter: fuzzyTextFilterFn
           },
           {
-            Header: 'Fund amount',
+            Header: 'Donated',
             accessor: 'amount',
             Filter: FuzzySearch,
             filter: fuzzyTextFilterFn
@@ -94,7 +95,6 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
         ownerAddress: profile?.ownedBy,
         limit: tableLimit
       }}
-      tableLimit={tableLimit}
     />
   )
 }

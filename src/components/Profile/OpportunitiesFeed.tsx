@@ -140,7 +140,6 @@ const OpportunitiesFeed: FC<Props> = ({ profile }) => {
         profileId: profile?.id,
         limit: tableLimit
       }}
-      tableLimit={tableLimit}
     />
   )
 }
