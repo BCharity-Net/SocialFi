@@ -5,7 +5,7 @@ import JSSoup from 'jssoup'
 import { NextPage } from 'next'
 import { useEffect, useMemo, useState } from 'react'
 import { useFilters, useTable } from 'react-table'
-import { VHR_TOP_HOLDERS_URL } from 'src/constants'
+import { CORS_PROXY, VHR_TOP_HOLDERS_URL } from 'src/constants'
 
 interface Item {
   index: number
@@ -19,7 +19,7 @@ const Vhrs: NextPage = () => {
 
   useEffect(() => {
     if (topHolders.length === 0)
-      fetch(VHR_TOP_HOLDERS_URL)
+      fetch(`${CORS_PROXY}/${VHR_TOP_HOLDERS_URL}`)
         .then((response) => {
           return response.text()
         })
