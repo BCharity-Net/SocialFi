@@ -1,5 +1,7 @@
 /* eslint-disable react/jsx-key */
+import { gql } from '@apollo/client'
 import { GridItemTwelve, GridLayout } from '@components/GridLayout'
+import { ProfileCell } from '@components/Profile/OpportunitiesTable/Cells'
 import { Card } from '@components/UI/Card'
 import JSSoup from 'jssoup'
 import { NextPage } from 'next'
@@ -7,15 +9,29 @@ import { useEffect, useMemo, useState } from 'react'
 import { useFilters, useTable } from 'react-table'
 import { CORS_PROXY, VHR_TOP_HOLDERS_URL } from 'src/constants'
 
+import QueryHandle from './QueryHandle'
+
+const CURRENT_USER_QUERY = gql`
+  query CurrentUser($ownedBy: [EthereumAddress!]) {
+    profiles(request: { ownedBy: $ownedBy }) {
+      items {
+        handle
+      }
+    }
+  }
+`
+
 interface Item {
   index: number
   address: string
+  handle: string
   amount: number
   percentage: string
 }
 
 const Vhrs: NextPage = () => {
   const [topHolders, setTopHolders] = useState<Item[]>([])
+  const [profileHandle, setProfileHandle] = useState<string>('')
 
   useEffect(() => {
     if (topHolders.length === 0)
@@ -35,6 +51,7 @@ const Vhrs: NextPage = () => {
               items[index] = {
                 index: index,
                 address: cur[1],
+                handle: '',
                 amount: Number(cur[2]?.replace(/,/g, '')),
                 percentage: cur[3]
               }
@@ -51,6 +68,14 @@ const Vhrs: NextPage = () => {
       {
         Header: 'Top VHR Holders',
         columns: [
+          {
+            Header: 'Handle',
+            accessor: 'handle',
+            Cell: ProfileCell,
+            Filter: () => {
+              return <div />
+            }
+          },
           {
             Header: 'Address',
             accessor: 'address',
@@ -120,18 +145,32 @@ const Vhrs: NextPage = () => {
           })}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
+          {rows.map((row, index) => {
             prepareRow(row)
             return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <td className="p-4" {...cell.getCellProps()}>
-                      {cell.render('Cell')}
-                    </td>
-                  )
-                })}
-              </tr>
+              <>
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <td className="p-4" {...cell.getCellProps()}>
+                        {cell.render('Cell')}
+                      </td>
+                    )
+                  })}
+                </tr>
+                <QueryHandle
+                  address={topHolders[index].address}
+                  callback={(data: any) => {
+                    if (
+                      topHolders[index].handle !==
+                      data.profiles.items[0]?.handle
+                    ) {
+                      topHolders[index].handle = data.profiles.items[0]?.handle
+                      setTopHolders([...topHolders])
+                    }
+                  }}
+                />
+              </>
             )
           })}
         </tbody>
