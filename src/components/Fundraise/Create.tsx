@@ -415,7 +415,7 @@ const Create: NextPage = () => {
                 placeholder="0x3A5bd...5e3"
                 {...form.register('recipient')}
               />
-              <Input
+              {/* <Input
                 label={t('Referral')}
                 helper={<span>{t('Referral info')}</span>}
                 type="number"
@@ -423,7 +423,7 @@ const Create: NextPage = () => {
                 min="0"
                 max="100"
                 {...form.register('referralFee')}
-              />
+              /> */}
               <TextArea
                 label={t('Fundraise description')}
                 placeholder={t('Fundraise description placeholder')}
