@@ -1172,10 +1172,10 @@
     dompurify "^2.2.2"
     uuid "^8.3.0"
 
-"@giphy/react-components@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@giphy/react-components/-/react-components-6.0.0.tgz#c9041cff8be19527ae2925a0ab2959ad01993504"
-  integrity sha512-LVHEC/hlNprvME43vm4i71p1WBWLW6dKOarIwsGhA8kd11aD5aphxffRYk752pCP7b8uqa41gMPoDOB1kSlUIQ==
+"@giphy/react-components@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@giphy/react-components/-/react-components-6.0.1.tgz#1850a94e42205fad6db8a9e1657d8beb01a168d6"
+  integrity sha512-gLyRloMwFHU1g/Y1yo6yf7JH3bACmRgk3Tq1NciO3pJqKUQ2IIUcYfMg99uEiMyL6pwfC26akg7As0ebAHpjgQ==
   dependencies:
     "@emotion/react" "11.9.3"
     "@emotion/styled" "11.9.3"
