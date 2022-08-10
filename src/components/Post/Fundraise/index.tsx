@@ -24,7 +24,7 @@ import getTokenImage from '@lib/getTokenImage'
 import imagekitURL from '@lib/imagekitURL'
 import Logger from '@lib/logger'
 import omit from '@lib/omit'
-import uploadToIPFS from '@lib/uploadToIPFS'
+import uploadToArweave from '@lib/uploadToArweave'
 import clsx from 'clsx'
 import { splitSignature } from 'ethers/lib/utils'
 import React, { FC, ReactNode, useEffect, useState } from 'react'
@@ -287,7 +287,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
     if (!isAuthenticated) return toast.error(CONNECT_WALLET)
 
     setIsUploading(true)
-    const { path } = await uploadToIPFS({
+    const id = await uploadToArweave({
       version: '1.0.0',
       metadata_id: uuid(),
       description: description,
@@ -343,7 +343,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
             fund?.__typename === 'Mirror'
               ? fund?.mirrorOf?.id
               : fund?.pubId ?? fund?.id,
-          contentURI: `https://ipfs.infura.io/ipfs/${path}`,
+          contentURI: `https://arweave.net/${id}`,
           collectModule: {
             feeCollectModule: {
               amount: {
