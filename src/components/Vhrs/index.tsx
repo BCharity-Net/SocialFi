@@ -138,7 +138,7 @@ const Vhrs: NextPage = () => {
             ) : (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <th className="p-" {...column.getHeaderProps()}>
+                  <th className="p-4" {...column.getHeaderProps()}>
                     {column.render('Header')}
                     <div>
                       {column.canFilter ? column.render('Filter') : null}
@@ -154,6 +154,15 @@ const Vhrs: NextPage = () => {
             prepareRow(row)
             return (
               <>
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <td className="p-4" {...cell.getCellProps()}>
+                        {cell.render('Cell')}
+                      </td>
+                    )
+                  })}
+                </tr>
                 <QueryHandle
                   address={topHolders[index].address}
                   callback={(data: any) => {
@@ -174,15 +183,6 @@ const Vhrs: NextPage = () => {
                     }
                   }}
                 />
-                <tr {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
-                    return (
-                      <td className="p-4" {...cell.getCellProps()}>
-                        {cell.render('Cell')}
-                      </td>
-                    )
-                  })}
-                </tr>
               </>
             )
           })}
