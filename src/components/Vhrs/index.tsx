@@ -1,5 +1,4 @@
 /* eslint-disable react/jsx-key */
-import { gql } from '@apollo/client'
 import { GridItemSix, GridLayout } from '@components/GridLayout'
 import { ProfileCell } from '@components/Profile/OpportunitiesTable/Cells'
 import { Card } from '@components/UI/Card'
@@ -12,22 +11,13 @@ import { VHR_TOP_HOLDERS_URL } from 'src/constants'
 
 import QueryHandle from './QueryHandle'
 
-const CURRENT_USER_QUERY = gql`
-  query CurrentUser($ownedBy: [EthereumAddress!]) {
-    profiles(request: { ownedBy: $ownedBy }) {
-      items {
-        handle
-      }
-    }
-  }
-`
-
 interface Tab {
   isOrg: boolean
 }
 
 interface Item {
   index: number
+  rank: number
   address: string
   handle: string
   amount: number
@@ -37,8 +27,6 @@ interface Item {
 
 const Vhrs: NextPage = () => {
   const [topHolders, setTopHolders] = useState<Item[]>([])
-  const [profileHandle, setProfileHandle] = useState<string>('')
-  const [organization, setOrganization] = useState<boolean>(false)
 
   useEffect(() => {
     if (topHolders.length === 0)
@@ -57,6 +45,7 @@ const Vhrs: NextPage = () => {
             if (i % 4 === 0 && i !== 0) {
               items[index] = {
                 index: index,
+                rank: 1,
                 address: cur[1],
                 handle: '',
                 amount: Number(cur[2]?.replace(/,/g, '')),
@@ -76,6 +65,13 @@ const Vhrs: NextPage = () => {
       {
         Header: 'Top Volunteers',
         columns: [
+          // {
+          //   Header: 'Rank',
+          //   accessor: 'rank',
+          //   Filter: () => {
+          //     return <div />
+          //   }
+          // },
           {
             Header: 'Handle',
             accessor: 'handle',
@@ -98,7 +94,9 @@ const Vhrs: NextPage = () => {
   )
 
   const Table: FC<Tab> = ({ isOrg }) => {
-    if (isOrg) columns[0].Header = 'Top Organizations'
+    if (isOrg) {
+      columns[0].Header = 'Top Organizations'
+    }
     const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
       useTable(
         {
@@ -170,11 +168,6 @@ const Vhrs: NextPage = () => {
                     }
                   }}
                 />
-                {/* {setTopHolders(
-                  topHolders.filter(function (value, index) {
-                    return !topHolders[index].individual
-                  })
-                )} */}
                 <tr {...row.getRowProps()}>
                   {row.cells.map((cell) => {
                     return (
