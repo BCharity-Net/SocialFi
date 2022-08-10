@@ -116,7 +116,7 @@ const Vhrs: NextPage = () => {
 
     return (
       <table
-        className="w-[400px] text-md text-center mb-2 mt-2"
+        className="w-full text-md text-center mb-2 mt-2"
         {...getTableProps()}
       >
         <thead>
@@ -201,10 +201,10 @@ const Vhrs: NextPage = () => {
         Top VHR Holders
       </div>
       <GridLayout>
-        <GridItemSix className="space-y-5">
+        <GridItemSix>
           <Card>{topHolders && <Table isOrg={false} />}</Card>
         </GridItemSix>
-        <GridItemSix className="space-y-5">
+        <GridItemSix>
           <Card>{topHolders && <Table isOrg={true} />}</Card>
         </GridItemSix>
       </GridLayout>
