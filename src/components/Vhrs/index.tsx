@@ -3,6 +3,7 @@ import { gql } from '@apollo/client'
 import { GridItemTwelve, GridLayout } from '@components/GridLayout'
 import { ProfileCell } from '@components/Profile/OpportunitiesTable/Cells'
 import { Card } from '@components/UI/Card'
+import isVerified from '@lib/isVerified'
 import JSSoup from 'jssoup'
 import { NextPage } from 'next'
 import { useEffect, useMemo, useState } from 'react'
@@ -27,6 +28,7 @@ interface Item {
   handle: string
   amount: number
   percentage: string
+  org: boolean
 }
 
 const Vhrs: NextPage = () => {
@@ -53,7 +55,8 @@ const Vhrs: NextPage = () => {
                 address: cur[1],
                 handle: '',
                 amount: Number(cur[2]?.replace(/,/g, '')),
-                percentage: cur[3]
+                percentage: cur[3],
+                org: false
               }
               index++
             }
@@ -108,7 +111,10 @@ const Vhrs: NextPage = () => {
       useTable(
         {
           columns,
-          data: topHolders
+          data: topHolders.filter(function (value, index) {
+            console.log(value.org)
+            return !value.org
+          })
         },
         useFilters
       )
@@ -133,7 +139,7 @@ const Vhrs: NextPage = () => {
             ) : (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <th className="p-4" {...column.getHeaderProps()}>
+                  <th className="p-" {...column.getHeaderProps()}>
                     {column.render('Header')}
                     <div>
                       {column.canFilter ? column.render('Filter') : null}
@@ -149,18 +155,17 @@ const Vhrs: NextPage = () => {
             prepareRow(row)
             return (
               <>
-                <tr {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
-                    return (
-                      <td className="p-4" {...cell.getCellProps()}>
-                        {cell.render('Cell')}
-                      </td>
-                    )
-                  })}
-                </tr>
                 <QueryHandle
                   address={topHolders[index].address}
                   callback={(data: any) => {
+                    if (
+                      topHolders[index].org === false &&
+                      isVerified(data.profiles.items[0]?.id)
+                    ) {
+                      topHolders[index].org = true
+                      setTopHolders([...topHolders])
+                    }
+
                     if (
                       topHolders[index].handle !==
                       data.profiles.items[0]?.handle
@@ -170,6 +175,20 @@ const Vhrs: NextPage = () => {
                     }
                   }}
                 />
+                {/* {setTopHolders(
+                  topHolders.filter(function (value, index) {
+                    return !topHolders[index].individual
+                  })
+                )} */}
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <td className="p-4" {...cell.getCellProps()}>
+                        {cell.render('Cell')}
+                      </td>
+                    )
+                  })}
+                </tr>
               </>
             )
           })}
