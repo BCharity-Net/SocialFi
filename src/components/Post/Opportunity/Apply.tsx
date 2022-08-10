@@ -23,7 +23,7 @@ import {
 import Logger from '@lib/logger'
 import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
-import uploadToIPFS from '@lib/uploadToIPFS'
+import uploadToArweave from '@lib/uploadToArweave'
 import { ethers } from 'ethers'
 import React, { FC, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -286,7 +286,7 @@ const Apply: FC<Props> = ({ post }) => {
     if (!isAuthenticated) return toast.error(CONNECT_WALLET)
 
     // TODO: Add animated_url support
-    const { path } = await uploadToIPFS({
+    const id = await uploadToArweave({
       version: '1.0.0',
       metadata_id: uuid(),
       description: 'VHR transfer transaction token',
@@ -312,7 +312,7 @@ const Apply: FC<Props> = ({ post }) => {
             post?.__typename === 'Mirror'
               ? post?.mirrorOf?.id
               : post?.pubId ?? post?.id,
-          contentURI: `https://ipfs.infura.io/ipfs/${path}`,
+          contentURI: `https://arweave.net/${id}`,
           collectModule: feeData.recipient
             ? {
                 [getModule(selectedModule.moduleName).config]: feeData
