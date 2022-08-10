@@ -93,9 +93,6 @@ const Create: NextPage = () => {
     recipient: string()
       .max(42, { message: 'Ethereum address should be within 42 characters' })
       .regex(/^0x[a-fA-F0-9]{40}$/, { message: 'Invalid Ethereum address' }),
-    referralFee: string()
-      .min(1, { message: 'Invalid Referral fee' })
-      .max(20, { message: 'Invalid Referral fee' }),
     description: string()
       .max(1000, { message: 'Description should not exceed 1000 characters' })
       .nullable()
@@ -207,7 +204,6 @@ const Create: NextPage = () => {
     amount: string,
     goal: string,
     recipient: string,
-    referralFee: string,
     description: string | null
   ) => {
     if (!isAuthenticated) return toast.error(CONNECT_WALLET)
@@ -268,7 +264,7 @@ const Create: NextPage = () => {
                 value: amount
               },
               recipient,
-              referralFee: parseInt(referralFee),
+              referralFee: 0,
               followerOnly: false
             }
           },
@@ -314,7 +310,6 @@ const Create: NextPage = () => {
                 amount,
                 goal,
                 recipient,
-                referralFee,
                 description
               }) => {
                 createFundraise(
@@ -323,7 +318,6 @@ const Create: NextPage = () => {
                   amount,
                   goal,
                   recipient,
-                  referralFee,
                   description
                 )
               }}
@@ -415,15 +409,6 @@ const Create: NextPage = () => {
                 placeholder="0x3A5bd...5e3"
                 {...form.register('recipient')}
               />
-              {/* <Input
-                label={t('Referral')}
-                helper={<span>{t('Referral info')}</span>}
-                type="number"
-                placeholder="5%"
-                min="0"
-                max="100"
-                {...form.register('referralFee')}
-              /> */}
               <TextArea
                 label={t('Fundraise description')}
                 placeholder={t('Fundraise description placeholder')}
