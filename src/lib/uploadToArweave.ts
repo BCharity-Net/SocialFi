@@ -1,20 +1,26 @@
-import axios from 'axios'
-import toast from 'react-hot-toast'
-import { ERROR_MESSAGE } from 'src/constants'
+import Arweave from 'arweave'
+import { ARWEAVE_KEY } from 'src/constants'
+
+const arweave = Arweave.init({
+  host: 'arweave.net',
+  port: 443,
+  protocol: 'https',
+  timeout: 20000,
+  logging: false
+})
 
 const uploadToArweave = async (data: any) => {
-  try {
-    const upload = await axios('/api/upload', {
-      method: 'POST',
-      data
-    })
+  const transaction = await arweave.createTransaction({
+    data: JSON.stringify(data)
+  })
 
-    const { id }: { id: string } = upload?.data
+  transaction.addTag('Content-Type', 'application/json')
 
-    return id
-  } catch (e) {
-    return toast.error(ERROR_MESSAGE)
-  }
+  await arweave.transactions.sign(transaction, JSON.parse(ARWEAVE_KEY ?? ''))
+
+  await arweave.transactions.post(transaction)
+
+  return transaction.id
 }
 
 export default uploadToArweave

@@ -80,6 +80,8 @@ export const INFURA_PROJECT_ID = process.env.NEXT_PUBLIC_INFURA_PROJECT_ID
 export const INFURA_PROJECT_SECRET =
   process.env.NEXT_PUBLIC_INFURA_PROJECT_SECRET
 
+export const ARWEAVE_KEY = process.env.NEXT_PUBLIC_ARWEAVE_KEY
+
 export const POLYGON_MAINNET = {
   ...chain.polygon,
   name: 'Polygon Mainnet',
