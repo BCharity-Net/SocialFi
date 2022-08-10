@@ -43,8 +43,8 @@ const Vhrs: NextPage = () => {
                 address: cur[1],
                 handle: '',
                 amount: Number(cur[2]?.replace(/,/g, '')),
-                org: false,
-                percentage: cur[3]
+                percentage: cur[3],
+                org: false
               }
               index++
             }
@@ -138,7 +138,7 @@ const Vhrs: NextPage = () => {
             ) : (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <th className="p-4" {...column.getHeaderProps()}>
+                  <th className="p-" {...column.getHeaderProps()}>
                     {column.render('Header')}
                     <div>
                       {column.canFilter ? column.render('Filter') : null}
@@ -154,15 +154,6 @@ const Vhrs: NextPage = () => {
             prepareRow(row)
             return (
               <>
-                <tr {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
-                    return (
-                      <td className="p-4" {...cell.getCellProps()}>
-                        {cell.render('Cell')}
-                      </td>
-                    )
-                  })}
-                </tr>
                 <QueryHandle
                   address={topHolders[index].address}
                   callback={(data: any) => {
@@ -183,6 +174,15 @@ const Vhrs: NextPage = () => {
                     }
                   }}
                 />
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <td className="p-4" {...cell.getCellProps()}>
+                        {cell.render('Cell')}
+                      </td>
+                    )
+                  })}
+                </tr>
               </>
             )
           })}
