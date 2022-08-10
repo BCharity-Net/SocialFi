@@ -1,12 +1,12 @@
 /* eslint-disable react/jsx-key */
 import { gql } from '@apollo/client'
-import { GridItemTwelve, GridLayout } from '@components/GridLayout'
+import { GridItemSix, GridLayout } from '@components/GridLayout'
 import { ProfileCell } from '@components/Profile/OpportunitiesTable/Cells'
 import { Card } from '@components/UI/Card'
 import isVerified from '@lib/isVerified'
 import JSSoup from 'jssoup'
 import { NextPage } from 'next'
-import { useEffect, useMemo, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { useFilters, useTable } from 'react-table'
 import { VHR_TOP_HOLDERS_URL } from 'src/constants'
 
@@ -22,6 +22,10 @@ const CURRENT_USER_QUERY = gql`
   }
 `
 
+interface Tab {
+  isOrg: boolean
+}
+
 interface Item {
   index: number
   address: string
@@ -34,6 +38,7 @@ interface Item {
 const Vhrs: NextPage = () => {
   const [topHolders, setTopHolders] = useState<Item[]>([])
   const [profileHandle, setProfileHandle] = useState<string>('')
+  const [organization, setOrganization] = useState<boolean>(false)
 
   useEffect(() => {
     if (topHolders.length === 0)
@@ -69,7 +74,7 @@ const Vhrs: NextPage = () => {
   const columns = useMemo(
     () => [
       {
-        Header: 'Top VHR Holders',
+        Header: 'Top Volunteers',
         columns: [
           {
             Header: 'Handle',
@@ -80,22 +85,8 @@ const Vhrs: NextPage = () => {
             }
           },
           {
-            Header: 'Address',
-            accessor: 'address',
-            Filter: () => {
-              return <div />
-            }
-          },
-          {
             Header: 'Amount',
             accessor: 'amount',
-            Filter: () => {
-              return <div />
-            }
-          },
-          {
-            Header: 'Percentage',
-            accessor: 'percentage',
             Filter: () => {
               return <div />
             }
@@ -106,22 +97,26 @@ const Vhrs: NextPage = () => {
     []
   )
 
-  const Table = () => {
+  const Table: FC<Tab> = ({ isOrg }) => {
+    if (isOrg) columns[0].Header = 'Top Organizations'
     const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
       useTable(
         {
           columns,
-          data: topHolders.filter(function (value, index) {
-            console.log(value.org)
-            return !value.org
-          })
+          data: isOrg
+            ? topHolders.filter(function (value) {
+                return value.org
+              })
+            : topHolders.filter(function (value) {
+                return !value.org
+              })
         },
         useFilters
       )
 
     return (
       <table
-        className="w-full text-md text-center mb-2 mt-2"
+        className="w-[400px] text-md text-center mb-2 mt-2"
         {...getTableProps()}
       >
         <thead>
@@ -183,9 +178,12 @@ const Vhrs: NextPage = () => {
                 <tr {...row.getRowProps()}>
                   {row.cells.map((cell) => {
                     return (
-                      <td className="p-4" {...cell.getCellProps()}>
-                        {cell.render('Cell')}
-                      </td>
+                      // eslint-disable-next-line react/jsx-no-useless-fragment
+                      <>
+                        <td className="p-4" {...cell.getCellProps()}>
+                          {cell.render('Cell')}
+                        </td>
+                      </>
                     )
                   })}
                 </tr>
@@ -198,11 +196,19 @@ const Vhrs: NextPage = () => {
   }
 
   return (
-    <GridLayout>
-      <GridItemTwelve className="space-y-5">
-        <Card>{topHolders && <Table />}</Card>
-      </GridItemTwelve>
-    </GridLayout>
+    <>
+      <div className="flex w-full pt-[20px] text-3xl font-bold justify-center whitespace-nowrap">
+        Top VHR Holders
+      </div>
+      <GridLayout>
+        <GridItemSix className="space-y-5">
+          <Card>{topHolders && <Table isOrg={false} />}</Card>
+        </GridItemSix>
+        <GridItemSix className="space-y-5">
+          <Card>{topHolders && <Table isOrg={true} />}</Card>
+        </GridItemSix>
+      </GridLayout>
+    </>
   )
 }
 
