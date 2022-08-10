@@ -105,10 +105,10 @@ const Vhrs: NextPage = () => {
           columns,
           data: isOrg
             ? topHolders.filter(function (value) {
-                return value.org && value.handle != ''
+                return value.org
               })
             : topHolders.filter(function (value) {
-                return !value.org && value.handle != ''
+                return !value.org
               })
         },
         useFilters
