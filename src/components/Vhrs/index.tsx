@@ -5,11 +5,15 @@ import { Card } from '@components/UI/Card'
 import isVerified from '@lib/isVerified'
 import JSSoup from 'jssoup'
 import { NextPage } from 'next'
-import { useEffect, useMemo, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { useFilters, useTable } from 'react-table'
 import { CORS_PROXY, VHR_TOP_HOLDERS_URL } from 'src/constants'
 
 import QueryHandle from './QueryHandle'
+
+interface Tab {
+  isOrg: boolean
+}
 
 interface Item {
   index: number
@@ -180,8 +184,12 @@ const Vhrs: NextPage = () => {
             return (
               <tr {...row.getRowProps()}>
                 {row.cells.map((cell) => {
+                  let className = ''
+                  if (index === 0) className = 'bg-yellow-300'
+                  if (index === 1) className = 'bg-slate-300'
+                  if (index === 2) className = 'bg-amber-500'
                   return (
-                    <td className="p-4" {...cell.getCellProps()}>
+                    <td className={`p-4 ${className}`} {...cell.getCellProps()}>
                       {cell.render('Cell', { rank: index })}
                     </td>
                   )
@@ -202,10 +210,10 @@ const Vhrs: NextPage = () => {
       <HandleHolders />
       <GridLayout>
         <GridItemSix>
-          <Card>{topHolders && <Table />}</Card>
+          <Card>{topHolders && <Table isOrg={false} />}</Card>
         </GridItemSix>
         <GridItemSix>
-          <Card>{topHolders && <OrgTable />}</Card>
+          <Card>{topHolders && <Table isOrg={true} />}</Card>
         </GridItemSix>
       </GridLayout>
     </>
