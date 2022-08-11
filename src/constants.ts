@@ -65,8 +65,8 @@ export const VHR_TOP_HOLDERS_URL =
 export const RARIBLE_URL = IS_MAINNET
   ? 'https://rarible.com'
   : 'https://rinkeby.rarible.com'
-export const IMAGEKIT_URL_PROD = 'https://ik.imagekit.io/pgaa4ngbay/production'
-export const IMAGEKIT_URL_DEV = 'https://ik.imagekit.io/pgaa4ngbay/dev'
+export const IMAGEKIT_URL_PROD = 'https://ik.imagekit.io/lensterimg/'
+export const IMAGEKIT_URL_DEV = 'https://ik.imagekit.io/lensterdev/'
 export const ARWEAVE_GATEWAY = 'https://arweave.net'
 export const IMAGEKIT_URL = IS_PRODUCTION ? IMAGEKIT_URL_PROD : IMAGEKIT_URL_DEV
 

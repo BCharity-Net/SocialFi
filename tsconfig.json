@@ -25,6 +25,6 @@
       "@generated*": ["src/generated*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "server/index.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "server/index.js", "src/pages/api/cors.js"],
   "exclude": ["node_modules", "cypress/support"]
 }
