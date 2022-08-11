@@ -5,14 +5,19 @@ import { Card } from '@components/UI/Card'
 import isVerified from '@lib/isVerified'
 import JSSoup from 'jssoup'
 import { NextPage } from 'next'
-import { useEffect, useMemo, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { useFilters, useTable } from 'react-table'
 import { CORS_PROXY, VHR_TOP_HOLDERS_URL } from 'src/constants'
 
 import QueryHandle from './QueryHandle'
 
+interface Tab {
+  isOrg: boolean
+}
+
 interface Item {
   index: number
+  rank: number
   address: string
   handle: string
   amount: number
@@ -41,6 +46,7 @@ const Vhrs: NextPage = () => {
             if (i % 4 === 0 && i !== 0) {
               items[index] = {
                 index: index,
+                rank: 1,
                 address: cur[1],
                 handle: '',
                 amount: Number(cur[2]?.replace(/,/g, '')),
@@ -58,8 +64,15 @@ const Vhrs: NextPage = () => {
   const columns = useMemo(
     () => [
       {
-        Header: 'Top Individual Holders',
+        Header: 'Top Volunteers',
         columns: [
+          // {
+          //   Header: 'Rank',
+          //   accessor: 'rank',
+          //   Filter: () => {
+          //     return <div />
+          //   }
+          // },
           {
             Header: 'Handle',
             accessor: 'handle',
@@ -81,40 +94,21 @@ const Vhrs: NextPage = () => {
     []
   )
 
-  const orgColumns = useMemo(
-    () => [
-      {
-        Header: 'Top Organization Holders',
-        columns: [
-          {
-            Header: 'Handle',
-            accessor: 'handle',
-            Cell: ProfileCell,
-            Filter: () => {
-              return <div />
-            }
-          },
-          {
-            Header: 'Amount',
-            accessor: 'amount',
-            Filter: () => {
-              return <div />
-            }
-          }
-        ]
-      }
-    ],
-    []
-  )
-
-  const Table = () => {
+  const Table: FC<Tab> = ({ isOrg }) => {
+    if (isOrg) {
+      columns[0].Header = 'Top Organizations'
+    }
     const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
       useTable(
         {
           columns,
-          data: topHolders.filter((i) => {
-            return !i.org
-          })
+          data: isOrg
+            ? topHolders.filter(function (value) {
+                return value.org
+              })
+            : topHolders.filter(function (value) {
+                return !value.org
+              })
         },
         useFilters
       )
@@ -256,14 +250,19 @@ const Vhrs: NextPage = () => {
   }
 
   return (
-    <GridLayout>
-      <GridItemSix>
-        <Card>{topHolders && <Table />}</Card>
-      </GridItemSix>
-      <GridItemSix>
-        <Card>{topHolders && <OrgTable />}</Card>
-      </GridItemSix>
-    </GridLayout>
+    <>
+      <div className="flex w-full pt-[20px] text-3xl font-bold justify-center whitespace-nowrap">
+        Top VHR Holders
+      </div>
+      <GridLayout>
+        <GridItemSix>
+          <Card>{topHolders && <Table isOrg={false} />}</Card>
+        </GridItemSix>
+        <GridItemSix>
+          <Card>{topHolders && <Table isOrg={true} />}</Card>
+        </GridItemSix>
+      </GridLayout>
+    </>
   )
 }
 
