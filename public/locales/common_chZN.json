@@ -146,7 +146,7 @@
   "Create": "创建",
 
   "Create fundraise description": "创建新的分散式募捐机构",
-  "Cause": "事业",
+  "Cause": "缘由",
   "Select currency": "选择货币",
   "Contribution": "捐款金额",
   "Funding goal": "筹资目标",
@@ -264,7 +264,7 @@
   "Post": "发帖",
   "Send": "发送",
   "Sign action": "签名",
-  "Uploading": "上传至IPFS",
+  "Uploading": "上传至Arweave",
   "Generating": "生成",
   "Empty": "评论不应该是空的!",
 

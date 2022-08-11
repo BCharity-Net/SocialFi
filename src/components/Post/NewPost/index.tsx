@@ -23,7 +23,7 @@ import Logger from '@lib/logger'
 import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
 import trimify from '@lib/trimify'
-import uploadToIPFS from '@lib/uploadToIPFS'
+import uploadToArweave from '@lib/uploadToArweave'
 import dynamic from 'next/dynamic'
 import { Dispatch, FC, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -222,7 +222,7 @@ const NewPost: FC<Props> = ({ setShowModal, hideCard = false }) => {
     setPostContentError('')
     setIsUploading(true)
     // TODO: Add animated_url support
-    const { path } = await uploadToIPFS({
+    const id = await uploadToArweave({
       version: '1.0.0',
       metadata_id: uuid(),
       description: trimify(postContent),
@@ -255,7 +255,7 @@ const NewPost: FC<Props> = ({ setShowModal, hideCard = false }) => {
         options: { overrideSigNonce: userSigNonce },
         request: {
           profileId: currentUser?.id,
-          contentURI: `https://ipfs.infura.io/ipfs/${path}`,
+          contentURI: `https://arweave.net/${id}`,
           collectModule: feeData.recipient
             ? {
                 [getModule(selectedModule.moduleName).config]: feeData

@@ -13,7 +13,7 @@ const uploadAssetsToIPFS = async (data: any): Promise<BCharityAttachment[]> => {
       })
       const { Hash }: { Hash: string } = await upload.json()
       attachments.push({
-        item: `https://ipfs.infura.io/ipfs/${Hash}`,
+        item: `ipfs://${Hash}`,
         type: file.type,
         altTag: ''
       })

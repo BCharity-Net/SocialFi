@@ -1,8 +1,9 @@
-import clsx from 'clsx'
-import React, { FC, ReactNode, useId, useState } from 'react'
+import { matchSorter } from 'match-sorter'
+import React, { FC, ReactNode, useState } from 'react'
+import AutoSuggest from 'react-autosuggest'
 
 interface Props {
-  lang?: string[]
+  lang: string[]
   label?: string
   prefix?: string | ReactNode
   className?: string
@@ -14,97 +15,62 @@ interface Props {
   onAdd?: Function
 }
 
-const Autosuggest: FC<Props> = ({
+const Autocomplete: FC<Props> = ({
   lang,
   label,
-  prefix,
-  className,
-  helper,
   error,
   onChange,
   placeholder,
-  type,
   onAdd
 }) => {
-  const [searchtext, setSearchtext] = useState('')
-  const [suggest, setSuggest] = useState<string[]>([])
-  const handleChange = (e: { target: { value: any } }) => {
-    if (onAdd) onAdd(e.target.value)
-    if (onChange) onChange(e)
-    let searchval = e.target.value
-    let suggestion: string[] = []
-    if (searchval.length > 0) {
-      if (!lang) return
-      suggestion = lang
-        .sort()
-        .filter(
-          (e: string) =>
-            e.length > searchval.length &&
-            e.substring(0, searchval.length).toLowerCase() ===
-              searchval.toLowerCase()
-        )
-    }
-    setSuggest(suggestion)
-    setSearchtext(searchval)
-  }
-
-  const suggestedText = (value: React.SetStateAction<string>) => {
-    setSearchtext(value)
-    if (onAdd) onAdd(value)
-    setSuggest([])
-  }
-  const getSuggestion = () => {
-    return (
-      <ul>
-        {suggest.map((item, index) => {
-          return (
-            <div key={index}>
-              <li
-                className="cursor-pointer list-none hover:bg-gray-200 rounded-md pl-3"
-                onClick={() => suggestedText(item)}
-              >
-                {item}
-              </li>
-              {index !== suggest.length - 1 && <hr />}
-            </div>
-          )
-        })}
-      </ul>
-    )
-  }
-  const id = useId()
+  const [value, setValue] = useState('')
+  const [suggestions, setSuggestions] = useState<string[]>([])
 
   return (
-    <label className="w-full" htmlFor={id}>
+    <>
       {label && (
         <div className="flex items-center mb-1 space-x-1.5">
           <div className="font-medium text-gray-800 dark:text-gray-200">
             <label
-              style={{ width: '500px', float: 'right', marginRight: '-400px' }}
+              style={{
+                width: '500px',
+                float: 'right',
+                marginRight: '-400px',
+                marginBottom: '-12px'
+              }}
             >
               {label}
             </label>
           </div>
         </div>
       )}
-      <input
-        type={type}
-        placeholder={placeholder}
-        className={clsx(
-          { 'rounded-r-xl': prefix },
-          { 'rounded-xl': !prefix },
-          'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700/80 focus:border-brand-500 focus:ring-brand-400 disabled:opacity-60 disabled:bg-gray-500 disabled:bg-opacity-20 outline-none w-full',
-          className
-        )}
-        value={searchtext}
-        onChange={handleChange}
+      <AutoSuggest
+        suggestions={suggestions}
+        onSuggestionsClearRequested={() => setSuggestions([])}
+        onSuggestionsFetchRequested={({ value }) => {
+          setValue(value)
+          setSuggestions(matchSorter(lang, value))
+        }}
+        onSuggestionSelected={(_, { suggestionValue }) => {
+          if (onAdd) onAdd(suggestionValue)
+        }}
+        getSuggestionValue={(suggestion) => suggestion}
+        renderSuggestion={(suggestion) => <span>{suggestion}</span>}
+        inputProps={{
+          placeholder: placeholder,
+          value: value,
+          onChange: (_, { newValue }) => {
+            if (onChange) onChange(newValue)
+            setValue(newValue)
+          }
+        }}
+        highlightFirstSuggestion={true}
       />
-      {getSuggestion()}
       {error && (
         <div className="mt-1 text-sm font-bold text-red-500">{error}</div>
       )}
-    </label>
+    </>
   )
 }
 
-export default Autosuggest
+export default Autocomplete
