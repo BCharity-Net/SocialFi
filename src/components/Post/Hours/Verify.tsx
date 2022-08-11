@@ -133,7 +133,7 @@ const Verify: FC<Props> = ({ post }) => {
   const [balanceOf, setBalanceOf] = useState(0)
   const [balanceOfQuote, setBalanceOfQuote] = useState(0)
   const [decimals, setDecimals] = useState(0)
-  const [validBalance, setValidBalance] = useState(0)
+  // const [validBalance, setValidBalance] = useState(0)
   const [goodTransferAmount, setGoodTransferAmount] = useState(0)
 
   useQuery(COMMENT_FEED_QUERY, {
@@ -248,6 +248,20 @@ const Verify: FC<Props> = ({ post }) => {
         toast.error(error?.data?.message ?? error?.message)
       }
     })
+
+  // const { config } = usePrepareContractWrite({
+  //   addressOrName: GOOD_TOKEN,
+  //   contractInterface: GOOD_ABI,
+  //   functionName: 'transfer',
+  //   args: [post.profile.ownedBy, (goodTransferAmount * 10 ** 18).toString()]
+  // })
+
+  // const {
+  //   data,
+  //   isLoading,
+  //   isSuccess,
+  //   write: writeGoodTransfer
+  // } = useContractWrite(config)
 
   const { isLoading: goodWriteLoading, write: writeGoodTransfer } =
     useContractWrite({
@@ -495,8 +509,6 @@ const Verify: FC<Props> = ({ post }) => {
     const vhrTransferAmount = parseInt(
       post.metadata.attributes[4].value as string
     )
-
-    //const goodTransferAmount = vhrTransferAmount * Math.ceil(vhrToGoodPrice)
     // console.log(vhrBalance)
     // console.log(goodBalance)
     // console.log(vhrToGoodPrice)
@@ -512,16 +524,19 @@ const Verify: FC<Props> = ({ post }) => {
         'Not enough GOOD in wallet. (' + goodTransferAmount + ' needed)'
       )
     } else {
-      setValidBalance(1)
-    }
-
-    if (validBalance) {
-      writeGoodTransfer()
       if (!hasVhrTxn) {
+        writeGoodTransfer()
         writeVhrTransfer()
       }
       createCollect()
     }
+    // if (validBalance) {
+    //   writeGoodTransfer()
+    //   if (!hasVhrTxn) {
+    //     writeVhrTransfer()
+    //   }
+    //   createCollect()
+    // }
   }
 
   return (
