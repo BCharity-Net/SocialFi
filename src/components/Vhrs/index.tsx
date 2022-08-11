@@ -5,15 +5,11 @@ import { Card } from '@components/UI/Card'
 import isVerified from '@lib/isVerified'
 import JSSoup from 'jssoup'
 import { NextPage } from 'next'
-import { FC, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useFilters, useTable } from 'react-table'
 import { CORS_PROXY, VHR_TOP_HOLDERS_URL } from 'src/constants'
 
 import QueryHandle from './QueryHandle'
-
-interface Tab {
-  isOrg: boolean
-}
 
 interface Item {
   index: number
@@ -206,10 +202,10 @@ const Vhrs: NextPage = () => {
       <HandleHolders />
       <GridLayout>
         <GridItemSix>
-          <Card>{topHolders && <Table isOrg={false} />}</Card>
+          <Card>{topHolders && <Table />}</Card>
         </GridItemSix>
         <GridItemSix>
-          <Card>{topHolders && <Table isOrg={true} />}</Card>
+          <Card>{topHolders && <OrgTable />}</Card>
         </GridItemSix>
       </GridLayout>
     </>
