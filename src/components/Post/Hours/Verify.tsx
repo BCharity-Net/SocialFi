@@ -1,3 +1,5 @@
+import { DAI_ABI } from '@abis/DAI_ABI'
+import { GOOD_ABI } from '@abis/GOOD_ABI'
 import { LensHubProxy } from '@abis/LensHubProxy'
 import { VHR_ABI } from '@abis/VHR_ABI'
 import { gql, useMutation, useQuery } from '@apollo/client'
@@ -25,20 +27,30 @@ import splitSignature from '@lib/splitSignature'
 import trimify from '@lib/trimify'
 import uploadToArweave from '@lib/uploadToArweave'
 import { ethers } from 'ethers'
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import {
   APP_NAME,
   CONNECT_WALLET,
+  DAI_TOKEN,
   ERROR_MESSAGE,
   ERRORS,
+  GIVE_DAI_LP,
+  GOOD_TOKEN,
   LENSHUB_PROXY,
   RELAY_ON,
+  VHR_TO_DAI_PRICE,
   VHR_TOKEN
 } from 'src/constants'
 import { useAppPersistStore, useAppStore } from 'src/store/app'
 import { v4 as uuid } from 'uuid'
-import { useAccount, useContractWrite, useSignTypedData } from 'wagmi'
+import {
+  useAccount,
+  useBalance,
+  useContractRead,
+  useContractWrite,
+  useSignTypedData
+} from 'wagmi'
 
 import IndexStatus from '../../Shared/IndexStatus'
 
@@ -116,6 +128,14 @@ const Verify: FC<Props> = ({ post }) => {
     }
   })
 
+  const [vhrBalance, setVhrBalance] = useState(0)
+  const [goodBalance, setGoodBalance] = useState('')
+  const [balanceOf, setBalanceOf] = useState(0)
+  const [balanceOfQuote, setBalanceOfQuote] = useState(0)
+  const [decimals, setDecimals] = useState(0)
+  // const [validBalance, setValidBalance] = useState(0)
+  const [goodTransferAmount, setGoodTransferAmount] = useState(0)
+
   useQuery(COMMENT_FEED_QUERY, {
     variables: {
       request: { commentsOf: post.id },
@@ -133,6 +153,87 @@ const Verify: FC<Props> = ({ post }) => {
     }
   })
 
+  useContractRead({
+    addressOrName: GOOD_TOKEN,
+    contractInterface: GOOD_ABI,
+    functionName: 'balanceOf',
+    watch: true,
+    args: [GIVE_DAI_LP],
+
+    onSuccess(data) {
+      //console.log('Success', data)
+      setBalanceOf(parseFloat(data.toString()))
+      //console.log(totalSupply);
+    }
+  })
+
+  useContractRead({
+    addressOrName: DAI_TOKEN,
+    contractInterface: DAI_ABI,
+    functionName: 'balanceOf',
+    watch: true,
+    args: [GIVE_DAI_LP],
+
+    onSuccess(data) {
+      //console.log('Success', data)
+      setBalanceOfQuote(parseFloat(data.toString()))
+      //console.log(totalSupply);
+    }
+  })
+
+  useContractRead({
+    addressOrName: GOOD_TOKEN,
+    contractInterface: GOOD_ABI,
+    functionName: 'decimals',
+    watch: true,
+    onSuccess(data) {
+      //console.log('Success', data)
+      setDecimals(parseFloat(data.toString()))
+      //console.log(totalSupply);
+    }
+  })
+
+  const quoteTokenAmountTotal = balanceOfQuote / 10 ** decimals
+  const tokenAmountTotal = balanceOf / 10 ** decimals
+  const goodToDAIPrice = +(quoteTokenAmountTotal / tokenAmountTotal).toFixed(8)
+  const vhrToGoodPrice = +(VHR_TO_DAI_PRICE / goodToDAIPrice).toFixed(8)
+
+  const getVhrBalance = useBalance({
+    addressOrName: address,
+    token: VHR_TOKEN,
+    watch: true,
+    chainId: 80001
+  })
+
+  const getGoodBalance = useBalance({
+    addressOrName: address,
+    token: GOOD_TOKEN,
+    watch: true,
+    chainId: 80001
+  })
+
+  useEffect(() => {
+    //console.log(parseInt(getVhrBalance.data?.value._hex as string, 16))
+    setVhrBalance(parseInt(getVhrBalance.data?.value._hex as string, 16))
+    // console.log(getGoodBalance.data)
+    setGoodBalance(
+      getGoodBalance.data?.formatted.length! > 7
+        ? getGoodBalance.data?.formatted.slice(0, 7)! + '...'
+        : getGoodBalance.data?.formatted!
+    )
+    // console.log(
+    //   parseInt(post.metadata.attributes[4].value as string) * vhrToGoodPrice
+    // )
+    setGoodTransferAmount(
+      parseInt(post.metadata.attributes[4].value as string) * vhrToGoodPrice
+    )
+  }, [
+    getVhrBalance.data,
+    getGoodBalance.data?.formatted,
+    vhrToGoodPrice,
+    post.metadata.attributes
+  ])
+
   const { isLoading: vhrWriteLoading, write: writeVhrTransfer } =
     useContractWrite({
       addressOrName: VHR_TOKEN,
@@ -142,6 +243,35 @@ const Verify: FC<Props> = ({ post }) => {
       onSuccess(data) {
         setTxnData(data.hash)
         createComment(data.hash)
+      },
+      onError(error: any) {
+        toast.error(error?.data?.message ?? error?.message)
+      }
+    })
+
+  // const { config } = usePrepareContractWrite({
+  //   addressOrName: GOOD_TOKEN,
+  //   contractInterface: GOOD_ABI,
+  //   functionName: 'transfer',
+  //   args: [post.profile.ownedBy, (goodTransferAmount * 10 ** 18).toString()]
+  // })
+
+  // const {
+  //   data,
+  //   isLoading,
+  //   isSuccess,
+  //   write: writeGoodTransfer
+  // } = useContractWrite(config)
+
+  const { isLoading: goodWriteLoading, write: writeGoodTransfer } =
+    useContractWrite({
+      addressOrName: GOOD_TOKEN,
+      contractInterface: GOOD_ABI,
+      functionName: 'transfer',
+      args: [post.profile.ownedBy, (goodTransferAmount * 10 ** 18).toString()],
+      onSuccess(data) {
+        //setTxnData(data.hash)
+        //createComment(data.hash)
       },
       onError(error: any) {
         toast.error(error?.data?.message ?? error?.message)
@@ -375,6 +505,40 @@ const Verify: FC<Props> = ({ post }) => {
     })
   }
 
+  const checkEnoughBalance = () => {
+    const vhrTransferAmount = parseInt(
+      post.metadata.attributes[4].value as string
+    )
+    // console.log(vhrBalance)
+    // console.log(goodBalance)
+    // console.log(vhrToGoodPrice)
+    // console.log(vhrTransferAmount)
+    // console.log(goodTransferAmount)
+
+    if (vhrBalance < vhrTransferAmount) {
+      toast.error(
+        'Not enough VHR in wallet. (' + vhrTransferAmount + ' needed)'
+      )
+    } else if (parseInt(goodBalance) < goodTransferAmount) {
+      toast.error(
+        'Not enough GOOD in wallet. (' + goodTransferAmount + ' needed)'
+      )
+    } else {
+      if (!hasVhrTxn) {
+        writeGoodTransfer()
+        writeVhrTransfer()
+      }
+      createCollect()
+    }
+    // if (validBalance) {
+    //   writeGoodTransfer()
+    //   if (!hasVhrTxn) {
+    //     writeVhrTransfer()
+    //   }
+    //   createCollect()
+    // }
+  }
+
   return (
     <div className="flex items-center mt-3 space-y-0 space-x-3 sm:block sm:mt-0 sm:space-y-2">
       {post?.metadata.attributes[1].value === currentUser?.ownedBy &&
@@ -383,13 +547,17 @@ const Verify: FC<Props> = ({ post }) => {
             <Button
               className="sm:mt-0 sm:ml-auto"
               onClick={() => {
-                if (!hasVhrTxn) writeVhrTransfer()
-                createCollect()
+                checkEnoughBalance()
+                // if (validBalance) {
+                //   // if (!hasVhrTxn) writeVhrTransfer()
+                //   // createCollect()
+                // }
               }}
               disabled={
                 typedDataLoading ||
                 signLoading ||
                 vhrWriteLoading ||
+                goodWriteLoading ||
                 commentWriteLoading ||
                 collectWriteLoading ||
                 commentBroadcastLoading ||
@@ -400,6 +568,7 @@ const Verify: FC<Props> = ({ post }) => {
                 typedDataLoading ||
                 signLoading ||
                 vhrWriteLoading ||
+                goodWriteLoading ||
                 commentWriteLoading ||
                 collectWriteLoading ||
                 commentBroadcastLoading ||

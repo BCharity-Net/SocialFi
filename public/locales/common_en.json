@@ -31,6 +31,7 @@
   "Terms": "Terms",
 
   "Copyright": "© BCharity powered by ECSSEN (Registered Charity)",
+  "Copyright-lenster": "© Lenster",
 
   "Search": "Search...",
   "No matching users": "No matching users",
@@ -268,7 +269,7 @@
   "Post": "Post",
   "Send": "Send",
   "Sign action": "Sign",
-  "Uploading": "Uploading to IPFS",
+  "Uploading": "Uploading to Arweave",
   "Generating": "Generating",
   "Empty": "Comment should not be empty!",
 

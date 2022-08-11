@@ -8,7 +8,7 @@ export const IS_MAINNET = process.env.NEXT_PUBLIC_IS_MAINNET === 'true'
 export const APP_NAME = 'BCharity'
 export const DESCRIPTION =
   'Next generation group-driven composable, decentralized, and permissionless public good Web3 built on blockchain.'
-export const DEFAULT_OG = 'https://assets.lenster.xyz/images/og/logo.jpeg'
+export const DEFAULT_OG = 'https://github.com/bcharity/assets'
 
 // Git
 export const GIT_COMMIT_SHA =
@@ -52,21 +52,20 @@ export const WRONG_NETWORK = IS_MAINNET
 export const SIGN_ERROR = 'Failed to sign data'
 
 // URLs
-export const STATIC_ASSETS = 'https://assets.lenster.xyz/images'
+export const STATIC_ASSETS = 'https://github.com/bcharity/assets'
 export const API_URL = IS_MAINNET
   ? 'https://api.lens.dev'
   : 'https://api-mumbai.lens.dev'
 export const POLYGONSCAN_URL = IS_MAINNET
   ? 'https://polygonscan.com'
   : 'https://mumbai.polygonscan.com'
-export const CORS_PROXY = 'https://thingproxy.freeboard.io/fetch'
 export const VHR_TOP_HOLDERS_URL =
   'https://mumbai.polygonscan.com/token/tokenholderchart/0x28ee241ab245699968f2980d3d1b1d23120ab8be'
 export const RARIBLE_URL = IS_MAINNET
   ? 'https://rarible.com'
   : 'https://rinkeby.rarible.com'
-export const IMAGEKIT_URL_PROD = 'https://ik.imagekit.io/lensterimg/'
-export const IMAGEKIT_URL_DEV = 'https://ik.imagekit.io/lensterdev/'
+export const IMAGEKIT_URL_PROD = 'https://ik.imagekit.io/gznuz6k7b/'
+export const IMAGEKIT_URL_DEV = 'https://ik.imagekit.io/ivzeeb1pg/'
 export const ARWEAVE_GATEWAY = 'https://arweave.net'
 export const IMAGEKIT_URL = IS_PRODUCTION ? IMAGEKIT_URL_PROD : IMAGEKIT_URL_DEV
 
@@ -113,7 +112,13 @@ export const FREE_COLLECT_MODULE = IS_MAINNET
 export const DEFAULT_COLLECT_TOKEN = IS_MAINNET
   ? '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
   : '0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889'
+
+//VHR and GOOD Conversion
 export const VHR_TOKEN = '0x28EE241ab245699968F2980D3D1b1d23120ab8BE'
+export const GOOD_TOKEN = '0xd21932b453f0dC0918384442D7AaD5B033C4217B'
+export const GIVE_DAI_LP = '0x4373C35bB4E55Dea2dA2Ba695605a768f011b4B9'
+export const DAI_TOKEN = '0xf0728Bfe68B96Eb241603994de44aBC2412548bE'
+export const VHR_TO_DAI_PRICE = 0.009
 
 // Bundlr
 export const BUNDLR_CURRENCY = 'matic'
