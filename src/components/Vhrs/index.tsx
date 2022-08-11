@@ -13,7 +13,6 @@ import QueryHandle from './QueryHandle'
 
 interface Item {
   index: number
-  rank: number
   address: string
   handle: string
   amount: number
@@ -42,7 +41,6 @@ const Vhrs: NextPage = () => {
             if (i % 4 === 0 && i !== 0) {
               items[index] = {
                 index: index,
-                rank: 1,
                 address: cur[1],
                 handle: '',
                 amount: Number(cur[2]?.replace(/,/g, '')),
@@ -57,6 +55,38 @@ const Vhrs: NextPage = () => {
         })
   }, [topHolders])
 
+  const HandleHolders = () => {
+    return (
+      // eslint-disable-next-line react/jsx-no-useless-fragment
+      <>
+        {topHolders &&
+          topHolders.map((i, index) => {
+            return (
+              <QueryHandle
+                address={topHolders[index].address}
+                callback={(data: any) => {
+                  if (
+                    topHolders[index].org === false &&
+                    isVerified(data.profiles.items[0]?.id)
+                  ) {
+                    topHolders[index].org = true
+                    setTopHolders([...topHolders])
+                  }
+
+                  if (
+                    topHolders[index].handle !== data.profiles.items[0]?.handle
+                  ) {
+                    topHolders[index].handle = data.profiles.items[0]?.handle
+                    setTopHolders([...topHolders])
+                  }
+                }}
+              />
+            )
+          })}
+      </>
+    )
+  }
+
   const columns = useMemo(
     () => [
       {
@@ -64,7 +94,9 @@ const Vhrs: NextPage = () => {
         columns: [
           {
             Header: 'Rank',
-            accessor: 'rank',
+            Cell: (props: { rank: number }) => {
+              return <a>{props.rank + 1}</a>
+            },
             Filter: () => {
               return <div />
             }
@@ -90,168 +122,23 @@ const Vhrs: NextPage = () => {
     []
   )
 
-  const orgColumns = useMemo(
-    () => [
-      {
-        Header: 'Top Organizations',
-        columns: [
-          {
-            Header: 'Rank',
-            accessor: 'rank',
-            Filter: () => {
-              return <div />
-            }
-          },
-          {
-            Header: 'Handle',
-            accessor: 'handle',
-            Cell: ProfileCell,
-            Filter: () => {
-              return <div />
-            }
-          },
-          {
-            Header: 'Amount',
-            accessor: 'amount',
-            Filter: () => {
-              return <div />
-            }
-          }
-        ]
-      }
-    ],
-    []
-  )
-
-  const Table = () => {
-    let r = 1
+  const Table: FC<Tab> = ({ isOrg }) => {
+    if (isOrg) {
+      columns[0].Header = 'Top Organizations'
+    } else {
+      columns[0].Header = 'Top Volunteers'
+    }
     const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
       useTable(
         {
           columns,
-          data: topHolders.filter(function (value, index) {
-            if (!value.org) {
-              topHolders[index].rank = r++
-            }
-            return !value.org
-          })
-        },
-        useFilters
-      )
-
-    return (
-      <table
-        className="w-full text-md text-center mb-2 mt-2"
-        {...getTableProps()}
-      >
-        <thead>
-          {headerGroups.map((headerGroup, index) => {
-            return index === 0 ? (
-              <tr>
-                <th
-                  className="p-4"
-                  {...headerGroup.headers[0].getHeaderProps()}
-                >
-                  {headerGroup.headers[0] &&
-                    headerGroup.headers[0].render('Header')}
-                </th>
-              </tr>
-            ) : (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <th className="p-4" {...column.getHeaderProps()}>
-                    {column.render('Header')}
-                    <div>
-                      {column.canFilter ? column.render('Filter') : null}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            )
-          })}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row, index) => {
-            prepareRow(row)
-            return (
-              <>
-                <tr {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
-                    return (
-                      <>
-                        {index == 0 && (
-                          <td
-                            className="p-4 bg-yellow-300"
-                            {...cell.getCellProps()}
-                          >
-                            {cell.render('Cell')}
-                          </td>
-                        )}
-                        {index == 1 && (
-                          <td
-                            className="p-4 bg-slate-300"
-                            {...cell.getCellProps()}
-                          >
-                            {cell.render('Cell')}
-                          </td>
-                        )}
-                        {index == 2 && (
-                          <td
-                            className="p-4 bg-amber-500"
-                            {...cell.getCellProps()}
-                          >
-                            {cell.render('Cell')}
-                          </td>
-                        )}
-                        {index >= 3 && (
-                          <td className="p-4" {...cell.getCellProps()}>
-                            {cell.render('Cell')}
-                          </td>
-                        )}
-                      </>
-                    )
-                  })}
-                </tr>
-                <QueryHandle
-                  address={topHolders[index].address}
-                  callback={(data: any) => {
-                    if (
-                      topHolders[index].org === false &&
-                      isVerified(data.profiles.items[0]?.id)
-                    ) {
-                      topHolders[index].org = true
-                      setTopHolders([...topHolders])
-                    }
-
-                    if (
-                      topHolders[index].handle !==
-                      data.profiles.items[0]?.handle
-                    ) {
-                      topHolders[index].handle = data.profiles.items[0]?.handle
-                      setTopHolders([...topHolders])
-                    }
-                  }}
-                />
-              </>
-            )
-          })}
-        </tbody>
-      </table>
-    )
-  }
-
-  const OrgTable = () => {
-    let r = 1
-    const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
-      useTable(
-        {
-          columns: orgColumns,
-          data: topHolders.filter((i, index) => {
-            if (i.org) {
-              topHolders[index].rank = r++
-            }
-            return i.org
-          })
+          data: isOrg
+            ? topHolders.filter((value) => {
+                return value.org
+              })
+            : topHolders.filter((value) => {
+                return !value.org
+              })
         },
         useFilters
       )
@@ -294,38 +181,9 @@ const Vhrs: NextPage = () => {
               <tr {...row.getRowProps()}>
                 {row.cells.map((cell) => {
                   return (
-                    // eslint-disable-next-line react/jsx-no-useless-fragment
-                    <>
-                      {index == 0 && (
-                        <td
-                          className="p-4 bg-yellow-300"
-                          {...cell.getCellProps()}
-                        >
-                          {cell.render('Cell')}
-                        </td>
-                      )}
-                      {index == 1 && (
-                        <td
-                          className="p-4 bg-slate-300"
-                          {...cell.getCellProps()}
-                        >
-                          {cell.render('Cell')}
-                        </td>
-                      )}
-                      {index == 2 && (
-                        <td
-                          className="p-4 bg-amber-500"
-                          {...cell.getCellProps()}
-                        >
-                          {cell.render('Cell')}
-                        </td>
-                      )}
-                      {index >= 3 && (
-                        <td className="p-4" {...cell.getCellProps()}>
-                          {cell.render('Cell')}
-                        </td>
-                      )}
-                    </>
+                    <td className="p-4" {...cell.getCellProps()}>
+                      {cell.render('Cell', { rank: index })}
+                    </td>
                   )
                 })}
               </tr>
@@ -341,6 +199,7 @@ const Vhrs: NextPage = () => {
       <div className="flex w-full pt-[20px] text-3xl font-bold justify-center whitespace-nowrap">
         Top VHR Holders
       </div>
+      <HandleHolders />
       <GridLayout>
         <GridItemSix>
           <Card>{topHolders && <Table />}</Card>
