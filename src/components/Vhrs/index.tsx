@@ -5,15 +5,11 @@ import { Card } from '@components/UI/Card'
 import isVerified from '@lib/isVerified'
 import JSSoup from 'jssoup'
 import { NextPage } from 'next'
-import { FC, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useFilters, useTable } from 'react-table'
 import { CORS_PROXY, VHR_TOP_HOLDERS_URL } from 'src/constants'
 
 import QueryHandle from './QueryHandle'
-
-interface Tab {
-  isOrg: boolean
-}
 
 interface Item {
   index: number
@@ -94,21 +90,47 @@ const Vhrs: NextPage = () => {
     []
   )
 
-  const Table: FC<Tab> = ({ isOrg }) => {
-    if (isOrg) {
-      columns[0].Header = 'Top Organizations'
-    }
+  const orgColumns = useMemo(
+    () => [
+      {
+        Header: 'Top Organizations',
+        columns: [
+          // {
+          //   Header: 'Rank',
+          //   accessor: 'rank',
+          //   Filter: () => {
+          //     return <div />
+          //   }
+          // },
+          {
+            Header: 'Handle',
+            accessor: 'handle',
+            Cell: ProfileCell,
+            Filter: () => {
+              return <div />
+            }
+          },
+          {
+            Header: 'Amount',
+            accessor: 'amount',
+            Filter: () => {
+              return <div />
+            }
+          }
+        ]
+      }
+    ],
+    []
+  )
+
+  const Table = () => {
     const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
       useTable(
         {
           columns,
-          data: isOrg
-            ? topHolders.filter(function (value) {
-                return value.org
-              })
-            : topHolders.filter(function (value) {
-                return !value.org
-              })
+          data: topHolders.filter(function (value) {
+            return !value.org
+          })
         },
         useFilters
       )
@@ -256,10 +278,10 @@ const Vhrs: NextPage = () => {
       </div>
       <GridLayout>
         <GridItemSix>
-          <Card>{topHolders && <Table isOrg={false} />}</Card>
+          <Card>{topHolders && <Table />}</Card>
         </GridItemSix>
         <GridItemSix>
-          <Card>{topHolders && <Table isOrg={true} />}</Card>
+          <Card>{topHolders && <OrgTable />}</Card>
         </GridItemSix>
       </GridLayout>
     </>
