@@ -59,6 +59,7 @@ export const API_URL = IS_MAINNET
 export const POLYGONSCAN_URL = IS_MAINNET
   ? 'https://polygonscan.com'
   : 'https://mumbai.polygonscan.com'
+export const CORS_PROXY = 'https://thingproxy.freeboard.io/fetch'
 export const VHR_TOP_HOLDERS_URL =
   'https://mumbai.polygonscan.com/token/tokenholderchart/0x28ee241ab245699968f2980d3d1b1d23120ab8be'
 export const RARIBLE_URL = IS_MAINNET
@@ -66,6 +67,7 @@ export const RARIBLE_URL = IS_MAINNET
   : 'https://rinkeby.rarible.com'
 export const IMAGEKIT_URL_PROD = 'https://ik.imagekit.io/lensterimg/'
 export const IMAGEKIT_URL_DEV = 'https://ik.imagekit.io/lensterdev/'
+export const ARWEAVE_GATEWAY = 'https://arweave.net'
 export const IMAGEKIT_URL = IS_PRODUCTION ? IMAGEKIT_URL_PROD : IMAGEKIT_URL_DEV
 
 // Web3
@@ -73,6 +75,12 @@ export const ALCHEMY_KEY = process.env.NEXT_PUBLIC_ALCHEMY_KEY
 export const ALCHEMY_RPC = IS_MAINNET
   ? `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`
   : `https://polygon-mumbai.g.alchemy.com/v2/${ALCHEMY_KEY}`
+
+export const INFURA_PROJECT_ID = process.env.NEXT_PUBLIC_INFURA_PROJECT_ID
+export const INFURA_PROJECT_SECRET =
+  process.env.NEXT_PUBLIC_INFURA_PROJECT_SECRET
+
+export const ARWEAVE_KEY = process.env.NEXT_PUBLIC_ARWEAVE_KEY
 
 export const POLYGON_MAINNET = {
   ...chain.polygon,
@@ -106,3 +114,9 @@ export const DEFAULT_COLLECT_TOKEN = IS_MAINNET
   ? '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270'
   : '0x9c3C9283D3e44854697Cd22D3Faa240Cfb032889'
 export const VHR_TOKEN = '0x28EE241ab245699968F2980D3D1b1d23120ab8BE'
+
+// Bundlr
+export const BUNDLR_CURRENCY = 'matic'
+export const BUNDLR_NODE_URL = IS_MAINNET
+  ? 'https://node1.bundlr.network'
+  : 'https://devnet.bundlr.network'

@@ -21,7 +21,7 @@ import Logger from '@lib/logger'
 import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
 import uploadAssetsToIPFS from '@lib/uploadAssetsToIPFS'
-import uploadToIPFS from '@lib/uploadToIPFS'
+import uploadToArweave from '@lib/uploadToArweave'
 import { NextPage } from 'next'
 import React, { ChangeEvent, FC, useState } from 'react'
 import { Controller } from 'react-hook-form'
@@ -258,7 +258,7 @@ const Opportunity: NextPage = () => {
   ) => {
     if (!isAuthenticated) return toast.error(CONNECT_WALLET)
     setIsUploading(true)
-    const { path } = await uploadToIPFS({
+    const id = await uploadToArweave({
       version: '1.0.0',
       metadata_id: uuid(),
       description: description,
@@ -330,7 +330,7 @@ const Opportunity: NextPage = () => {
         options: { overrideSigNonce: userSigNonce },
         request: {
           profileId: currentUser?.id,
-          contentURI: `https://ipfs.infura.io/ipfs/${path}`,
+          contentURI: `https://arweave.net/${id}`,
           collectModule: {
             freeCollectModule: {
               followerOnly: false

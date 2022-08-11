@@ -7,7 +7,7 @@ import JSSoup from 'jssoup'
 import { NextPage } from 'next'
 import { FC, useEffect, useMemo, useState } from 'react'
 import { useFilters, useTable } from 'react-table'
-import { VHR_TOP_HOLDERS_URL } from 'src/constants'
+import { CORS_PROXY, VHR_TOP_HOLDERS_URL } from 'src/constants'
 
 import QueryHandle from './QueryHandle'
 
@@ -30,8 +30,9 @@ const Vhrs: NextPage = () => {
 
   useEffect(() => {
     if (topHolders.length === 0)
-      fetch(VHR_TOP_HOLDERS_URL)
+      fetch(`${CORS_PROXY}/${VHR_TOP_HOLDERS_URL}`)
         .then((response) => {
+          console.log(response)
           return response.text()
         })
         .then((html) => {
@@ -132,7 +133,7 @@ const Vhrs: NextPage = () => {
             ) : (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <th className="p-" {...column.getHeaderProps()}>
+                  <th className="p-4" {...column.getHeaderProps()}>
                     {column.render('Header')}
                     <div>
                       {column.canFilter ? column.render('Filter') : null}
@@ -148,6 +149,15 @@ const Vhrs: NextPage = () => {
             prepareRow(row)
             return (
               <>
+                <tr {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <td className="p-4" {...cell.getCellProps()}>
+                        {cell.render('Cell')}
+                      </td>
+                    )
+                  })}
+                </tr>
                 <QueryHandle
                   address={topHolders[index].address}
                   callback={(data: any) => {
@@ -168,19 +178,70 @@ const Vhrs: NextPage = () => {
                     }
                   }}
                 />
-                <tr {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
-                    return (
-                      // eslint-disable-next-line react/jsx-no-useless-fragment
-                      <>
-                        <td className="p-4" {...cell.getCellProps()}>
-                          {cell.render('Cell')}
-                        </td>
-                      </>
-                    )
-                  })}
-                </tr>
               </>
+            )
+          })}
+        </tbody>
+      </table>
+    )
+  }
+
+  const OrgTable = () => {
+    const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
+      useTable(
+        {
+          columns: orgColumns,
+          data: topHolders.filter((i) => {
+            return i.org
+          })
+        },
+        useFilters
+      )
+
+    return (
+      <table
+        className="w-full text-md text-center mb-2 mt-2"
+        {...getTableProps()}
+      >
+        <thead>
+          {headerGroups.map((headerGroup, index) => {
+            return index === 0 ? (
+              <tr>
+                <th
+                  className="p-4"
+                  {...headerGroup.headers[0].getHeaderProps()}
+                >
+                  {headerGroup.headers[0] &&
+                    headerGroup.headers[0].render('Header')}
+                </th>
+              </tr>
+            ) : (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <th className="p-4" {...column.getHeaderProps()}>
+                    {column.render('Header')}
+                    <div>
+                      {column.canFilter ? column.render('Filter') : null}
+                    </div>
+                  </th>
+                ))}
+              </tr>
+            )
+          })}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map((row) => {
+            prepareRow(row)
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map((cell) => {
+                  return (
+                    <td className="p-4" {...cell.getCellProps()}>
+                      {cell.render('Cell')}
+                    </td>
+                  )
+                })}
+              </tr>
             )
           })}
         </tbody>

@@ -1,6 +1,12 @@
 import Head from 'next/head'
 import React, { FC } from 'react'
-import { APP_NAME, DEFAULT_OG, DESCRIPTION, STATIC_ASSETS } from 'src/constants'
+import {
+  APP_NAME,
+  ARWEAVE_GATEWAY,
+  DEFAULT_OG,
+  DESCRIPTION,
+  STATIC_ASSETS
+} from 'src/constants'
 
 interface Props {
   title?: string
@@ -21,8 +27,8 @@ const SEO: FC<Props> = ({ title = APP_NAME, description = DESCRIPTION }) => {
       <link rel="dns-prefetch" href="https://ik.imagekit.io" />
       <link rel="preconnect" href="https://assets.bcharity.xyz" />
       <link rel="dns-prefetch" href="https://assets.bcharity.xyz" />
-      <link rel="preconnect" href="https://ipfs.infura.io" />
-      <link rel="dns-prefetch" href="https://ipfs.infura.io" />
+      <link rel="preconnect" href={ARWEAVE_GATEWAY} />
+      <link rel="dns-prefetch" href={ARWEAVE_GATEWAY} />
 
       <link
         rel="apple-touch-icon"
