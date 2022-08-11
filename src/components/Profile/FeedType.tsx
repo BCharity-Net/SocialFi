@@ -121,7 +121,7 @@ const FeedType: FC<Props> = ({
           />
         </>
       )}
-      <div className="flex flex-wrap gap-3 px-5 pb-2 mt-3 sm:px-0 sm:mt-0 md:pb-0">
+      <div className="w-[600px] flex flex-wrap gap-3 px-5 pb-2 mt-3 sm:px-0 sm:mt-0 md:pb-0">
         <FeedLink
           name={t('Posts')}
           icon={<PencilAltIcon className="w-4 h-4" />}
@@ -149,6 +149,8 @@ const FeedType: FC<Props> = ({
           type="NFT"
           testId="type-nfts"
         />
+      </div>
+      <div className="w-[800px] flex flex-wrap gap-3 px-5 pb-2 mt-3 sm:px-0 sm:mt-0 md:pb-0">
         {isVerified(id) ? (
           <>
             <FeedLink
