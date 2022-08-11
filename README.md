@@ -35,7 +35,9 @@
 
 ## About BCharity
 
-BCharity is a coomunity-driven, decentralized, and permissionless public good social media Web3.0 built on blockchains.
+BCharity is a community-driven, decentralized, and permissionless public good social media Web3.0 built on blockchains.
+
+This project is a fork of [Lenster](https://github.com/lensterxyz/lenster), which is a decentralized, and permissionless social media app built with [Lens Protocol](https://lens.xyz/)
 
 ## ✅ Group
 
@@ -63,4 +65,4 @@ and visit http://localhost:4783
 
 ## ⚖️ License
 
-BCharity is open-sourced software licensed under the BCharity with © [GNU General Public License 3.0](LICENSE).
+BCharity is open-sourced software licensed under Lenster with © [MIT](LICENSE).

@@ -8,7 +8,7 @@ export const IS_MAINNET = process.env.NEXT_PUBLIC_IS_MAINNET === 'true'
 export const APP_NAME = 'BCharity'
 export const DESCRIPTION =
   'Next generation group-driven composable, decentralized, and permissionless public good Web3 built on blockchain.'
-export const DEFAULT_OG = 'https://assets.lenster.xyz/images/og/logo.jpeg'
+export const DEFAULT_OG = 'https://github.com/bcharity/assets'
 
 // Git
 export const GIT_COMMIT_SHA =
@@ -52,7 +52,7 @@ export const WRONG_NETWORK = IS_MAINNET
 export const SIGN_ERROR = 'Failed to sign data'
 
 // URLs
-export const STATIC_ASSETS = 'https://assets.lenster.xyz/images'
+export const STATIC_ASSETS = 'https://github.com/bcharity/assets'
 export const API_URL = IS_MAINNET
   ? 'https://api.lens.dev'
   : 'https://api-mumbai.lens.dev'
@@ -65,8 +65,8 @@ export const VHR_TOP_HOLDERS_URL =
 export const RARIBLE_URL = IS_MAINNET
   ? 'https://rarible.com'
   : 'https://rinkeby.rarible.com'
-export const IMAGEKIT_URL_PROD = 'https://ik.imagekit.io/lensterimg/'
-export const IMAGEKIT_URL_DEV = 'https://ik.imagekit.io/lensterdev/'
+export const IMAGEKIT_URL_PROD = 'https://ik.imagekit.io/pgaa4ngbay/production'
+export const IMAGEKIT_URL_DEV = 'https://ik.imagekit.io/pgaa4ngbay/dev'
 export const ARWEAVE_GATEWAY = 'https://arweave.net'
 export const IMAGEKIT_URL = IS_PRODUCTION ? IMAGEKIT_URL_PROD : IMAGEKIT_URL_DEV
 
