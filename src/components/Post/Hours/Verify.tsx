@@ -270,8 +270,8 @@ const Verify: FC<Props> = ({ post }) => {
       functionName: 'transfer',
       args: [post.profile.ownedBy, (goodTransferAmount * 10 ** 18).toString()],
       onSuccess(data) {
-        //setTxnData(data.hash)
-        //createComment(data.hash)
+        setTxnData(data.hash)
+        createComment(data.hash + ' "good"')
       },
       onError(error: any) {
         toast.error(error?.data?.message ?? error?.message)
