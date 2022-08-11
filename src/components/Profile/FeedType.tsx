@@ -161,6 +161,7 @@ const FeedType: FC<Props> = ({
               name="OrgVHR"
               icon={<ClockIcon className="w-4 h-4" />}
               type="org"
+              count={orgVerifiedHours}
               testId="type-org"
             />
             <FeedLink
@@ -169,12 +170,9 @@ const FeedType: FC<Props> = ({
               type="org-opp"
               testId="type-opp"
             />
-            <FeedLabel name={`Total Donors: ${orgDonors?.toString() ?? ''}`} />
+            <FeedLabel name={`Org Donors: ${orgDonors?.toString() ?? ''}`} />
             <FeedLabel
-              name={`Total Hours: ${orgVerifiedHours?.toString() ?? ''}`}
-            />
-            <FeedLabel
-              name={`Total Volunteers: ${orgVolunteers?.toString() ?? ''}`}
+              name={`Org Volunteers: ${orgVolunteers?.toString() ?? ''}`}
             />
           </>
         ) : (
