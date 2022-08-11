@@ -84,86 +84,91 @@ const FeedType: FC<Props> = ({
   )
 
   return (
-    <div className="flex overflow-x-auto gap-3 px-5 pb-2 mt-3 sm:px-0 sm:mt-0 md:pb-0">
-      <FeedLink
-        name={t('Posts')}
-        icon={<PencilAltIcon className="w-4 h-4" />}
-        type="POST"
-        count={stats?.totalPosts}
-        testId="type-posts"
-      />
-      <FeedLink
-        name={t('Comments')}
-        icon={<ChatAlt2Icon className="w-4 h-4" />}
-        type="COMMENT"
-        count={stats?.totalComments}
-        testId="type-comments"
-      />
-      <FeedLink
-        name={t('Mirrors')}
-        icon={<SwitchHorizontalIcon className="w-4 h-4" />}
-        type="MIRROR"
-        count={stats?.totalMirrors}
-        testId="type-mirrors"
-      />
-      <FeedLink
-        name="NFTs"
-        icon={<PhotographIcon className="w-4 h-4" />}
-        type="NFT"
-        testId="type-nfts"
-      />
-      {isVerified(id) ? (
-        <>
-          <OrgVerifiedHours
-            profile={profile}
-            callback={(hours: number) => {
-              setOrgVerifiedHours(hours)
-            }}
-          />
-          <FeedLink
-            name="OrgFunds"
-            icon={<CashIcon className="w-4 h-4" />}
-            type="funds-org"
-            testId="type-fundraise-org"
-          />
-          <FeedLink
-            name="OrgVHR"
-            icon={<ClockIcon className="w-4 h-4" />}
-            type="org"
-            count={orgVerifiedHours}
-            testId="type-org"
-          />
-          <FeedLink
-            name="OrgOpp"
-            icon={<ClipboardListIcon className="w-4 h-4" />}
-            type="org-opp"
-            testId="type-opp"
-          />
-        </>
-      ) : (
-        <>
-          <FeedLink
-            name="Funds"
-            icon={<CashIcon className="w-4 h-4" />}
-            type="funds"
-            testId="type-fundraise"
-          />
-          <FeedLink
-            name="VHR"
-            icon={<ClockIcon className="w-4 h-4" />}
-            type="vhr"
-            count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
-            testId="type-vhr"
-          />
-          <FeedLink
-            name="Opportunities"
-            icon={<ClipboardListIcon className="w-4 h-4" />}
-            type="opp"
-            testId="type-opp"
-          />
-        </>
-      )}
-    </div>
+    <>
+      <div className="w-[550px] flex-wrap flex gap-3 px-5 pb-2 mt-3 sm:px-0 sm:mt-0 md:pb-0">
+        <FeedLink
+          name={t('Posts')}
+          icon={<PencilAltIcon className="w-4 h-4" />}
+          type="POST"
+          count={stats?.totalPosts}
+          testId="type-posts"
+        />
+        <FeedLink
+          name={t('Comments')}
+          icon={<ChatAlt2Icon className="w-4 h-4" />}
+          type="COMMENT"
+          count={stats?.totalComments}
+          testId="type-comments"
+        />
+        <FeedLink
+          name={t('Mirrors')}
+          icon={<SwitchHorizontalIcon className="w-4 h-4" />}
+          type="MIRROR"
+          count={stats?.totalMirrors}
+          testId="type-mirrors"
+        />
+        <FeedLink
+          name="NFTs"
+          icon={<PhotographIcon className="w-4 h-4" />}
+          type="NFT"
+          testId="type-nfts"
+        />
+      </div>
+      <div className="w-[750px] flex-wrap flex gap-3">
+        {isVerified(id) ? (
+          <>
+            <FeedLink
+              name="OrgFunds"
+              icon={<CashIcon className="w-4 h-4" />}
+              type="funds-org"
+              testId="type-fundraise-org"
+            />
+
+            <FeedLink
+              name="OrgVHR"
+              icon={<ClockIcon className="w-4 h-4" />}
+              type="org"
+              count={orgVerifiedHours}
+              testId="type-org"
+            />
+            <FeedLink
+              name="OrgOpp"
+              icon={<ClipboardListIcon className="w-4 h-4" />}
+              type="org-opp"
+              testId="type-opp"
+            />
+            <OrgVerifiedHours
+              profile={profile}
+              callback={(hours: number) => {
+                setOrgVerifiedHours(hours)
+              }}
+            />
+          </>
+        ) : (
+          <>
+            <FeedLink
+              name="Funds"
+              icon={<CashIcon className="w-4 h-4" />}
+              type="funds"
+              testId="type-fundraise"
+            />
+            <FeedLink
+              name="VHR"
+              icon={<ClockIcon className="w-4 h-4" />}
+              type="vhr"
+              count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
+              testId="type-vhr"
+            />
+            <FeedLink
+              name="Opportunities"
+              icon={<ClipboardListIcon className="w-4 h-4" />}
+              type="opp"
+              testId="type-opp"
+            />
+          </>
+        )}
+      </div>
+    </>
   )
 }
 
