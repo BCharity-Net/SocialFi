@@ -52,7 +52,8 @@ export const WRONG_NETWORK = IS_MAINNET
 export const SIGN_ERROR = 'Failed to sign data'
 
 // URLs
-export const STATIC_ASSETS = 'https://github.com/bcharity/assets'
+export const STATIC_ASSETS =
+  'https://raw.githubusercontent.com/liraymond04/bcharity-assets/eecb7c30f65c1867712116d3119f502bb622edd4'
 export const API_URL = IS_MAINNET
   ? 'https://api.lens.dev'
   : 'https://api-mumbai.lens.dev'
