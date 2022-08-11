@@ -62,13 +62,13 @@ const Vhrs: NextPage = () => {
       {
         Header: 'Top Volunteers',
         columns: [
-          // {
-          //   Header: 'Rank',
-          //   accessor: 'rank',
-          //   Filter: () => {
-          //     return <div />
-          //   }
-          // },
+          {
+            Header: 'Rank',
+            accessor: 'rank',
+            Filter: () => {
+              return <div />
+            }
+          },
           {
             Header: 'Handle',
             accessor: 'handle',
@@ -95,13 +95,13 @@ const Vhrs: NextPage = () => {
       {
         Header: 'Top Organizations',
         columns: [
-          // {
-          //   Header: 'Rank',
-          //   accessor: 'rank',
-          //   Filter: () => {
-          //     return <div />
-          //   }
-          // },
+          {
+            Header: 'Rank',
+            accessor: 'rank',
+            Filter: () => {
+              return <div />
+            }
+          },
           {
             Header: 'Handle',
             accessor: 'handle',
@@ -124,11 +124,15 @@ const Vhrs: NextPage = () => {
   )
 
   const Table = () => {
+    let r = 1
     const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
       useTable(
         {
           columns,
-          data: topHolders.filter(function (value) {
+          data: topHolders.filter(function (value, index) {
+            if (!value.org) {
+              topHolders[index].rank = r++
+            }
             return !value.org
           })
         },
@@ -209,11 +213,15 @@ const Vhrs: NextPage = () => {
   }
 
   const OrgTable = () => {
+    let r = 1
     const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
       useTable(
         {
           columns: orgColumns,
-          data: topHolders.filter((i) => {
+          data: topHolders.filter((i, index) => {
+            if (i.org) {
+              topHolders[index].rank = r++
+            }
             return i.org
           })
         },
