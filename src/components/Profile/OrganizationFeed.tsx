@@ -105,6 +105,12 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
             filter: lessThanEqualToFn
           },
           {
+            Header: 'GOOD',
+            accessor: 'good',
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
+          },
+          {
             Header: 'Total Hours',
             accessor: 'totalHours',
             Cell: TotalHoursCell,
