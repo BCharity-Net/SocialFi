@@ -59,14 +59,13 @@ export const API_URL = IS_MAINNET
 export const POLYGONSCAN_URL = IS_MAINNET
   ? 'https://polygonscan.com'
   : 'https://mumbai.polygonscan.com'
-export const CORS_PROXY = 'https://thingproxy.freeboard.io/fetch'
 export const VHR_TOP_HOLDERS_URL =
   'https://mumbai.polygonscan.com/token/tokenholderchart/0x28ee241ab245699968f2980d3d1b1d23120ab8be'
 export const RARIBLE_URL = IS_MAINNET
   ? 'https://rarible.com'
   : 'https://rinkeby.rarible.com'
-export const IMAGEKIT_URL_PROD = 'https://ik.imagekit.io/lensterimg/'
-export const IMAGEKIT_URL_DEV = 'https://ik.imagekit.io/lensterdev/'
+export const IMAGEKIT_URL_PROD = 'https://ik.imagekit.io/gznuz6k7b/'
+export const IMAGEKIT_URL_DEV = 'https://ik.imagekit.io/ivzeeb1pg/'
 export const ARWEAVE_GATEWAY = 'https://arweave.net'
 export const IMAGEKIT_URL = IS_PRODUCTION ? IMAGEKIT_URL_PROD : IMAGEKIT_URL_DEV
 
