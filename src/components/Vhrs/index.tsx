@@ -178,9 +178,37 @@ const Vhrs: NextPage = () => {
                 <tr {...row.getRowProps()}>
                   {row.cells.map((cell) => {
                     return (
-                      <td className="p-4" {...cell.getCellProps()}>
-                        {cell.render('Cell')}
-                      </td>
+                      <>
+                        {index == 0 && (
+                          <td
+                            className="p-4 bg-yellow-300"
+                            {...cell.getCellProps()}
+                          >
+                            {cell.render('Cell')}
+                          </td>
+                        )}
+                        {index == 1 && (
+                          <td
+                            className="p-4 bg-slate-300"
+                            {...cell.getCellProps()}
+                          >
+                            {cell.render('Cell')}
+                          </td>
+                        )}
+                        {index == 2 && (
+                          <td
+                            className="p-4 bg-amber-500"
+                            {...cell.getCellProps()}
+                          >
+                            {cell.render('Cell')}
+                          </td>
+                        )}
+                        {index >= 3 && (
+                          <td className="p-4" {...cell.getCellProps()}>
+                            {cell.render('Cell')}
+                          </td>
+                        )}
+                      </>
                     )
                   })}
                 </tr>
@@ -260,15 +288,44 @@ const Vhrs: NextPage = () => {
           })}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
+          {rows.map((row, index) => {
             prepareRow(row)
             return (
               <tr {...row.getRowProps()}>
                 {row.cells.map((cell) => {
                   return (
-                    <td className="p-4" {...cell.getCellProps()}>
-                      {cell.render('Cell')}
-                    </td>
+                    // eslint-disable-next-line react/jsx-no-useless-fragment
+                    <>
+                      {index == 0 && (
+                        <td
+                          className="p-4 bg-yellow-300"
+                          {...cell.getCellProps()}
+                        >
+                          {cell.render('Cell')}
+                        </td>
+                      )}
+                      {index == 1 && (
+                        <td
+                          className="p-4 bg-slate-300"
+                          {...cell.getCellProps()}
+                        >
+                          {cell.render('Cell')}
+                        </td>
+                      )}
+                      {index == 2 && (
+                        <td
+                          className="p-4 bg-amber-500"
+                          {...cell.getCellProps()}
+                        >
+                          {cell.render('Cell')}
+                        </td>
+                      )}
+                      {index >= 3 && (
+                        <td className="p-4" {...cell.getCellProps()}>
+                          {cell.render('Cell')}
+                        </td>
+                      )}
+                    </>
                   )
                 })}
               </tr>
