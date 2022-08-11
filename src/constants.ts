@@ -8,7 +8,7 @@ export const IS_MAINNET = process.env.NEXT_PUBLIC_IS_MAINNET === 'true'
 export const APP_NAME = 'BCharity'
 export const DESCRIPTION =
   'Next generation group-driven composable, decentralized, and permissionless public good Web3 built on blockchain.'
-export const DEFAULT_OG = 'https://assets.lenster.xyz/images/og/logo.jpeg'
+export const DEFAULT_OG = 'https://github.com/bcharity/assets'
 
 // Git
 export const GIT_COMMIT_SHA =
@@ -52,7 +52,7 @@ export const WRONG_NETWORK = IS_MAINNET
 export const SIGN_ERROR = 'Failed to sign data'
 
 // URLs
-export const STATIC_ASSETS = 'https://assets.lenster.xyz/images'
+export const STATIC_ASSETS = 'https://github.com/bcharity/assets'
 export const API_URL = IS_MAINNET
   ? 'https://api.lens.dev'
   : 'https://api-mumbai.lens.dev'

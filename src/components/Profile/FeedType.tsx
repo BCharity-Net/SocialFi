@@ -16,7 +16,8 @@ import { useTranslation } from 'react-i18next'
 import { VHR_TOKEN } from 'src/constants'
 import { useBalance } from 'wagmi'
 
-import OrgVerifiedHours from './OrgVerifiedHours'
+import OrgDonors from './Count/OrgDonors'
+import OrgVerifiedHours from './Count/OrgVerifiedHours'
 
 interface Props {
   stats: ProfileStats
@@ -37,6 +38,8 @@ const FeedType: FC<Props> = ({
 }) => {
   const { t } = useTranslation('common')
   const [orgVerifiedHours, setOrgVerifiedHours] = useState<number>()
+  const [orgVolunteers, setOrgVolunteers] = useState<number>()
+  const [orgDonors, setOrgDonors] = useState<number>()
   const { data: vhrBalance } = useBalance({
     addressOrName: address,
     token: VHR_TOKEN,
@@ -83,87 +86,122 @@ const FeedType: FC<Props> = ({
     </button>
   )
 
+  interface FeedLabelProps {
+    name: string
+  }
+
+  const FeedLabel: FC<FeedLabelProps> = ({ name }) => (
+    <button
+      type="button"
+      className={clsx(
+        'flex rounded-lg px-4 sm:px-3 py-2 sm:py-1 text-brand hover:bg-brand-100 dark:hover:bg-opacity-20 hover:bg-opacity-100'
+      )}
+      aria-label={name}
+    >
+      <div className="hidden sm:block">{name}</div>
+    </button>
+  )
+
   return (
-    <div className="flex overflow-x-auto gap-3 px-5 pb-2 mt-3 sm:px-0 sm:mt-0 md:pb-0">
-      <FeedLink
-        name={t('Posts')}
-        icon={<PencilAltIcon className="w-4 h-4" />}
-        type="POST"
-        count={stats?.totalPosts}
-        testId="type-posts"
-      />
-      <FeedLink
-        name={t('Comments')}
-        icon={<ChatAlt2Icon className="w-4 h-4" />}
-        type="COMMENT"
-        count={stats?.totalComments}
-        testId="type-comments"
-      />
-      <FeedLink
-        name={t('Mirrors')}
-        icon={<SwitchHorizontalIcon className="w-4 h-4" />}
-        type="MIRROR"
-        count={stats?.totalMirrors}
-        testId="type-mirrors"
-      />
-      <FeedLink
-        name="NFTs"
-        icon={<PhotographIcon className="w-4 h-4" />}
-        type="NFT"
-        testId="type-nfts"
-      />
-      {isVerified(id) ? (
+    <>
+      {isVerified(id) && (
         <>
           <OrgVerifiedHours
             profile={profile}
-            callback={(hours: number) => {
+            callback={(hours: number, volunteers: number) => {
               setOrgVerifiedHours(hours)
+              setOrgVolunteers(volunteers)
             }}
           />
-          <FeedLink
-            name="OrgFunds"
-            icon={<CashIcon className="w-4 h-4" />}
-            type="funds-org"
-            testId="type-fundraise-org"
-          />
-          <FeedLink
-            name="OrgVHR"
-            icon={<ClockIcon className="w-4 h-4" />}
-            type="org"
-            count={orgVerifiedHours}
-            testId="type-org"
-          />
-          <FeedLink
-            name="OrgOpp"
-            icon={<ClipboardListIcon className="w-4 h-4" />}
-            type="org-opp"
-            testId="type-opp"
-          />
-        </>
-      ) : (
-        <>
-          <FeedLink
-            name="Funds"
-            icon={<CashIcon className="w-4 h-4" />}
-            type="funds"
-            testId="type-fundraise"
-          />
-          <FeedLink
-            name="VHR"
-            icon={<ClockIcon className="w-4 h-4" />}
-            type="vhr"
-            count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
-            testId="type-vhr"
-          />
-          <FeedLink
-            name="Opportunities"
-            icon={<ClipboardListIcon className="w-4 h-4" />}
-            type="opp"
-            testId="type-opp"
+          <OrgDonors
+            profile={profile}
+            callback={(donors: number) => {
+              setOrgDonors(donors)
+            }}
           />
         </>
       )}
-    </div>
+      <div className="flex flex-wrap gap-3 px-5 pb-2 mt-3 sm:px-0 sm:mt-0 md:pb-0">
+        <FeedLink
+          name={t('Posts')}
+          icon={<PencilAltIcon className="w-4 h-4" />}
+          type="POST"
+          count={stats?.totalPosts}
+          testId="type-posts"
+        />
+        <FeedLink
+          name={t('Comments')}
+          icon={<ChatAlt2Icon className="w-4 h-4" />}
+          type="COMMENT"
+          count={stats?.totalComments}
+          testId="type-comments"
+        />
+        <FeedLink
+          name={t('Mirrors')}
+          icon={<SwitchHorizontalIcon className="w-4 h-4" />}
+          type="MIRROR"
+          count={stats?.totalMirrors}
+          testId="type-mirrors"
+        />
+        <FeedLink
+          name="NFTs"
+          icon={<PhotographIcon className="w-4 h-4" />}
+          type="NFT"
+          testId="type-nfts"
+        />
+        {isVerified(id) ? (
+          <>
+            <FeedLink
+              name="OrgFunds"
+              icon={<CashIcon className="w-4 h-4" />}
+              type="funds-org"
+              testId="type-fundraise-org"
+            />
+            <FeedLink
+              name="OrgVHR"
+              icon={<ClockIcon className="w-4 h-4" />}
+              type="org"
+              testId="type-org"
+            />
+            <FeedLink
+              name="OrgOpp"
+              icon={<ClipboardListIcon className="w-4 h-4" />}
+              type="org-opp"
+              testId="type-opp"
+            />
+            <FeedLabel name={`Total Donors: ${orgDonors?.toString() ?? ''}`} />
+            <FeedLabel
+              name={`Total Hours: ${orgVerifiedHours?.toString() ?? ''}`}
+            />
+            <FeedLabel
+              name={`Total Volunteers: ${orgVolunteers?.toString() ?? ''}`}
+            />
+          </>
+        ) : (
+          <>
+            <FeedLink
+              name="Funds"
+              icon={<CashIcon className="w-4 h-4" />}
+              type="funds"
+              testId="type-fundraise"
+            />
+            <FeedLink
+              name="VHR"
+              icon={<ClockIcon className="w-4 h-4" />}
+              type="vhr"
+              count={vhrBalance !== undefined ? vhrBalance.value.toNumber() : 0}
+              testId="type-vhr"
+            />
+            <FeedLink
+              name="Opportunities"
+              icon={<ClipboardListIcon className="w-4 h-4" />}
+              type="opp"
+              testId="type-opp"
+            />
+          </>
+        )}
+      </div>
+    </>
   )
 }
 

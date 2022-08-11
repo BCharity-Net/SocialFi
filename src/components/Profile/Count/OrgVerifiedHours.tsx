@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-key */
 import { gql, useQuery } from '@apollo/client'
-import { Profile } from '@generated/types'
+import { BCharityPost } from '@generated/bcharitytypes'
+import { PaginatedResultInfo, Profile } from '@generated/types'
 import React, { FC, useMemo, useState } from 'react'
 import { Row, useFilters, useTable } from 'react-table'
 import { useAppPersistStore } from 'src/store/app'
@@ -69,6 +70,8 @@ interface Data {
 
 const OrgVerifiedHours: FC<Props> = ({ profile, callback }) => {
   const { currentUser } = useAppPersistStore()
+  const [pageInfo, setPageInfo] = useState<PaginatedResultInfo>()
+  const [publications, setPublications] = useState<BCharityPost[]>([])
   const [onEnter, setOnEnter] = useState<boolean>(false)
   const [tableData, setTableData] = useState<Data[]>([])
   const [pubIdData, setPubIdData] = useState<string[]>([])
@@ -102,7 +105,7 @@ const OrgVerifiedHours: FC<Props> = ({ profile, callback }) => {
     )
   }
 
-  const tableLimit = 10
+  const tableLimit = 50
   const { fetchMore } = useQuery(NOTIFICATIONS_QUERY, {
     variables: {
       request: {
@@ -127,13 +130,43 @@ const OrgVerifiedHours: FC<Props> = ({ profile, callback }) => {
           !i.mentionPublication.hidden
         )
       })
+      setPageInfo(data?.publications?.pageInfo)
+      setPublications(data?.publications?.items)
       handleTableData(notifs).then((result: Data[]) => {
         setTableData([...tableData, ...result])
         if (tableData.length != tableLimit) {
           fetchMore({
             variables: {
-              offset: tableLimit - tableData.length
+              request: {
+                profileId: profile?.id,
+                limit: tableLimit,
+                cursor: pageInfo?.next
+              }
             }
+          }).then((result: any) => {
+            const results = result?.data?.notifications?.items.filter(
+              (i: any) => {
+                return (
+                  i.__typename === 'NewMentionNotification' &&
+                  i.mentionPublication.metadata.attributes[0].value ===
+                    'hours' &&
+                  !i.mentionPublication.hidden
+                )
+              }
+            )
+            const pubId: string[] = [],
+              vhrTxn: string[] = [],
+              addresses: string[] = []
+            results.map((i: any) => {
+              pubId.push(i.mentionPublication.id)
+              vhrTxn.push('')
+              addresses.push(i.mentionPublication.collectNftAddress)
+            })
+            setPubIdData([...pubIdData, ...pubId])
+            setVhrTxnData([...vhrTxnData, ...vhrTxn])
+            setAddressData([...addressData, ...addresses])
+            setPageInfo(result?.data?.publications?.pageInfo)
+            setPublications([...publications, ...results])
           })
         }
       })
@@ -157,6 +190,10 @@ const OrgVerifiedHours: FC<Props> = ({ profile, callback }) => {
       {
         Header: 'VHR Verification',
         columns: [
+          {
+            Header: 'From',
+            accessor: 'orgName'
+          },
           {
             Header: 'Total Hours',
             accessor: 'totalHours'
@@ -183,6 +220,14 @@ const OrgVerifiedHours: FC<Props> = ({ profile, callback }) => {
     return result
   }
 
+  const computeVolunteers = (rows: Row<Data>[]) => {
+    let result = new Set()
+    rows.forEach((row) => {
+      result.add(row.values.orgName)
+    })
+    return result.size
+  }
+
   const { loading, rows } = useTable(
     {
       columns,
@@ -192,7 +237,7 @@ const OrgVerifiedHours: FC<Props> = ({ profile, callback }) => {
   )
 
   const Complete = () => {
-    if (callback) callback(computeHours(rows))
+    if (callback) callback(computeHours(rows), computeVolunteers(rows))
     return <div />
   }
 

@@ -6,14 +6,15 @@ import PublicationDonors, { CollectDonors } from './PublicationDonors'
 interface Props {
   pubIdData: any
   callback?: Function
+  from?: boolean
 }
 
-const TotalDonors: FC<Props> = ({ pubIdData }) => {
+const TotalDonors: FC<Props> = ({ pubIdData, callback, from }) => {
   const [donors, setDonors] = useState(new Set())
 
   return (
     <>
-      <a>Total Donors: {donors.size}</a>
+      {!from && <a>Total Donors: {donors.size}</a>}
       {pubIdData?.map((i: any, index: number) => {
         return (
           <>
@@ -32,6 +33,7 @@ const TotalDonors: FC<Props> = ({ pubIdData }) => {
               pubId={i}
               callback={(data: any) => {
                 setDonors((donors) => new Set(donors.add(data)))
+                if (callback) callback(donors.size)
               }}
             />
           </>
