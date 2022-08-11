@@ -16,7 +16,8 @@ import { useTranslation } from 'react-i18next'
 import { VHR_TOKEN } from 'src/constants'
 import { useBalance } from 'wagmi'
 
-import OrgVerifiedHours from './OrgVerifiedHours'
+import OrgDonors from './Count/OrgDonors'
+import OrgVerifiedHours from './Count/OrgVerifiedHours'
 
 interface Props {
   stats: ProfileStats
@@ -37,6 +38,8 @@ const FeedType: FC<Props> = ({
 }) => {
   const { t } = useTranslation('common')
   const [orgVerifiedHours, setOrgVerifiedHours] = useState<number>()
+  const [orgVolunteers, setOrgVolunteers] = useState<number>()
+  const [orgDonors, setOrgDonors] = useState<number>()
   const { data: vhrBalance } = useBalance({
     addressOrName: address,
     token: VHR_TOKEN,
@@ -83,9 +86,42 @@ const FeedType: FC<Props> = ({
     </button>
   )
 
+  interface FeedLabelProps {
+    name: string
+  }
+
+  const FeedLabel: FC<FeedLabelProps> = ({ name }) => (
+    <button
+      type="button"
+      className={clsx(
+        'flex rounded-lg px-4 sm:px-3 py-2 sm:py-1 text-brand hover:bg-brand-100 dark:hover:bg-opacity-20 hover:bg-opacity-100'
+      )}
+      aria-label={name}
+    >
+      <div className="hidden sm:block">{name}</div>
+    </button>
+  )
+
   return (
     <>
-      <div className="w-[550px] flex-wrap flex gap-3 px-5 pb-2 mt-3 sm:px-0 sm:mt-0 md:pb-0">
+      {isVerified(id) && (
+        <>
+          <OrgVerifiedHours
+            profile={profile}
+            callback={(hours: number, volunteers: number) => {
+              setOrgVerifiedHours(hours)
+              setOrgVolunteers(volunteers)
+            }}
+          />
+          <OrgDonors
+            profile={profile}
+            callback={(donors: number) => {
+              setOrgDonors(donors)
+            }}
+          />
+        </>
+      )}
+      <div className="flex flex-wrap gap-3 px-5 pb-2 mt-3 sm:px-0 sm:mt-0 md:pb-0">
         <FeedLink
           name={t('Posts')}
           icon={<PencilAltIcon className="w-4 h-4" />}
@@ -113,8 +149,6 @@ const FeedType: FC<Props> = ({
           type="NFT"
           testId="type-nfts"
         />
-      </div>
-      <div className="w-[750px] flex-wrap flex gap-3">
         {isVerified(id) ? (
           <>
             <FeedLink
@@ -123,12 +157,10 @@ const FeedType: FC<Props> = ({
               type="funds-org"
               testId="type-fundraise-org"
             />
-
             <FeedLink
               name="OrgVHR"
               icon={<ClockIcon className="w-4 h-4" />}
               type="org"
-              count={orgVerifiedHours}
               testId="type-org"
             />
             <FeedLink
@@ -137,11 +169,12 @@ const FeedType: FC<Props> = ({
               type="org-opp"
               testId="type-opp"
             />
-            <OrgVerifiedHours
-              profile={profile}
-              callback={(hours: number) => {
-                setOrgVerifiedHours(hours)
-              }}
+            <FeedLabel name={`Total Donors: ${orgDonors?.toString() ?? ''}`} />
+            <FeedLabel
+              name={`Total Hours: ${orgVerifiedHours?.toString() ?? ''}`}
+            />
+            <FeedLabel
+              name={`Total Volunteers: ${orgVolunteers?.toString() ?? ''}`}
             />
           </>
         ) : (
