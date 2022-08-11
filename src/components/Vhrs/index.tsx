@@ -5,11 +5,15 @@ import { Card } from '@components/UI/Card'
 import isVerified from '@lib/isVerified'
 import JSSoup from 'jssoup'
 import { NextPage } from 'next'
-import { useEffect, useMemo, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { useFilters, useTable } from 'react-table'
-import { CORS_PROXY, VHR_TOP_HOLDERS_URL } from 'src/constants'
+import { VHR_TOP_HOLDERS_URL } from 'src/constants'
 
 import QueryHandle from './QueryHandle'
+
+interface Tab {
+  isOrg: boolean
+}
 
 interface Item {
   index: number
@@ -25,8 +29,9 @@ const Vhrs: NextPage = () => {
 
   useEffect(() => {
     if (topHolders.length === 0)
-      fetch(`${CORS_PROXY}/${VHR_TOP_HOLDERS_URL}`)
+      fetch(`api/cors?url=${VHR_TOP_HOLDERS_URL}`)
         .then((response) => {
+          console.log(response)
           return response.text()
         })
         .then((html) => {
@@ -54,11 +59,52 @@ const Vhrs: NextPage = () => {
         })
   }, [topHolders])
 
+  const HandleHolders = () => {
+    return (
+      // eslint-disable-next-line react/jsx-no-useless-fragment
+      <>
+        {topHolders &&
+          topHolders.map((i, index) => {
+            return (
+              <QueryHandle
+                address={topHolders[index].address}
+                callback={(data: any) => {
+                  if (
+                    topHolders[index].org === false &&
+                    isVerified(data.profiles.items[0]?.id)
+                  ) {
+                    topHolders[index].org = true
+                    setTopHolders([...topHolders])
+                  }
+
+                  if (
+                    topHolders[index].handle !== data.profiles.items[0]?.handle
+                  ) {
+                    topHolders[index].handle = data.profiles.items[0]?.handle
+                    setTopHolders([...topHolders])
+                  }
+                }}
+              />
+            )
+          })}
+      </>
+    )
+  }
+
   const columns = useMemo(
     () => [
       {
-        Header: 'Top Individual Holders',
+        Header: 'Top Volunteers',
         columns: [
+          {
+            Header: 'Rank',
+            Cell: (props: { rank: number }) => {
+              return <a>{props.rank + 1}</a>
+            },
+            Filter: () => {
+              return <div />
+            }
+          },
           {
             Header: 'Handle',
             accessor: 'handle',
@@ -80,40 +126,23 @@ const Vhrs: NextPage = () => {
     []
   )
 
-  const orgColumns = useMemo(
-    () => [
-      {
-        Header: 'Top Organization Holders',
-        columns: [
-          {
-            Header: 'Handle',
-            accessor: 'handle',
-            Cell: ProfileCell,
-            Filter: () => {
-              return <div />
-            }
-          },
-          {
-            Header: 'Amount',
-            accessor: 'amount',
-            Filter: () => {
-              return <div />
-            }
-          }
-        ]
-      }
-    ],
-    []
-  )
-
-  const Table = () => {
+  const Table: FC<Tab> = ({ isOrg }) => {
+    if (isOrg) {
+      columns[0].Header = 'Top Organizations'
+    } else {
+      columns[0].Header = 'Top Volunteers'
+    }
     const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
       useTable(
         {
           columns,
-          data: topHolders.filter((i) => {
-            return !i.org
-          })
+          data: isOrg
+            ? topHolders.filter((value) => {
+                return value.org
+              })
+            : topHolders.filter((value) => {
+                return !value.org
+              })
         },
         useFilters
       )
@@ -153,96 +182,15 @@ const Vhrs: NextPage = () => {
           {rows.map((row, index) => {
             prepareRow(row)
             return (
-              <>
-                <tr {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
-                    return (
-                      <td className="p-4" {...cell.getCellProps()}>
-                        {cell.render('Cell')}
-                      </td>
-                    )
-                  })}
-                </tr>
-                <QueryHandle
-                  address={topHolders[index].address}
-                  callback={(data: any) => {
-                    if (
-                      topHolders[index].org === false &&
-                      isVerified(data.profiles.items[0]?.id)
-                    ) {
-                      topHolders[index].org = true
-                      setTopHolders([...topHolders])
-                    }
-
-                    if (
-                      topHolders[index].handle !==
-                      data.profiles.items[0]?.handle
-                    ) {
-                      topHolders[index].handle = data.profiles.items[0]?.handle
-                      setTopHolders([...topHolders])
-                    }
-                  }}
-                />
-              </>
-            )
-          })}
-        </tbody>
-      </table>
-    )
-  }
-
-  const OrgTable = () => {
-    const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
-      useTable(
-        {
-          columns: orgColumns,
-          data: topHolders.filter((i) => {
-            return i.org
-          })
-        },
-        useFilters
-      )
-
-    return (
-      <table
-        className="w-full text-md text-center mb-2 mt-2"
-        {...getTableProps()}
-      >
-        <thead>
-          {headerGroups.map((headerGroup, index) => {
-            return index === 0 ? (
-              <tr>
-                <th
-                  className="p-4"
-                  {...headerGroup.headers[0].getHeaderProps()}
-                >
-                  {headerGroup.headers[0] &&
-                    headerGroup.headers[0].render('Header')}
-                </th>
-              </tr>
-            ) : (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <th className="p-4" {...column.getHeaderProps()}>
-                    {column.render('Header')}
-                    <div>
-                      {column.canFilter ? column.render('Filter') : null}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            )
-          })}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row)
-            return (
               <tr {...row.getRowProps()}>
                 {row.cells.map((cell) => {
+                  let className = ''
+                  if (index === 0) className = 'bg-yellow-300'
+                  if (index === 1) className = 'bg-slate-300'
+                  if (index === 2) className = 'bg-amber-500'
                   return (
-                    <td className="p-4" {...cell.getCellProps()}>
-                      {cell.render('Cell')}
+                    <td className={`p-4 ${className}`} {...cell.getCellProps()}>
+                      {cell.render('Cell', { rank: index })}
                     </td>
                   )
                 })}
@@ -255,14 +203,20 @@ const Vhrs: NextPage = () => {
   }
 
   return (
-    <GridLayout>
-      <GridItemSix>
-        <Card>{topHolders && <Table />}</Card>
-      </GridItemSix>
-      <GridItemSix>
-        <Card>{topHolders && <OrgTable />}</Card>
-      </GridItemSix>
-    </GridLayout>
+    <>
+      <div className="flex w-full pt-[20px] text-3xl font-bold justify-center whitespace-nowrap">
+        Top VHR Holders
+      </div>
+      <HandleHolders />
+      <GridLayout>
+        <GridItemSix>
+          <Card>{topHolders && <Table isOrg={false} />}</Card>
+        </GridItemSix>
+        <GridItemSix>
+          <Card>{topHolders && <Table isOrg={true} />}</Card>
+        </GridItemSix>
+      </GridLayout>
+    </>
   )
 }
 

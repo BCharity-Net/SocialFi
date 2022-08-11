@@ -365,7 +365,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
 
   const goalAmount = fund?.metadata?.attributes[1]?.value
   const percentageReached = revenue
-    ? (revenue / parseInt(goalAmount as string)) * 100
+    ? (revenue / Number(goalAmount as string)) * 100
     : 0
   const cover = fund?.metadata?.cover?.original?.url
   if (loading) return <FundraiseShimmer />

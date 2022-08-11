@@ -1,5 +1,5 @@
 import { gql, useQuery } from '@apollo/client'
-import { GridItemSix, GridLayout } from '@components/GridLayout'
+import { GridItemFour, GridLayout } from '@components/GridLayout'
 import Like from '@components/Post/Actions/Like'
 import Share from '@components/Post/Actions/Share'
 import Markup from '@components/Shared/Markup'
@@ -79,8 +79,10 @@ const Fundraisers: FC<Props> = ({}) => {
       const fundraise = data?.explorePublications?.items.filter((i: any) => {
         return i?.metadata?.attributes[0]?.value == 'fundraise'
       })
-      fundraise.map(() => {
+      fundraise.map((i: any) => {
+        // if (!fundraise) {
         revenueData.push(0)
+        // }
       })
 
       setPageInfo(data?.explorePublications?.pageInfo)
@@ -93,6 +95,7 @@ const Fundraisers: FC<Props> = ({}) => {
       )
     }
   })
+  console.log(revenueData)
 
   const { observe } = useInView({
     onEnter: async () => {
@@ -111,8 +114,24 @@ const Fundraisers: FC<Props> = ({}) => {
       const fundraise = data?.explorePublications?.items.filter((i: any) => {
         return i?.metadata?.attributes[0]?.value == 'fundraise'
       })
+      // console.log('publication', publications.length)
+      const nextValues = data?.explorePublications?.items
+      let count = 0
+      // console.log('next 15', nextValues)
+      nextValues.forEach((i: any) => {
+        if (i?.metadata?.attributes[0]?.value == 'fundraise') {
+          count++
+        }
+      })
+
+      console.log('page info', pageInfo?.next)
+      console.log(
+        'explore publications',
+        data?.explorePublications?.pageInfo?.next
+      )
       setPageInfo(data?.explorePublications?.pageInfo)
       setPublications([...publications, ...fundraise])
+      console.log('count', count)
       Logger.log(
         '[Query]',
         `Fetched next 50 explore publications FeedType:${feedType} Next:${pageInfo?.next}`
@@ -129,8 +148,10 @@ const Fundraisers: FC<Props> = ({}) => {
         (post: BCharityPost, index: number) => (
           (cover = post?.metadata?.cover?.original?.url),
           (
-            <GridItemSix key={`${post?.id}_${index}`}>
+            <GridItemFour key={`${post?.id}_${index}`}>
               <Card>
+                {/* <SinglePost post={post} /> */}
+
                 <div
                   className="h-40 rounded-t-xl border-b sm:h-52 dark:border-b-gray-700/80"
                   style={{
@@ -145,6 +166,7 @@ const Fundraisers: FC<Props> = ({}) => {
                     backgroundRepeat: cover ? 'no-repeat' : 'repeat'
                   }}
                 />
+
                 <div className="p-5">
                   <div className="block justify-between items-center sm:flex">
                     <div className="mr-0 space-y-1 sm:mr-16">
@@ -165,7 +187,7 @@ const Fundraisers: FC<Props> = ({}) => {
                     </div>
                   </div>
                   <GridLayout className="!p-0 mt-5">
-                    <GridItemSix className="!mb-4 space-y-1 sm:mb-0">
+                    <GridItemFour className="!mb-4 space-y-1 sm:mb-0">
                       {loading ? (
                         <div className="w-16 h-5 !mt-2 rounded-md shimmer" />
                       ) : (
@@ -207,11 +229,11 @@ const Fundraisers: FC<Props> = ({}) => {
                       >
                         <Button>Donate</Button>
                       </a>
-                    </GridItemSix>
+                    </GridItemFour>
                   </GridLayout>
                 </div>
               </Card>
-            </GridItemSix>
+            </GridItemFour>
           )
         )
       )}
