@@ -63,13 +63,14 @@ export const mainnetVerified = [
 
 export const testnetVerified = [
   '0x15' /** @yoginth.test */,
-  '0x33a2' /**pandasheesh.test */,
+  '0x33a2' /** @pandasheesh.test */,
   '0x01' /** @lensprotocol.test */,
   '0x02' /** @donosonaumczuk.test */,
   '0x4084' /** @vanboy.test */,
   '0x03ca' /** @ecslew.test */,
   '0x4056' /** @bcharity.test */,
   '0x4195' /** @orgtest.test */,
-  '0x3196',
-  '0x4353' /**checkmark0guy.test */
+  '0x3196' /** @kevinnn.test */,
+  '0x4353' /** @checkmark0guy.test */,
+  '0x40d2' /** @anothertest.test */
 ]
