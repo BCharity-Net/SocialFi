@@ -15,6 +15,7 @@ import { useFilters, useTable } from 'react-table'
 import { useAppPersistStore } from 'src/store/app'
 
 import PublicationRevenue from './PublicationRevenue'
+import TotalDonors from './TotalDonors'
 
 interface Props {
   profile: Profile
@@ -149,6 +150,9 @@ const FundraiseTable: FC<Props> = ({
                 >
                   {headerGroup.headers[0] &&
                     headerGroup.headers[0].render('Header')}
+                  <div className="flex items-stretch justify-center">
+                    <TotalDonors pubIdData={pubIdData} />
+                  </div>
                 </th>
               </tr>
             ) : (

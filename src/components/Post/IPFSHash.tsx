@@ -3,6 +3,7 @@ import { ExternalLinkIcon } from '@heroicons/react/outline'
 import formatIPFSHash from '@lib/formatIPFSHash'
 import getIPFSHash from '@lib/getIPFSHash'
 import React, { FC } from 'react'
+import { ARWEAVE_GATEWAY } from 'src/constants'
 
 interface Props {
   ipfsHash: string
@@ -18,7 +19,7 @@ const IPFSHash: FC<Props> = ({ ipfsHash }) => {
       <CardBody className="text-sm text-gray-500">
         <a
           className="flex justify-between items-center"
-          href={`https://ipfs.infura.io/ipfs/${formattedHash}`}
+          href={`${ARWEAVE_GATEWAY}/${formattedHash}`}
           target="_blank"
           rel="noreferrer noopener"
         >

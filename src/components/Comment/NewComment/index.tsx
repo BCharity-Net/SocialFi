@@ -27,7 +27,7 @@ import Logger from '@lib/logger'
 import omit from '@lib/omit'
 import splitSignature from '@lib/splitSignature'
 import trimify from '@lib/trimify'
-import uploadToIPFS from '@lib/uploadToIPFS'
+import uploadToArweave from '@lib/uploadToArweave'
 import dynamic from 'next/dynamic'
 import { Dispatch, FC, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -238,7 +238,7 @@ const NewComment: FC<Props> = ({
     setCommentContentError('')
     setIsUploading(true)
     // TODO: Add animated_url support
-    const { path } = await uploadToIPFS({
+    const id = await uploadToArweave({
       version: '1.0.0',
       metadata_id: uuid(),
       description: trimify(commentContent),
@@ -272,7 +272,7 @@ const NewComment: FC<Props> = ({
           profileId: currentUser?.id,
           publicationId:
             post?.__typename === 'Mirror' ? post?.mirrorOf?.id : post?.id,
-          contentURI: `https://ipfs.infura.io/ipfs/${path}`,
+          contentURI: `https://arweave.net/${id}`,
           collectModule: feeData.recipient
             ? {
                 [getModule(selectedModule.moduleName).config]: feeData
