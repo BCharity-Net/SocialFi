@@ -176,6 +176,7 @@ const FeedType: FC<Props> = ({
             <FeedLabel
               name={`Org Volunteers: ${orgVolunteers?.toString() ?? ''}`}
             />
+            <FeedLabel name={`Org GOOD: `} />
           </>
         ) : (
           <>
