@@ -64,6 +64,12 @@ const FundraiseFeed: FC<Props> = ({ profile }) => {
             filter: fuzzyTextFilterFn
           },
           {
+            Header: 'Good',
+            accessor: 'amountGOOD',
+            Filter: FuzzySearch,
+            filter: fuzzyTextFilterFn
+          },
+          {
             Header: 'Date',
             accessor: 'date',
             Filter: DateSearch
