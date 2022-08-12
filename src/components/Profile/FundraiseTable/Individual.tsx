@@ -1,4 +1,6 @@
 /* eslint-disable react/jsx-key */
+import { GOOD_ABI } from '@abis/GOOD_ABI'
+import { WMATIC_ABI } from '@abis/WMATIC_ABI'
 import { DocumentNode, useQuery } from '@apollo/client'
 import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
 import { Card } from '@components/UI/Card'
@@ -9,9 +11,17 @@ import { BCharityPost } from '@generated/bcharitytypes'
 import { PaginatedResultInfo, Profile } from '@generated/types'
 import { CollectionIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
-import React, { FC, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { useInView } from 'react-cool-inview'
 import { useFilters, useTable } from 'react-table'
+import {
+  DAI_CHECK_FOR_CONVERSION,
+  GOOD_TO_DAI_DONATE_RATE,
+  GOOD_TOKEN,
+  WMATIC_GOOD_LP,
+  WMATIC_TOKEN
+} from 'src/constants'
+import { useContractRead } from 'wagmi'
 
 import NFT from './NFT'
 
@@ -30,6 +40,7 @@ export interface Data {
   fundName: string
   date: string
   amount: string
+  amountGOOD: string
   postID: string
 }
 
@@ -38,6 +49,58 @@ const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
   const [publications, setPublications] = useState<BCharityPost[]>([])
   const [onEnter, setOnEnter] = useState<boolean>(false)
   const [tableData, setTableData] = useState<Data[]>([])
+
+  const bal = useContractRead({
+    addressOrName: GOOD_TOKEN,
+    contractInterface: GOOD_ABI,
+    functionName: 'balanceOf',
+    watch: true,
+    chainId: 80001,
+    args: [WMATIC_GOOD_LP]
+    // onSuccess(data) {
+    //   console.log(data)
+    // },
+    // onError(error) {
+    //   console.log(error)
+    // }
+  })
+
+  const balQ = useContractRead({
+    addressOrName: WMATIC_TOKEN,
+    contractInterface: WMATIC_ABI,
+    functionName: 'balanceOf',
+    watch: true,
+    chainId: 80001,
+    args: [WMATIC_GOOD_LP]
+  })
+
+  const decs = useContractRead({
+    addressOrName: GOOD_TOKEN,
+    contractInterface: GOOD_ABI,
+    functionName: 'decimals',
+    chainId: 80001,
+    watch: true
+  })
+
+  var decimals = decs?.data
+  var balanceOfQuote = parseInt(balQ.data?._hex as string, 16)
+  var balanceOf = parseInt(bal.data?._hex as string, 16)
+
+  useEffect(() => {
+    decimals = decs.data
+    balanceOfQuote = parseInt(balQ.data?._hex as string, 16)
+    balanceOf = parseInt(bal.data?._hex as string, 16)
+  }, [decs.data, bal.data?._hex, balQ.data?._hex])
+
+  const quoteTokenAmountTotal = balanceOfQuote / 10 ** decimals
+  const tokenAmountTotal = balanceOf / 10 ** decimals
+  var wmaticToGoodPrice = +(quoteTokenAmountTotal / tokenAmountTotal).toFixed(8)
+
+  if (bal.isError) {
+    wmaticToGoodPrice = 242335773312669 / 249999999999999096594
+  }
+
+  var goodToDAIPrice = GOOD_TO_DAI_DONATE_RATE
 
   const fetchMetadata = async (contentURI: string) => {
     return fetch(contentURI)
@@ -91,6 +154,12 @@ const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
                 result.attributes[4] && result.attributes[4].key === 'newAmount'
                   ? result.attributes[4].value
                   : '',
+              amountGOOD:
+                result.attributes[4] && result.attributes[4].key === 'newAmount'
+                  ? (+(result.attributes[4].value / goodToDAIPrice).toFixed(
+                      2
+                    )).toString()
+                  : '',
               postID: ''
             })
             setTableData([...tableData, ...nft])
@@ -141,6 +210,10 @@ const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
                 result.attributes[4] && result.attributes[4].key === 'newAmount'
                   ? result.attributes[4].value
                   : '',
+              amountGOOD: (
+                result.attributes[4].value *
+                (1 / goodToDAIPrice)
+              ).toString(),
               postID: ''
             })
             setTableData([...tableData, ...nft])
@@ -215,10 +288,37 @@ const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
                   callback={(data: any) => {
                     if (tableData[index].amount === '') {
                       tableData[index].amount = data.collectModule.amount.value
+                      if (
+                        data.collectModule.amount.asset.address ==
+                        DAI_CHECK_FOR_CONVERSION
+                      ) {
+                        tableData[index].amount += ' DAI'
+                      } else if (
+                        data.collectModule.amount.asset.address == WMATIC_TOKEN
+                      ) {
+                        tableData[index].amount += ' WMATIC'
+                      }
                       setTableData([...tableData])
                     }
                     if (tableData[index].postID !== data.id) {
                       tableData[index].postID = data.id
+                      if (tableData[index].amountGOOD === '') {
+                        if (
+                          data.collectModule.amount.asset.address ==
+                          DAI_CHECK_FOR_CONVERSION
+                        ) {
+                          tableData[index].amountGOOD = (+(
+                            data.collectModule.amount.value / goodToDAIPrice
+                          ).toFixed(2)).toString()
+                        } else if (
+                          data.collectModule.amount.asset.address ==
+                          WMATIC_TOKEN
+                        ) {
+                          tableData[index].amountGOOD = (+(
+                            data.collectModule.amount.value * wmaticToGoodPrice
+                          ).toFixed(2)).toString()
+                        }
+                      }
                       setTableData([...tableData])
                     }
                   }}
