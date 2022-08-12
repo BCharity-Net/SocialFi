@@ -38,6 +38,10 @@ export interface Data {
     index: number
     value: number
   }
+  totalGood: {
+    index: number
+    value: number
+  }
   verified: {
     index: number
     value: string
@@ -60,6 +64,7 @@ const VHRTable: FC<Props> = ({
   const [tableData, setTableData] = useState<Data[]>([])
   const [pubIdData, setPubIdData] = useState<string[]>([])
   const [vhrTxnData, setVhrTxnData] = useState<string[]>([])
+  const [goodTxnData, setGoodTxnData] = useState<string[]>([])
   const [addressData, setAddressData] = useState<string[]>([])
 
   const handleTableData = async (data: any) => {
@@ -77,6 +82,10 @@ const VHRTable: FC<Props> = ({
           totalHours: {
             index: index,
             value: i.metadata.attributes[4].value
+          },
+          totalGood: {
+            index: index,
+            value: 0
           },
           verified: {
             index: index,
@@ -103,6 +112,10 @@ const VHRTable: FC<Props> = ({
             totalHours: {
               index: index,
               value: metadata.attributes[4].value
+            },
+            totalGood: {
+              index: index,
+              value: 0
             },
             verified: {
               index: index,
@@ -141,14 +154,17 @@ const VHRTable: FC<Props> = ({
       }
       const pubId: string[] = [],
         vhrTxn: string[] = [],
+        goodTxn: string[] = [],
         addresses: string[] = []
       hours.map((i: any) => {
         pubId.push(i.id)
         vhrTxn.push('')
+        goodTxn.push('')
         addresses.push(i.collectNftAddress)
       })
       setPubIdData([...pubIdData, ...pubId])
       setVhrTxnData([...vhrTxnData, ...vhrTxn])
+      setGoodTxnData([...goodTxnData, ...goodTxn])
       setAddressData([...addressData, ...addresses])
       setOnEnter(true)
     }
@@ -255,9 +271,13 @@ const VHRTable: FC<Props> = ({
               <>
                 <tr {...row.getRowProps()}>
                   {row.cells.map((cell) => {
+                    console.log(goodTxnData)
                     return (
                       <td className="p-4" {...cell.getCellProps()}>
-                        {cell.render('Cell', { vhr: vhrTxnData })}
+                        {cell.render('Cell', {
+                          vhr: vhrTxnData,
+                          good: goodTxnData
+                        })}
                       </td>
                     )
                   })}
@@ -266,7 +286,9 @@ const VHRTable: FC<Props> = ({
                   pubId={pubIdData[index]}
                   callback={(data: any) => {
                     const publications = data.publications.items.filter(
-                      (i: any) => ethers.utils.isHexString(i.metadata.content)
+                      (i: any) => {
+                        return ethers.utils.isHexString(i.metadata.content)
+                      }
                     )
                     if (publications.length !== 0) {
                       if (
@@ -274,6 +296,22 @@ const VHRTable: FC<Props> = ({
                       ) {
                         vhrTxnData[index] = publications[0].metadata.content
                         setVhrTxnData(vhrTxnData)
+                        setTableData([...tableData])
+                      }
+                    }
+
+                    const good = data.publications.items.filter((i: any) => {
+                      const res = i?.metadata?.content?.split(' ')
+                      return (
+                        ethers.utils.isHexString(res[0]) && res[1] === '"good"'
+                      )
+                    })
+                    if (good.length !== 0) {
+                      if (
+                        goodTxnData[index] != publications[0].metadata.content
+                      ) {
+                        goodTxnData[index] = publications[0].metadata.content
+                        setGoodTxnData(goodTxnData)
                         setTableData([...tableData])
                       }
                     }
