@@ -23,5 +23,5 @@ export const getTotalVHRSent = async (txnHash) => {
       result += Web3.utils.hexToNumber(value)
     }
   }
-  console.log(result)
+  return result
 }
