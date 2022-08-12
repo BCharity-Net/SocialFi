@@ -2027,7 +2027,7 @@
     localforage "^1.8.1"
     tslib "^1.9.3"
 
-"@sentry/nextjs@^7.9.0":
+"@sentry/nextjs@^7.10.0":
   version "7.10.0"
   resolved "https://registry.yarnpkg.com/@sentry/nextjs/-/nextjs-7.10.0.tgz#c1e752f6fdddd82544bf2408821ce54ca0401ee2"
   integrity sha512-e0csRmRGNxStK8A48hM8/4f/B00EkAnwpZC6qR4JlxOTTgMpm88pydiIchBeB3yAivTsc7WI1Ia17/wLiRNthw==
@@ -9343,7 +9343,7 @@ void-elements@3.1.0:
   resolved "https://registry.yarnpkg.com/void-elements/-/void-elements-3.1.0.tgz#614f7fbf8d801f0bb5f0661f5b2f5785750e4f09"
   integrity sha512-Dhxzh5HZuiHQhbvTW9AMetFfBHDMYpo23Uo9btPXgdYP+3T5S+p+jgNy7spra+veYhBP2dCSgxR/i2Y02h5/6w==
 
-wagmi@0.5.12:
+wagmi@^0.5.12:
   version "0.5.12"
   resolved "https://registry.yarnpkg.com/wagmi/-/wagmi-0.5.12.tgz#156ef39fc1be4a12b1067a4800b327e8a6736e16"
   integrity sha512-Y7eGKYhgNw6fohiXBE4uak/lotfgB+KaANqok16ORqwBFV+zaByMYWCrOIYlk1/6ngSyW1dcSVCU8djjh+RNtg==
