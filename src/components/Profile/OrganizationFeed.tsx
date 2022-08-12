@@ -4,7 +4,12 @@ import { Profile } from '@generated/types'
 import React, { FC, useMemo, useState } from 'react'
 
 import VHRTable from './VHRTable'
-import { ProfileCell, StatusCell, TotalHoursCell } from './VHRTable/Cells'
+import {
+  ProfileCell,
+  StatusCell,
+  TotalGoodCell,
+  TotalHoursCell
+} from './VHRTable/Cells'
 import {
   DateSearch,
   FuzzySearch,
@@ -103,6 +108,12 @@ const OrganizationFeed: FC<Props> = ({ profile }) => {
             accessor: 'endDate',
             Filter: DateSearch,
             filter: lessThanEqualToFn
+          },
+          {
+            Header: 'GOOD',
+            accessor: 'totalGood',
+            Cell: TotalGoodCell,
+            Filter: NoFilter
           },
           {
             Header: 'Total Hours',
