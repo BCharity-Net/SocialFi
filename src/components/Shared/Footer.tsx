@@ -77,7 +77,7 @@ const Footer: FC = () => {
           {t('Copyright')}
         </a>
       </span>
-       <span className="font-bold text-gray-600 dark:text-gray-600">
+      <span className="font-bold text-gray-600 dark:text-gray-600">
         <a
           href="https://github.com/lensterxyz/lenster"
           target="_blank"
