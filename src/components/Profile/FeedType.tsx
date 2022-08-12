@@ -11,12 +11,14 @@ import {
 import isVerified from '@lib/isVerified'
 import nFormatter from '@lib/nFormatter'
 import clsx from 'clsx'
-import React, { Dispatch, FC, ReactNode, useState } from 'react'
+import React, { Dispatch, FC, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { getTotalVHRSent } from 'src/alchemy'
 import { VHR_TOKEN } from 'src/constants'
 import { useBalance } from 'wagmi'
 
 import OrgDonors from './Count/OrgDonors'
+import OrgGOOD from './Count/OrgGOOD'
 import OrgVerifiedHours from './Count/OrgVerifiedHours'
 
 interface Props {
@@ -40,10 +42,17 @@ const FeedType: FC<Props> = ({
   const [orgVerifiedHours, setOrgVerifiedHours] = useState<number>()
   const [orgVolunteers, setOrgVolunteers] = useState<number>()
   const [orgDonors, setOrgDonors] = useState<number>()
+  const [orgGood, setOrgGood] = useState<number>()
   const { data: vhrBalance } = useBalance({
     addressOrName: address,
     token: VHR_TOKEN,
     watch: true
+  })
+
+  useEffect(() => {
+    getTotalVHRSent(profile.ownedBy).then((value) => {
+      setOrgVerifiedHours(value)
+    })
   })
 
   interface FeedLinkProps {
@@ -109,7 +118,6 @@ const FeedType: FC<Props> = ({
           <OrgVerifiedHours
             profile={profile}
             callback={(hours: number, volunteers: number) => {
-              setOrgVerifiedHours(hours)
               setOrgVolunteers(volunteers)
             }}
           />
@@ -117,6 +125,12 @@ const FeedType: FC<Props> = ({
             profile={profile}
             callback={(donors: number) => {
               setOrgDonors(donors)
+            }}
+          />
+          <OrgGOOD
+            profile={profile}
+            callback={(good: number) => {
+              setOrgGood(good)
             }}
           />
         </>
@@ -176,7 +190,9 @@ const FeedType: FC<Props> = ({
             <FeedLabel
               name={`Org Volunteers: ${orgVolunteers?.toString() ?? ''}`}
             />
-            <FeedLabel name={`Org GOOD: `} />
+            <FeedLabel
+              name={`Org GOOD: ${orgGood?.toFixed(2)?.toString() ?? ''}`}
+            />
           </>
         ) : (
           <>

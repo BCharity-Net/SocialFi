@@ -1,4 +1,6 @@
 /* eslint-disable react/jsx-key */
+import { DAI_ABI } from '@abis/DAI_ABI'
+import { GOOD_ABI } from '@abis/GOOD_ABI'
 import { DocumentNode, useQuery } from '@apollo/client'
 import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
 import { Card } from '@components/UI/Card'
@@ -13,8 +15,14 @@ import { ethers } from 'ethers'
 import React, { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
 import { Row, useFilters, useTable } from 'react-table'
-import { getGoodSent } from 'src/good'
+import {
+  DAI_TOKEN,
+  GIVE_DAI_LP,
+  GOOD_TOKEN,
+  VHR_TO_DAI_PRICE
+} from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
+import { useContractRead } from 'wagmi'
 
 import NFTDetails from './NFTDetails'
 import VHRToken from './VHRToken'
@@ -68,6 +76,55 @@ const VHRTable: FC<Props> = ({
   const [goodTxnData, setGoodTxnData] = useState<string[]>([])
   const [addressData, setAddressData] = useState<string[]>([])
 
+  const [balanceOf, setBalanceOf] = useState(0)
+  const [balanceOfQuote, setBalanceOfQuote] = useState(0)
+  const [decimals, setDecimals] = useState(0)
+
+  useContractRead({
+    addressOrName: GOOD_TOKEN,
+    contractInterface: GOOD_ABI,
+    functionName: 'balanceOf',
+    watch: true,
+    args: [GIVE_DAI_LP],
+
+    onSuccess(data) {
+      //console.log('Success', data)
+      setBalanceOf(parseFloat(data.toString()))
+      //console.log(totalSupply);
+    }
+  })
+
+  useContractRead({
+    addressOrName: DAI_TOKEN,
+    contractInterface: DAI_ABI,
+    functionName: 'balanceOf',
+    watch: true,
+    args: [GIVE_DAI_LP],
+
+    onSuccess(data) {
+      //console.log('Success', data)
+      setBalanceOfQuote(parseFloat(data.toString()))
+      //console.log(totalSupply);
+    }
+  })
+
+  useContractRead({
+    addressOrName: GOOD_TOKEN,
+    contractInterface: GOOD_ABI,
+    functionName: 'decimals',
+    watch: true,
+    onSuccess(data) {
+      //console.log('Success', data)
+      setDecimals(parseFloat(data.toString()))
+      //console.log(totalSupply);
+    }
+  })
+
+  const quoteTokenAmountTotal = balanceOfQuote / 10 ** decimals
+  const tokenAmountTotal = balanceOf / 10 ** decimals
+  const goodToDAIPrice = +(quoteTokenAmountTotal / tokenAmountTotal).toFixed(8)
+  const vhrToGoodPrice = +(VHR_TO_DAI_PRICE / goodToDAIPrice).toFixed(8)
+
   const handleTableData = async (data: any) => {
     return Promise.all(
       data.map(async (i: any, index: number) => {
@@ -86,7 +143,7 @@ const VHRTable: FC<Props> = ({
           },
           totalGood: {
             index: index,
-            value: 0
+            value: Number(i.metadata.attributes[4].value) * vhrToGoodPrice
           },
           verified: {
             index: index,
@@ -116,7 +173,7 @@ const VHRTable: FC<Props> = ({
             },
             totalGood: {
               index: index,
-              value: 0
+              value: Number(metadata.attributes[4].value) * vhrToGoodPrice
             },
             verified: {
               index: index,
@@ -188,6 +245,20 @@ const VHRTable: FC<Props> = ({
       handleTableData(hours).then((result: Data[]) => {
         setTableData([...tableData, ...result])
       })
+      const pubId: string[] = [],
+        vhrTxn: string[] = [],
+        goodTxn: string[] = [],
+        addresses: string[] = []
+      hours.map((i: any) => {
+        pubId.push(i.id)
+        vhrTxn.push('')
+        goodTxn.push('')
+        addresses.push(i.collectNftAddress)
+      })
+      setPubIdData([...pubIdData, ...pubId])
+      setVhrTxnData([...vhrTxnData, ...vhrTxn])
+      setGoodTxnData([...goodTxnData, ...goodTxn])
+      setAddressData([...addressData, ...addresses])
       if (from) {
         setPageInfo(data?.notifications?.pageInfo)
         setPublications([...publications, ...data?.notifications?.items])
@@ -311,14 +382,8 @@ const VHRTable: FC<Props> = ({
                       }
                     })
                     if (good.length !== 0) {
-                      if (goodTxnData[index] != good[index]) {
-                        getGoodSent(good[index], (value: number) => {
-                          if (tableData[index].totalGood.value !== value) {
-                            tableData[index].totalGood.value = value
-                            setTableData([...tableData])
-                          }
-                        })
-                        goodTxnData[index] = good[index]
+                      if (goodTxnData[index] != good[0]) {
+                        goodTxnData[index] = good[0]
                         setGoodTxnData(goodTxnData)
                         setTableData([...tableData])
                       }

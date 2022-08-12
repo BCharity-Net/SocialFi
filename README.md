@@ -65,4 +65,4 @@ and visit http://localhost:4783
 
 ## ⚖️ License
 
-BCharity is open-sourced software licensed under Lenster with © [MIT](LICENSE).
+BCharity is open-sourced software licensed under Lenster and BCharity with © [MIT](LICENSE).

@@ -112,6 +112,11 @@ const OpportunitiesTable: FC<Props> = ({
       handleTableData(opportunities).then((result: Data[]) => {
         setTableData([...tableData, ...result])
       })
+      const pubId: string[] = []
+      opportunities.map((i: any) => {
+        pubId.push(i.id)
+      })
+      setPubIdData([...pubIdData, ...pubId])
       setPageInfo(data?.publications?.pageInfo)
       setPublications([...publications, ...data?.publications?.items])
       Logger.log(
