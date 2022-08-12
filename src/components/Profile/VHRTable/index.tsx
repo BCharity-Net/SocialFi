@@ -3,7 +3,6 @@ import { DAI_ABI } from '@abis/DAI_ABI'
 import { GOOD_ABI } from '@abis/GOOD_ABI'
 import { DocumentNode, useQuery } from '@apollo/client'
 import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
-import { Button } from '@components/UI/Button'
 import { Card } from '@components/UI/Card'
 import { EmptyState } from '@components/UI/EmptyState'
 import { ErrorMessage } from '@components/UI/ErrorMessage'
@@ -16,7 +15,6 @@ import { ethers } from 'ethers'
 import React, { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
 import { Row, useFilters, useTable } from 'react-table'
-import { getTotalVHRSent } from 'src/alchemy'
 import {
   DAI_TOKEN,
   GIVE_DAI_LP,
@@ -399,13 +397,6 @@ const VHRTable: FC<Props> = ({
 
   return (
     <>
-      <Button
-        onClick={() => {
-          getTotalVHRSent('0x736680C1B41324C0B6248ea819B1580aad03d77B')
-        }}
-      >
-        hi
-      </Button>
       {loading && <PostsShimmer />}
       {data?.publications?.items?.length === 0 && (
         <EmptyState
