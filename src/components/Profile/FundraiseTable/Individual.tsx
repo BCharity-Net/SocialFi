@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-key */
+import { DAI_ABI } from '@abis/DAI_ABI'
 import { GOOD_ABI } from '@abis/GOOD_ABI'
-import { WMATIC_ABI } from '@abis/WMATIC_ABI'
 import { DocumentNode, useQuery } from '@apollo/client'
 import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
 import { Card } from '@components/UI/Card'
@@ -11,14 +11,15 @@ import { BCharityPost } from '@generated/bcharitytypes'
 import { PaginatedResultInfo, Profile } from '@generated/types'
 import { CollectionIcon } from '@heroicons/react/outline'
 import Logger from '@lib/logger'
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
 import { useFilters, useTable } from 'react-table'
 import {
   DAI_CHECK_FOR_CONVERSION,
+  DAI_TOKEN,
+  GIVE_DAI_LP,
   GOOD_TO_DAI_DONATE_RATE,
   GOOD_TOKEN,
-  WMATIC_GOOD_LP,
   WMATIC_TOKEN
 } from 'src/constants'
 import { useContractRead } from 'wagmi'
@@ -50,55 +51,53 @@ const FundraiseTable: FC<Props> = ({ profile, getColumns, query, request }) => {
   const [onEnter, setOnEnter] = useState<boolean>(false)
   const [tableData, setTableData] = useState<Data[]>([])
 
-  const bal = useContractRead({
+  useContractRead({
     addressOrName: GOOD_TOKEN,
     contractInterface: GOOD_ABI,
     functionName: 'balanceOf',
     watch: true,
-    chainId: 80001,
-    args: [WMATIC_GOOD_LP]
-    // onSuccess(data) {
-    //   console.log(data)
-    // },
-    // onError(error) {
-    //   console.log(error)
-    // }
+    args: [GIVE_DAI_LP],
+
+    onSuccess(data) {
+      //console.log('Success', data)
+      setBalanceOf(parseFloat(data.toString()))
+      //console.log(totalSupply);
+    }
   })
 
-  const balQ = useContractRead({
-    addressOrName: WMATIC_TOKEN,
-    contractInterface: WMATIC_ABI,
+  useContractRead({
+    addressOrName: DAI_TOKEN,
+    contractInterface: DAI_ABI,
     functionName: 'balanceOf',
     watch: true,
-    chainId: 80001,
-    args: [WMATIC_GOOD_LP]
+    args: [GIVE_DAI_LP],
+
+    onSuccess(data) {
+      //console.log('Success', data)
+      setBalanceOfQuote(parseFloat(data.toString()))
+      //console.log(totalSupply);
+    }
   })
 
-  const decs = useContractRead({
+  useContractRead({
     addressOrName: GOOD_TOKEN,
     contractInterface: GOOD_ABI,
     functionName: 'decimals',
-    chainId: 80001,
-    watch: true
+    watch: true,
+    onSuccess(data) {
+      //console.log('Success', data)
+      setDecimals(parseFloat(data.toString()))
+      //console.log(totalSupply);
+    }
   })
 
-  var decimals = decs?.data
-  var balanceOfQuote = parseInt(balQ.data?._hex as string, 16)
-  var balanceOf = parseInt(bal.data?._hex as string, 16)
-
-  useEffect(() => {
-    decimals = decs.data
-    balanceOfQuote = parseInt(balQ.data?._hex as string, 16)
-    balanceOf = parseInt(bal.data?._hex as string, 16)
-  }, [decs.data, bal.data?._hex, balQ.data?._hex])
+  const [balanceOf, setBalanceOf] = useState(0)
+  const [balanceOfQuote, setBalanceOfQuote] = useState(0)
+  const [decimals, setDecimals] = useState(0)
 
   const quoteTokenAmountTotal = balanceOfQuote / 10 ** decimals
   const tokenAmountTotal = balanceOf / 10 ** decimals
   var wmaticToGoodPrice = +(quoteTokenAmountTotal / tokenAmountTotal).toFixed(8)
-
-  if (bal.isError) {
-    wmaticToGoodPrice = 242335773312669 / 249999999999999096594
-  }
 
   var goodToDAIPrice = GOOD_TO_DAI_DONATE_RATE
 

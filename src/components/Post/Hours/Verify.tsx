@@ -130,6 +130,10 @@ const Verify: FC<Props> = ({ post }) => {
 
   const [vhrBalance, setVhrBalance] = useState(0)
   const [goodBalance, setGoodBalance] = useState('')
+  const [balanceOf, setBalanceOf] = useState(0)
+  const [balanceOfQuote, setBalanceOfQuote] = useState(0)
+  const [decimals, setDecimals] = useState(0)
+  // const [validBalance, setValidBalance] = useState(0)
   const [goodTransferAmount, setGoodTransferAmount] = useState(0)
 
   useQuery(COMMENT_FEED_QUERY, {
@@ -149,32 +153,45 @@ const Verify: FC<Props> = ({ post }) => {
     }
   })
 
-  const bal = useContractRead({
+  useContractRead({
     addressOrName: GOOD_TOKEN,
     contractInterface: GOOD_ABI,
     functionName: 'balanceOf',
     watch: true,
-    args: [GIVE_DAI_LP]
+    args: [GIVE_DAI_LP],
+
+    onSuccess(data) {
+      //console.log('Success', data)
+      setBalanceOf(parseFloat(data.toString()))
+      //console.log(totalSupply);
+    }
   })
 
-  const balQ = useContractRead({
+  useContractRead({
     addressOrName: DAI_TOKEN,
     contractInterface: DAI_ABI,
     functionName: 'balanceOf',
     watch: true,
-    args: [GIVE_DAI_LP]
+    args: [GIVE_DAI_LP],
+
+    onSuccess(data) {
+      //console.log('Success', data)
+      setBalanceOfQuote(parseFloat(data.toString()))
+      //console.log(totalSupply);
+    }
   })
 
-  const decs = useContractRead({
+  useContractRead({
     addressOrName: GOOD_TOKEN,
     contractInterface: GOOD_ABI,
     functionName: 'decimals',
-    watch: true
+    watch: true,
+    onSuccess(data) {
+      //console.log('Success', data)
+      setDecimals(parseFloat(data.toString()))
+      //console.log(totalSupply);
+    }
   })
-
-  var decimals = decs?.data
-  var balanceOfQuote = parseInt(balQ.data?._hex as string, 16)
-  var balanceOf = parseInt(bal.data?._hex as string, 16)
 
   const quoteTokenAmountTotal = balanceOfQuote / 10 ** decimals
   const tokenAmountTotal = balanceOf / 10 ** decimals
@@ -196,19 +213,23 @@ const Verify: FC<Props> = ({ post }) => {
   })
 
   useEffect(() => {
+    //console.log(parseInt(getVhrBalance.data?.value._hex as string, 16))
     setVhrBalance(parseInt(getVhrBalance.data?.value._hex as string, 16))
+    // console.log(getGoodBalance.data)
     setGoodBalance(
-      +(
-        parseInt(getGoodBalance.data?.value._hex as string, 16) /
-        10 ** 18
-      ).toFixed(4)
+      getGoodBalance.data?.formatted.length! > 7
+        ? getGoodBalance.data?.formatted.slice(0, 7)! + '...'
+        : getGoodBalance.data?.formatted!
     )
+    // console.log(
+    //   parseInt(post.metadata.attributes[4].value as string) * vhrToGoodPrice
+    // )
     setGoodTransferAmount(
       parseInt(post.metadata.attributes[4].value as string) * vhrToGoodPrice
     )
   }, [
     getVhrBalance.data,
-    getGoodBalance.data,
+    getGoodBalance.data?.formatted,
     vhrToGoodPrice,
     post.metadata.attributes
   ])
@@ -227,6 +248,20 @@ const Verify: FC<Props> = ({ post }) => {
         toast.error(error?.data?.message ?? error?.message)
       }
     })
+
+  // const { config } = usePrepareContractWrite({
+  //   addressOrName: GOOD_TOKEN,
+  //   contractInterface: GOOD_ABI,
+  //   functionName: 'transfer',
+  //   args: [post.profile.ownedBy, (goodTransferAmount * 10 ** 18).toString()]
+  // })
+
+  // const {
+  //   data,
+  //   isLoading,
+  //   isSuccess,
+  //   write: writeGoodTransfer
+  // } = useContractWrite(config)
 
   const { isLoading: goodWriteLoading, write: writeGoodTransfer } =
     useContractWrite({
@@ -474,6 +509,11 @@ const Verify: FC<Props> = ({ post }) => {
     const vhrTransferAmount = parseInt(
       post.metadata.attributes[4].value as string
     )
+    // console.log(vhrBalance)
+    // console.log(goodBalance)
+    // console.log(vhrToGoodPrice)
+    // console.log(vhrTransferAmount)
+    // console.log(goodTransferAmount)
 
     if (vhrBalance < vhrTransferAmount) {
       toast.error(
@@ -490,6 +530,13 @@ const Verify: FC<Props> = ({ post }) => {
       }
       createCollect()
     }
+    // if (validBalance) {
+    //   writeGoodTransfer()
+    //   if (!hasVhrTxn) {
+    //     writeVhrTransfer()
+    //   }
+    //   createCollect()
+    // }
   }
 
   return (
@@ -501,6 +548,10 @@ const Verify: FC<Props> = ({ post }) => {
               className="sm:mt-0 sm:ml-auto"
               onClick={() => {
                 checkEnoughBalance()
+                // if (validBalance) {
+                //   // if (!hasVhrTxn) writeVhrTransfer()
+                //   // createCollect()
+                // }
               }}
               disabled={
                 typedDataLoading ||
