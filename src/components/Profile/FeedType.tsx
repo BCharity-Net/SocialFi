@@ -11,8 +11,9 @@ import {
 import isVerified from '@lib/isVerified'
 import nFormatter from '@lib/nFormatter'
 import clsx from 'clsx'
-import React, { Dispatch, FC, ReactNode, useState } from 'react'
+import React, { Dispatch, FC, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { getTotalVHRSent } from 'src/alchemy'
 import { VHR_TOKEN } from 'src/constants'
 import { useBalance } from 'wagmi'
 
@@ -46,6 +47,12 @@ const FeedType: FC<Props> = ({
     addressOrName: address,
     token: VHR_TOKEN,
     watch: true
+  })
+
+  useEffect(() => {
+    getTotalVHRSent(profile.ownedBy).then((value) => {
+      setOrgVerifiedHours(value)
+    })
   })
 
   interface FeedLinkProps {
@@ -111,7 +118,6 @@ const FeedType: FC<Props> = ({
           <OrgVerifiedHours
             profile={profile}
             callback={(hours: number, volunteers: number) => {
-              setOrgVerifiedHours(hours)
               setOrgVolunteers(volunteers)
             }}
           />
