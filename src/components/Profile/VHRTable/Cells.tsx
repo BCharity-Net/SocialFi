@@ -56,7 +56,7 @@ export const TotalGoodCell = (props: {
       rel="noopener noreferrer"
       className="text-brand-500"
     >
-      {<ExternalLinkIcon className="w-4 h-4 inline-flex" />}
+      {value.toFixed(2)} {<ExternalLinkIcon className="w-4 h-4 inline-flex" />}
     </a>
   )
 }
