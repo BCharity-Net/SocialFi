@@ -31,7 +31,6 @@ const Vhrs: NextPage = () => {
     if (topHolders.length === 0)
       fetch(`api/cors?url=${VHR_TOP_HOLDERS_URL}`)
         .then((response) => {
-          console.log(response)
           return response.text()
         })
         .then((html) => {

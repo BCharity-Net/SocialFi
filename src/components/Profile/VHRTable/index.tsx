@@ -13,6 +13,7 @@ import { ethers } from 'ethers'
 import React, { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
 import { Row, useFilters, useTable } from 'react-table'
+import { getGoodSent } from 'src/good'
 import { useAppPersistStore } from 'src/store/app'
 
 import NFTDetails from './NFTDetails'
@@ -271,7 +272,6 @@ const VHRTable: FC<Props> = ({
               <>
                 <tr {...row.getRowProps()}>
                   {row.cells.map((cell) => {
-                    console.log(goodTxnData)
                     return (
                       <td className="p-4" {...cell.getCellProps()}>
                         {cell.render('Cell', {
@@ -300,17 +300,25 @@ const VHRTable: FC<Props> = ({
                       }
                     }
 
-                    const good = data.publications.items.filter((i: any) => {
+                    const good: string[] = []
+                    data.publications.items.forEach((i: any) => {
                       const res = i?.metadata?.content?.split(' ')
-                      return (
-                        ethers.utils.isHexString(res[0]) && res[1] === '"good"'
-                      )
+                      if (
+                        ethers.utils.isHexString(res[0]) &&
+                        res[1] === '"good"'
+                      ) {
+                        good.push(res[0])
+                      }
                     })
                     if (good.length !== 0) {
-                      if (
-                        goodTxnData[index] != publications[0].metadata.content
-                      ) {
-                        goodTxnData[index] = publications[0].metadata.content
+                      if (goodTxnData[index] != good[index]) {
+                        getGoodSent(good[index], (value: number) => {
+                          if (tableData[index].totalGood.value !== value) {
+                            tableData[index].totalGood.value = value
+                            setTableData([...tableData])
+                          }
+                        })
+                        goodTxnData[index] = good[index]
                         setGoodTxnData(goodTxnData)
                         setTableData([...tableData])
                       }
