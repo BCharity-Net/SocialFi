@@ -311,14 +311,14 @@ const VHRTable: FC<Props> = ({
                       }
                     })
                     if (good.length !== 0) {
-                      if (goodTxnData[index] != good[index]) {
-                        getGoodSent(good[index], (value: number) => {
+                      if (goodTxnData[index] != good[0]) {
+                        getGoodSent(good[0], (value: number) => {
                           if (tableData[index].totalGood.value !== value) {
                             tableData[index].totalGood.value = value
                             setTableData([...tableData])
                           }
                         })
-                        goodTxnData[index] = good[index]
+                        goodTxnData[index] = good[0]
                         setGoodTxnData(goodTxnData)
                         setTableData([...tableData])
                       }

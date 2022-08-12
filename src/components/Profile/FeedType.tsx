@@ -17,6 +17,7 @@ import { VHR_TOKEN } from 'src/constants'
 import { useBalance } from 'wagmi'
 
 import OrgDonors from './Count/OrgDonors'
+import OrgGOOD from './Count/OrgGOOD'
 import OrgVerifiedHours from './Count/OrgVerifiedHours'
 
 interface Props {
@@ -40,6 +41,7 @@ const FeedType: FC<Props> = ({
   const [orgVerifiedHours, setOrgVerifiedHours] = useState<number>()
   const [orgVolunteers, setOrgVolunteers] = useState<number>()
   const [orgDonors, setOrgDonors] = useState<number>()
+  const [orgGood, setOrgGood] = useState<number>()
   const { data: vhrBalance } = useBalance({
     addressOrName: address,
     token: VHR_TOKEN,
@@ -119,6 +121,12 @@ const FeedType: FC<Props> = ({
               setOrgDonors(donors)
             }}
           />
+          <OrgGOOD
+            profile={profile}
+            callback={(good: number) => {
+              setOrgGood(good)
+            }}
+          />
         </>
       )}
       <div className="w-[600px] flex flex-wrap gap-3 px-5 pb-2 mt-3 sm:px-0 sm:mt-0 md:pb-0">
@@ -176,7 +184,9 @@ const FeedType: FC<Props> = ({
             <FeedLabel
               name={`Org Volunteers: ${orgVolunteers?.toString() ?? ''}`}
             />
-            <FeedLabel name={`Org GOOD: `} />
+            <FeedLabel
+              name={`Org GOOD: ${orgGood?.toFixed(2)?.toString() ?? ''}`}
+            />
           </>
         ) : (
           <>
