@@ -41,7 +41,7 @@
     "graphql": "^16.5.0",
     "i18n": "^0.15.0",
     "i18next": "^21.9.0",
-    "i18next-browser-languagedetector": "^6.1.4",
+    "i18next-browser-languagedetector": "^6.1.5",
     "interweave": "^13.0.0",
     "interweave-autolink": "^5.1.0",
     "js-cookie": "^3.0.1",
