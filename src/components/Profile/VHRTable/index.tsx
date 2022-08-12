@@ -245,6 +245,20 @@ const VHRTable: FC<Props> = ({
       handleTableData(hours).then((result: Data[]) => {
         setTableData([...tableData, ...result])
       })
+      const pubId: string[] = [],
+        vhrTxn: string[] = [],
+        goodTxn: string[] = [],
+        addresses: string[] = []
+      hours.map((i: any) => {
+        pubId.push(i.id)
+        vhrTxn.push('')
+        goodTxn.push('')
+        addresses.push(i.collectNftAddress)
+      })
+      setPubIdData([...pubIdData, ...pubId])
+      setVhrTxnData([...vhrTxnData, ...vhrTxn])
+      setGoodTxnData([...goodTxnData, ...goodTxn])
+      setAddressData([...addressData, ...addresses])
       if (from) {
         setPageInfo(data?.notifications?.pageInfo)
         setPublications([...publications, ...data?.notifications?.items])

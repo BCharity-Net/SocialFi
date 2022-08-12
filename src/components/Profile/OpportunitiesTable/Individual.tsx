@@ -121,6 +121,14 @@ const OpportunitiesTable: FC<Props> = ({
         }
       })
       const opportunities = handleQueryComplete(data)
+      const pubId: string[] = [],
+        addresses: string[] = []
+      opportunities.map((i: any) => {
+        pubId.push(i.id)
+        addresses.push(i.collectNftAddress)
+      })
+      setPubIdData([...pubIdData, ...pubId])
+      setAddressData([...addressData, ...addresses])
       setPageInfo(data?.publications?.pageInfo)
       setPublications([...publications, ...data?.publications?.items])
       handleTableData(opportunities).then((result: Data[]) => {
