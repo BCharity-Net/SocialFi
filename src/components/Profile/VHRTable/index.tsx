@@ -1,6 +1,9 @@
 /* eslint-disable react/jsx-key */
+import { DAI_ABI } from '@abis/DAI_ABI'
+import { GOOD_ABI } from '@abis/GOOD_ABI'
 import { DocumentNode, useQuery } from '@apollo/client'
 import PostsShimmer from '@components/Shared/Shimmer/PostsShimmer'
+import { Button } from '@components/UI/Button'
 import { Card } from '@components/UI/Card'
 import { EmptyState } from '@components/UI/EmptyState'
 import { ErrorMessage } from '@components/UI/ErrorMessage'
@@ -13,8 +16,15 @@ import { ethers } from 'ethers'
 import React, { FC, useState } from 'react'
 import { useInView } from 'react-cool-inview'
 import { Row, useFilters, useTable } from 'react-table'
-import { getGoodSent } from 'src/good'
+import { getTotalVHRSent } from 'src/alchemy'
+import {
+  DAI_TOKEN,
+  GIVE_DAI_LP,
+  GOOD_TOKEN,
+  VHR_TO_DAI_PRICE
+} from 'src/constants'
 import { useAppPersistStore } from 'src/store/app'
+import { useContractRead } from 'wagmi'
 
 import NFTDetails from './NFTDetails'
 import VHRToken from './VHRToken'
@@ -68,6 +78,55 @@ const VHRTable: FC<Props> = ({
   const [goodTxnData, setGoodTxnData] = useState<string[]>([])
   const [addressData, setAddressData] = useState<string[]>([])
 
+  const [balanceOf, setBalanceOf] = useState(0)
+  const [balanceOfQuote, setBalanceOfQuote] = useState(0)
+  const [decimals, setDecimals] = useState(0)
+
+  useContractRead({
+    addressOrName: GOOD_TOKEN,
+    contractInterface: GOOD_ABI,
+    functionName: 'balanceOf',
+    watch: true,
+    args: [GIVE_DAI_LP],
+
+    onSuccess(data) {
+      //console.log('Success', data)
+      setBalanceOf(parseFloat(data.toString()))
+      //console.log(totalSupply);
+    }
+  })
+
+  useContractRead({
+    addressOrName: DAI_TOKEN,
+    contractInterface: DAI_ABI,
+    functionName: 'balanceOf',
+    watch: true,
+    args: [GIVE_DAI_LP],
+
+    onSuccess(data) {
+      //console.log('Success', data)
+      setBalanceOfQuote(parseFloat(data.toString()))
+      //console.log(totalSupply);
+    }
+  })
+
+  useContractRead({
+    addressOrName: GOOD_TOKEN,
+    contractInterface: GOOD_ABI,
+    functionName: 'decimals',
+    watch: true,
+    onSuccess(data) {
+      //console.log('Success', data)
+      setDecimals(parseFloat(data.toString()))
+      //console.log(totalSupply);
+    }
+  })
+
+  const quoteTokenAmountTotal = balanceOfQuote / 10 ** decimals
+  const tokenAmountTotal = balanceOf / 10 ** decimals
+  const goodToDAIPrice = +(quoteTokenAmountTotal / tokenAmountTotal).toFixed(8)
+  const vhrToGoodPrice = +(VHR_TO_DAI_PRICE / goodToDAIPrice).toFixed(8)
+
   const handleTableData = async (data: any) => {
     return Promise.all(
       data.map(async (i: any, index: number) => {
@@ -86,7 +145,7 @@ const VHRTable: FC<Props> = ({
           },
           totalGood: {
             index: index,
-            value: 0
+            value: Number(i.metadata.attributes[4].value) * vhrToGoodPrice
           },
           verified: {
             index: index,
@@ -116,7 +175,7 @@ const VHRTable: FC<Props> = ({
             },
             totalGood: {
               index: index,
-              value: 0
+              value: Number(metadata.attributes[4].value) * vhrToGoodPrice
             },
             verified: {
               index: index,
@@ -312,12 +371,6 @@ const VHRTable: FC<Props> = ({
                     })
                     if (good.length !== 0) {
                       if (goodTxnData[index] != good[0]) {
-                        getGoodSent(good[0], (value: number) => {
-                          if (tableData[index].totalGood.value !== value) {
-                            tableData[index].totalGood.value = value
-                            setTableData([...tableData])
-                          }
-                        })
                         goodTxnData[index] = good[0]
                         setGoodTxnData(goodTxnData)
                         setTableData([...tableData])
@@ -346,6 +399,13 @@ const VHRTable: FC<Props> = ({
 
   return (
     <>
+      <Button
+        onClick={() => {
+          getTotalVHRSent('0x736680C1B41324C0B6248ea819B1580aad03d77B')
+        }}
+      >
+        hi
+      </Button>
       {loading && <PostsShimmer />}
       {data?.publications?.items?.length === 0 && (
         <EmptyState
