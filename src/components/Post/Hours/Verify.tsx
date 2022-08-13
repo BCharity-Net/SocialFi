@@ -172,7 +172,7 @@ const Verify: FC<Props> = ({ post }) => {
     watch: true
   })
 
-  var decimals = decs?.data
+  var decimals: any = decs?.data
   var balanceOfQuote = parseInt(balQ.data?._hex as string, 16)
   var balanceOf = parseInt(bal.data?._hex as string, 16)
 
@@ -198,7 +198,7 @@ const Verify: FC<Props> = ({ post }) => {
   useEffect(() => {
     setVhrBalance(parseInt(getVhrBalance.data?.value._hex as string, 16))
     setGoodBalance(
-      +(
+      (
         parseInt(getGoodBalance.data?.value._hex as string, 16) /
         10 ** 18
       ).toFixed(4)

@@ -35,7 +35,7 @@ export const VhrToGoodRate = () => {
     watch: true
   })
 
-  var decimals = decs?.data
+  var decimals: any = decs?.data
   var balanceOfQuote = parseInt(balQ.data?._hex as string, 16)
   var balanceOf = parseInt(bal.data?._hex as string, 16)
 
@@ -71,7 +71,7 @@ export const WmaticToGoodRate = () => {
     watch: true
   })
 
-  var decimals = decs?.data
+  var decimals: any = decs?.data
   var balanceOfQuote = parseInt(balQ.data?._hex as string, 16)
   var balanceOf = parseInt(bal.data?._hex as string, 16)
 
