@@ -62,7 +62,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.34.0",
     "react-hot-toast": "^2.3.0",
-    "react-i18next": "^11.18.3",
+    "react-i18next": "^11.18.4",
     "react-mentions": "4.4.7",
     "react-query": "4.0.0",
     "react-table": "^7.8.0",
