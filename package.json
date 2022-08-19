@@ -72,7 +72,7 @@
     "wagmi": "^0.5.12",
     "web3": "^1.7.5",
     "zod": "^3.18.0",
-    "zustand": "^4.0.0"
+    "zustand": "^4.1.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^2.11.5",
