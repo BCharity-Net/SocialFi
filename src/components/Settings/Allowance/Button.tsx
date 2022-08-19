@@ -6,10 +6,15 @@ import { WarningMessage } from '@components/UI/WarningMessage'
 import { ApprovedAllowanceAmount } from '@generated/types'
 import { ExclamationIcon, MinusIcon, PlusIcon } from '@heroicons/react/outline'
 import { getModule } from '@lib/getModule'
+import { Mixpanel } from '@lib/mixpanel'
 import React, { Dispatch, FC, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useSendTransaction, useWaitForTransaction } from 'wagmi'
+import {
+  usePrepareSendTransaction,
+  useSendTransaction,
+  useWaitForTransaction
+} from 'wagmi'
 
 const GENERATE_ALLOWANCE_QUERY = gql`
   query GenerateModuleCurrencyApprovalData(
@@ -42,11 +47,17 @@ const AllowanceButton: FC<Props> = ({
     GENERATE_ALLOWANCE_QUERY
   )
 
+  const { config } = usePrepareSendTransaction({
+    request: {}
+  })
+
   const {
     data: txData,
     isLoading: transactionLoading,
     sendTransaction
   } = useSendTransaction({
+    ...config,
+    mode: 'recklesslyUnprepared',
     onError(error: any) {
       toast.error(error?.data?.message ?? error?.message)
     }
@@ -57,6 +68,9 @@ const AllowanceButton: FC<Props> = ({
       toast.success(`Module ${allowed ? 'disabled' : 'enabled'} successfully!`)
       setShowWarninModal(false)
       setAllowed(!allowed)
+      Mixpanel.track(`Module ${allowed ? 'disabled' : 'enabled'}`, {
+        result: 'success'
+      })
     },
     onError(error: any) {
       toast.error(error?.data?.message ?? error?.message)
@@ -78,8 +92,12 @@ const AllowanceButton: FC<Props> = ({
       }
     }).then((res) => {
       const data = res?.data?.generateModuleCurrencyApprovalData
-      sendTransaction({
-        request: { from: data.from, to: data.to, data: data.data }
+      sendTransaction?.({
+        recklesslySetUnpreparedRequest: {
+          from: data?.from,
+          to: data?.to,
+          data: data?.data
+        }
       })
     })
   }

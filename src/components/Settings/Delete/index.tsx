@@ -83,6 +83,7 @@ const DeleteSettings: FC = () => {
     addressOrName: LENSHUB_PROXY,
     contractInterface: LensHubProxy,
     functionName: 'burnWithSig',
+    mode: 'recklesslyUnprepared',
     onSuccess() {
       onCompleted()
     },
@@ -113,7 +114,7 @@ const DeleteSettings: FC = () => {
           const { v, r, s } = splitSignature(signature)
           const sig = { v, r, s, deadline }
 
-          write({ args: [tokenId, sig] })
+          write?.({ recklesslySetUnpreparedArgs: [tokenId, sig] })
         } catch (error) {
           Logger.warn('[Sign Error]', error)
         }

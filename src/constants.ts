@@ -23,6 +23,7 @@ export const RELAY_ON =
   PUBLIC_URL === 'http://localhost:4783'
     ? process.env.NEXT_PUBLIC_RELAY_ON === 'true'
     : false
+export const MIXPANEL_TOKEN = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN ?? ''
 export const CATEGORIES = [
   'Education',
   'Environment',

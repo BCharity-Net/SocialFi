@@ -203,6 +203,7 @@ const Fundraise: FC<Props> = ({ fund }) => {
     addressOrName: LENSHUB_PROXY,
     contractInterface: LensHubProxy,
     functionName: 'commentWithSig',
+    mode: 'recklesslyUnprepared',
     onError(error: any) {
       toast.error(error?.data?.message ?? error?.message)
     }
@@ -259,13 +260,12 @@ const Fundraise: FC<Props> = ({ fund }) => {
               variables: { request: { id, signature } }
             })
 
-            if ('reason' in result) commentWrite({ args: inputStruct })
+            if ('reason' in result)
+              commentWrite?.({ recklesslySetUnpreparedArgs: inputStruct })
           } else {
-            commentWrite({ args: inputStruct })
+            commentWrite?.({ recklesslySetUnpreparedArgs: inputStruct })
           }
-        } catch (error) {
-          Logger.warn('[Sign Error]', error)
-        }
+        } catch (error) {}
       },
       onError(error) {
         toast.error(error.message ?? ERROR_MESSAGE)

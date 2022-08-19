@@ -219,6 +219,7 @@ const Verify: FC<Props> = ({ post }) => {
       contractInterface: VHR_ABI,
       functionName: 'transfer',
       args: [post.profile.ownedBy, post.metadata.attributes[4].value],
+      mode: 'recklesslyUnprepared',
       onSuccess(data) {
         setTxnData(data.hash)
         createComment(data.hash)
@@ -234,6 +235,7 @@ const Verify: FC<Props> = ({ post }) => {
       contractInterface: GOOD_ABI,
       functionName: 'transfer',
       args: [post.profile.ownedBy, (goodTransferAmount * 10 ** 18).toString()],
+      mode: 'recklesslyUnprepared',
       onSuccess(data) {
         setTxnData(data.hash)
         createComment(data.hash + ' "good"')
@@ -248,6 +250,7 @@ const Verify: FC<Props> = ({ post }) => {
       addressOrName: LENSHUB_PROXY,
       contractInterface: LensHubProxy,
       functionName: 'commentWithSig',
+      mode: 'recklesslyUnprepared',
       onSuccess() {
         setSelectedModule(defaultModuleData)
         setFeeData(defaultFeeData)
@@ -320,13 +323,12 @@ const Verify: FC<Props> = ({ post }) => {
               variables: { request: { id, signature } }
             })
 
-            if ('reason' in result) commentWrite({ args: inputStruct })
+            if ('reason' in result)
+              commentWrite?.({ recklesslySetUnpreparedArgs: inputStruct })
           } else {
-            commentWrite({ args: inputStruct })
+            commentWrite?.({ recklesslySetUnpreparedArgs: inputStruct })
           }
-        } catch (error) {
-          Logger.warn('[Sign Error]', error)
-        }
+        } catch (error) {}
       },
       onError(error) {
         toast.error(error.message ?? ERROR_MESSAGE)
@@ -389,6 +391,7 @@ const Verify: FC<Props> = ({ post }) => {
     addressOrName: LENSHUB_PROXY,
     contractInterface: LensHubProxy,
     functionName: 'collectWithSig',
+    mode: 'recklesslyUnprepared',
     onSuccess() {
       onCompleted()
     },
@@ -445,13 +448,12 @@ const Verify: FC<Props> = ({ post }) => {
               variables: { request: { id, signature } }
             })
 
-            if ('reason' in result) collectWrite({ args: inputStruct })
+            if ('reason' in result)
+              collectWrite?.({ recklesslySetUnpreparedArgs: inputStruct })
           } else {
-            collectWrite({ args: inputStruct })
+            collectWrite?.({ recklesslySetUnpreparedArgs: inputStruct })
           }
-        } catch (error) {
-          Logger.warn('[Sign Error]', error)
-        }
+        } catch (error) {}
       },
       onError(error) {
         toast.error(error.message ?? ERROR_MESSAGE)
