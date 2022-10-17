@@ -29,7 +29,7 @@
     "@tailwindcss/aspect-ratio": "^0.4.0",
     "@tippyjs/react": "^4.2.6",
     "@types/mixpanel-browser": "^2.38.0",
-    "@types/react-mentions": "^4.1.6",
+    "@types/react-mentions": "^4.1.7",
     "@types/react-table": "^7.7.12",
     "alchemy-sdk": "^2.0.2",
     "arweave": "^1.10.23",
