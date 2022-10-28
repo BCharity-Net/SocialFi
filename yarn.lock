@@ -5936,10 +5936,10 @@ fragment-cache@^0.2.1:
   dependencies:
     map-cache "^0.2.2"
 
-framer-motion@^7.1.0:
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-7.2.0.tgz#1abc8090e185eaac8a3b3729e2529154d2edcb17"
-  integrity sha512-D24ZHtbtdpiaByamNYiVXafVU6JfBxjrVlR1beyNupJL80haaDE23xS4dR0b/Qb64frtw/Mpdd9VYwSCv+UtSw==
+framer-motion@^7.6.2:
+  version "7.6.2"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-7.6.2.tgz#7fb93ebfeda27c8c2cff1895ca7a417229e81bf7"
+  integrity sha512-YRr+KaC+1MlLx7iArVyjZRpc0QXI7H0XIOJrdol+dF1+WLQJwS2sP04KGq808BG+byD36UAmAt4YqObE5YFLtw==
   dependencies:
     "@motionone/dom" "10.13.1"
     framesync "6.1.2"
