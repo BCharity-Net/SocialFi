@@ -1225,13 +1225,13 @@
     "@ethersproject/properties" "^5.6.0"
     "@ethersproject/strings" "^5.6.1"
 
-"@giphy/js-analytics@^4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@giphy/js-analytics/-/js-analytics-4.1.1.tgz#67d163bfa0c8ed300f29daeb2be24e57229c14ae"
-  integrity sha512-C4GOSYHCkgG4CcEZ48Zepa4HMrFx1ZMLso28ms681pi1Zb9cA6I7u3rBywcLNeS+oi4Ny0lmceygIDtMBy3uyQ==
+"@giphy/js-analytics@^4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@giphy/js-analytics/-/js-analytics-4.2.0.tgz#5c638c868fa84a8e7ef684b87e40d4bb5e871ca4"
+  integrity sha512-AikTYgDp+d9yB9Ox4IDLOeZw/LGoL+gd4AdQpW9OLg8cHVHu8TuizXndby+2eGkjMy+O4XxfVNC6ADGalyG5jQ==
   dependencies:
-    "@giphy/js-types" "^4.2.1"
-    "@giphy/js-util" "^4.1.1"
+    "@giphy/js-types" "^4.4.0"
+    "@giphy/js-util" "^4.3.0"
     append-query "^2.1.0"
     throttle-debounce "^3.0.1"
 
@@ -1242,41 +1242,41 @@
   dependencies:
     emotion "10.0.27"
 
-"@giphy/js-fetch-api@^4.4.0":
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/@giphy/js-fetch-api/-/js-fetch-api-4.4.0.tgz#1249be7924b5c6d4bc0c233d9b3f29de70268310"
-  integrity sha512-eLJuOxY8LQnmg80qzH34zs9s0+ibLzgX98mQwWSOFxz3WKyVkxT5/YBvr5e1bNznrlFGKSqIb2RV4gG+/YlLPg==
+"@giphy/js-fetch-api@^4.4.0", "@giphy/js-fetch-api@^4.7.0":
+  version "4.7.0"
+  resolved "https://registry.yarnpkg.com/@giphy/js-fetch-api/-/js-fetch-api-4.7.0.tgz#cf5119d76318d28364783ba5cf79d5b91f7b7e63"
+  integrity sha512-KNhN5ZtP8EqV659pgHyjh0AdweXfcODdlBc/6JlfouzbKqTlCQME5JtDQKuweuUtXD5FrcE60Z7hUii71IuIeg==
   dependencies:
-    "@giphy/js-types" "^4.2.1"
-    "@giphy/js-util" "^4.1.1"
+    "@giphy/js-types" "^4.4.0"
+    "@giphy/js-util" "^4.3.0"
     qs "^6.9.4"
 
-"@giphy/js-types@^4.2.1":
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/@giphy/js-types/-/js-types-4.2.1.tgz#c0946746c767f00c267ba7b10af6512be87ed3cc"
-  integrity sha512-Ii+TvBhQsDHaeS79Y/dSqJTCeH3TirHv9DpbuIzxJ2VDKpsXVuIMrxAybwQ7Ve/mF+kjvEiL7TXtrz9Sc8Zxeg==
+"@giphy/js-types@^4.4.0":
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@giphy/js-types/-/js-types-4.4.0.tgz#4f491a408293e52d77aa4d6b38d20f6b2828723a"
+  integrity sha512-W9G6crS2oqTn7g0RpvYu1l/sna4LnivRTk25jmxdzujOFb9kvQ+VFM/v9RPYV2GIBnzT/maW/EwjFIba9jkflA==
 
-"@giphy/js-util@^4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@giphy/js-util/-/js-util-4.1.1.tgz#27384dbfd9c4a793591b4cd28d75f1a5fc140461"
-  integrity sha512-b+Q6vQiRFyLrRzhV9OBEpLON57wxpvrSRjtk9rdtbISpgvmgcSzyb/g2SCB9Ptqo8c50+1HK6MQxA1ufTXBafw==
+"@giphy/js-util@^4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@giphy/js-util/-/js-util-4.3.0.tgz#8885f0d0756d95ec9d0e9a20cf6783e2eec17f79"
+  integrity sha512-ZxYw4DiNVchMxtCjVdLzXJ6+40To1C1B37PJ2a7zUP8Dxa62uGctbyb2PXAB1NmsCZOhy1d0QGEnjxK5LQocHQ==
   dependencies:
-    "@giphy/js-types" "^4.2.1"
+    "@giphy/js-types" "^4.4.0"
     dompurify "^2.2.2"
     uuid "^8.3.0"
 
-"@giphy/react-components@^6.0.0":
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/@giphy/react-components/-/react-components-6.1.1.tgz#1a04e502e975b533f8cb2d3a434c74f1820dfadc"
-  integrity sha512-6ladgVwRkzsk1Sp63GcuTi39nvviNuHBOCnhWxleSlMETDx/QF5wNWIgstioBIFfba8a78pAjfOQHCgZyR4fpQ==
+"@giphy/react-components@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@giphy/react-components/-/react-components-6.5.0.tgz#8202bebbf59377a0768cf49df720723c63a47063"
+  integrity sha512-CoBwu5FsuNJoGAxFXgKuguCW2TtP+OcpIQb/E+6sLpyPV4LFhCbcN+XXPkab39pJ9l/i4EhJQjV/MZY1bqlQPg==
   dependencies:
     "@emotion/react" "11.9.3"
     "@emotion/styled" "11.9.3"
-    "@giphy/js-analytics" "^4.1.1"
+    "@giphy/js-analytics" "^4.2.0"
     "@giphy/js-brand" "^2.2.2"
-    "@giphy/js-fetch-api" "^4.4.0"
-    "@giphy/js-types" "^4.2.1"
-    "@giphy/js-util" "^4.1.1"
+    "@giphy/js-fetch-api" "^4.7.0"
+    "@giphy/js-types" "^4.4.0"
+    "@giphy/js-util" "^4.3.0"
     intersection-observer "^0.12.2"
     react-use "17.4.0"
     throttle-debounce "^3.0.1"
