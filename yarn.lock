@@ -1242,26 +1242,26 @@
   dependencies:
     emotion "10.0.27"
 
-"@giphy/js-fetch-api@^4.4.0":
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/@giphy/js-fetch-api/-/js-fetch-api-4.4.0.tgz#1249be7924b5c6d4bc0c233d9b3f29de70268310"
-  integrity sha512-eLJuOxY8LQnmg80qzH34zs9s0+ibLzgX98mQwWSOFxz3WKyVkxT5/YBvr5e1bNznrlFGKSqIb2RV4gG+/YlLPg==
+"@giphy/js-fetch-api@^4.4.0", "@giphy/js-fetch-api@^4.7.1":
+  version "4.7.1"
+  resolved "https://registry.yarnpkg.com/@giphy/js-fetch-api/-/js-fetch-api-4.7.1.tgz#5f5ecf55d7738061138b2351af2e4a5106973f85"
+  integrity sha512-LFpi8ZbV/N51nhIDc7ig6HnBUZ0Y/Av0GVCVDOs9zmUK1/zgTA33fkWMCNVxc4wgrugwRXCJA7Mj8Zb8BTea2w==
   dependencies:
-    "@giphy/js-types" "^4.2.1"
-    "@giphy/js-util" "^4.1.1"
+    "@giphy/js-types" "^4.4.0"
+    "@giphy/js-util" "^4.3.0"
     qs "^6.9.4"
 
-"@giphy/js-types@^4.2.1":
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/@giphy/js-types/-/js-types-4.2.1.tgz#c0946746c767f00c267ba7b10af6512be87ed3cc"
-  integrity sha512-Ii+TvBhQsDHaeS79Y/dSqJTCeH3TirHv9DpbuIzxJ2VDKpsXVuIMrxAybwQ7Ve/mF+kjvEiL7TXtrz9Sc8Zxeg==
+"@giphy/js-types@^4.2.1", "@giphy/js-types@^4.4.0":
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@giphy/js-types/-/js-types-4.4.0.tgz#4f491a408293e52d77aa4d6b38d20f6b2828723a"
+  integrity sha512-W9G6crS2oqTn7g0RpvYu1l/sna4LnivRTk25jmxdzujOFb9kvQ+VFM/v9RPYV2GIBnzT/maW/EwjFIba9jkflA==
 
-"@giphy/js-util@^4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@giphy/js-util/-/js-util-4.1.1.tgz#27384dbfd9c4a793591b4cd28d75f1a5fc140461"
-  integrity sha512-b+Q6vQiRFyLrRzhV9OBEpLON57wxpvrSRjtk9rdtbISpgvmgcSzyb/g2SCB9Ptqo8c50+1HK6MQxA1ufTXBafw==
+"@giphy/js-util@^4.1.1", "@giphy/js-util@^4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@giphy/js-util/-/js-util-4.3.0.tgz#8885f0d0756d95ec9d0e9a20cf6783e2eec17f79"
+  integrity sha512-ZxYw4DiNVchMxtCjVdLzXJ6+40To1C1B37PJ2a7zUP8Dxa62uGctbyb2PXAB1NmsCZOhy1d0QGEnjxK5LQocHQ==
   dependencies:
-    "@giphy/js-types" "^4.2.1"
+    "@giphy/js-types" "^4.4.0"
     dompurify "^2.2.2"
     uuid "^8.3.0"
 
