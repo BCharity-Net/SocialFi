@@ -28,7 +28,7 @@
     "@sentry/nextjs": "^7.10.0",
     "@tailwindcss/aspect-ratio": "^0.4.0",
     "@tippyjs/react": "^4.2.6",
-    "@types/mixpanel-browser": "^2.38.0",
+    "@types/mixpanel-browser": "^2.38.1",
     "@types/react-mentions": "^4.1.6",
     "@types/react-table": "^7.7.12",
     "alchemy-sdk": "^2.0.2",
