@@ -33,7 +33,7 @@
     "@types/react-table": "^7.7.12",
     "alchemy-sdk": "^2.0.2",
     "arweave": "^1.10.23",
-    "axios": "^0.27.2",
+    "axios": "^1.2.6",
     "clsx": "^1.2.1",
     "dayjs": "^1.11.3",
     "dotenv": "^16.0.1",
